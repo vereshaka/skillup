@@ -1,9 +1,9 @@
 #!/bin/bash
 
 VERSION=$1
-REPO="loc"
+REPO="tasktrack.telekom.at/gucci-docker-local"
 PROJECT="widget-template"
-# tasktrack.telekom.at/gucci-docker-local
+
 ./build_docker.sh $PROJECT $VERSION $REPO
 
 exit 0
