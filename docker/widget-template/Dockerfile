@@ -9,7 +9,7 @@ ENV LOG_FOLDER=$LOG_FOLDER
 ENV ELK_VER=6.7.0
 
 RUN apt-get update && \
-    apt-get install -y supervisor && \
+    apt-get install -y supervisor nano && \
     curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-$ELK_VER-amd64.deb && \
     dpkg -i filebeat-$ELK_VER-amd64.deb && \
     rm filebeat-$ELK_VER-amd64.deb && \
