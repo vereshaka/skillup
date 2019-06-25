@@ -2,9 +2,9 @@ FROM node:8-slim
 
 LABEL "maintainer"="viacheslav.nezamai@sytoss.com"
 
-ARG LOGSTASH_IP
+ARG LOGGING_LOGSTASH_HOST
 ARG LOG_FOLDER
-ENV LOGSTASH_IP=$LOGSTASH_IP
+ENV LOGGING_LOGSTASH_HOST=$LOGGING_LOGSTASH_HOST
 ENV LOG_FOLDER=$LOG_FOLDER
 ENV ELK_VER=6.7.0
 
@@ -20,7 +20,7 @@ RUN apt-get update && \
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'user=root' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'nodaemon=true' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'environment=LOGSTASH_IP="%(ENV_LOGSTASH_IP)s",LOG_FOLDER="%(ENV_LOG_FOLDER)s"\n' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'environment=LOGGING_LOGSTASH_HOST="%(ENV_LOGGING_LOGSTASH_HOST)s",LOG_FOLDER="%(ENV_LOG_FOLDER)s"\n' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo '[program:filebeat-app]' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'command=/usr/bin/filebeat -e' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo "autostart=true" >> /etc/supervisor/conf.d/supervisord.conf && \
@@ -29,7 +29,7 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'startretries=5' >> /etc/supervisor/conf.d/supervisord.conf
 
 RUN echo "output.logstash:" > /etc/filebeat/filebeat.yml && \
-    echo "  hosts: \${LOGSTASH_IP}:\${LOGSTASH_PORT:5044}" >> /etc/filebeat/filebeat.yml && \
+    echo "  hosts: \${LOGGING_LOGSTASH_HOST}:\${LOGGING_LOGSTASH_PORT:5044}" >> /etc/filebeat/filebeat.yml && \
     echo "filebeat.inputs:" >> /etc/filebeat/filebeat.yml && \
     echo "- type: log" >> /etc/filebeat/filebeat.yml && \
     echo "  paths: \${LOG_FOLDER}" >> /etc/filebeat/filebeat.yml && \

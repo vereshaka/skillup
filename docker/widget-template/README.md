@@ -2,9 +2,9 @@
 
 ## Environment variables
 
-* LOGSTASH_IP - IP or FQDN of Logstash target host.
+* LOGGING_LOGSTASH_IP - IP or FQDN of Logstash target host.
 
-* LOGSTASH_PORT - port that Logstash target host listen. Default value is 5044.
+* LOGGING_LOGSTASH_PORT - port that Logstash target host listen. Default value is 5044.
 
 * LOG_FOLDER - absolute paths to folders that contains logs.
 
