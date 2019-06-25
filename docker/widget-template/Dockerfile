@@ -9,7 +9,7 @@ ENV LOG_FOLDER=$LOG_FOLDER
 ENV ELK_VER=6.7.0
 
 RUN apt-get update && \
-    apt-get install -y supervisor nano && \
+    apt-get install -y supervisor && \
     curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-$ELK_VER-amd64.deb && \
     dpkg -i filebeat-$ELK_VER-amd64.deb && \
     rm filebeat-$ELK_VER-amd64.deb && \
@@ -29,7 +29,7 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'startretries=5' >> /etc/supervisor/conf.d/supervisord.conf
 
 RUN echo "output.logstash:" > /etc/filebeat/filebeat.yml && \
-    echo "  hosts: \${LOGSTASH_IP}" >> /etc/filebeat/filebeat.yml && \
+    echo "  hosts: \${LOGSTASH_IP}:\${LOGSTASH_PORT:5044}" >> /etc/filebeat/filebeat.yml && \
     echo "filebeat.inputs:" >> /etc/filebeat/filebeat.yml && \
     echo "- type: log" >> /etc/filebeat/filebeat.yml && \
     echo "  paths: \${LOG_FOLDER}" >> /etc/filebeat/filebeat.yml && \
