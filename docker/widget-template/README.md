@@ -2,11 +2,10 @@
 
 ## Environment variables
 
-LOGSTASH_IP - IP or FQDN name of Logstash target host.
+* LOGSTASH_IP - IP or FQDN of Logstash target host.
 
-LOGSTASH_PORT - port that Logstash target host is listen
+* LOGSTASH_PORT - port that Logstash target host listen. Default value is 5044.
 
-LOG_FOLDER - absolute paths to folders that contains logs.
+* LOG_FOLDER - absolute paths to folders that contains logs.
 
-ELK_VER - version of Elastic Stack. This value uses for congruence Filebeat and Elastic Stack versions. Default value is 6.7.0.
-
+* ELK_VER - version of Elastic Stack. This value used for equality Filebeat and Elastic Stack versions. Default value is 6.7.0.

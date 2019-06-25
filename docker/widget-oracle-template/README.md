@@ -1,1 +1,1 @@
-# Oracle client
+# Widget Oracle template
