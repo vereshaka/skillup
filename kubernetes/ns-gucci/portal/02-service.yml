@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gucci-portal
+  namespace: gucci
+  labels:
+    A1.project: GUCCI_core
+spec:
+  selector:
+    service: gucci-portal
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080

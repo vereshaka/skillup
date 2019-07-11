@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gucci-config
+data:
+  LOGGING_LOGSTASH_HOST: logstash-service.common
+  LOGGING_LOGSTASH_PORT: 5044
+  GUCCI_PORTAL_URL: 
+  KEYCLOAK_URL: keycloak-service.common:8080
+  TRACING_ORIGIN: zipkin-service.common:9410
