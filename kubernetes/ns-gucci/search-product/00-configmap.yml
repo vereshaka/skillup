@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gucci-config
+data:
+  LOGGING_LOGSTASH_HOST: logstash-service.common
+  LOGGING_LOGSTASH_PORT: 5044

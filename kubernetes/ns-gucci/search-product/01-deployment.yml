@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microfrontend-search-product
+  namespace: gucci
+  labels:
+    app: microfrontend-search-product
+    A1.project: HSHF
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microfrontend-search-product
+  template:
+    metadata:
+      labels:
+        app: microfrontend-search-product
+    spec:
+      containers:
+      - name: microfrontend-search-product
+        image: tasktrack.telekom.at/gucci-docker/microfrontend-search-product:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_ENV
+          value: dev
+        - name: ESB_USER
+          valueFrom:
+            secretKeyRef:
+              name: ccf-esb-user
+              key: user
+        - name: ESB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ccf-esb-user
+              key: password
+        - name: PARTY_MASTER_AUTH_SYSTEM
+          valueFrom:
+            secretKeyRef:
+              name: ccf-esb-user
+              key: partyMasterAuthSystem
+        - name: PARTY_MASTER_AUTH_USER
+          valueFrom:
+            secretKeyRef:
+              name: ccf-esb-user
+              key: partyMasterAuthUser
+        - name: WIDGET_NAME
+          value: "search-product"
+        - name: LOG_FOLDER
+          value: "/opt/app/src/logs/*.log"
+        ports:
+        - containerPort: 6101
+        envFrom:
+        - configMapRef:
+            name: gucci-config
+      imagePullSecrets:
+      - name: tasktrack.telekom.at
