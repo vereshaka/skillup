@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: jenkins-app-ingress
+  namespace: devops
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - jenkins.sytoss.intra
+    secretName: traefik-ui-tls-cert
+  rules:
+  - host: jenkins.sytoss.intra
+    http:
+      paths:
+      - backend:
+          serviceName: jenkins-service
+          servicePort: 8080
