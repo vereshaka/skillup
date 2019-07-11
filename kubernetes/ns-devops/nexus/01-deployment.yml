@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-deployment
+  namespace: devops
+  labels:
+    app: nexus-storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-registry
+  template:
+    metadata:
+      labels:
+        app: nexus-registry
+    spec:
+      containers:
+      - name: nexus-app
+        image: sonatype/nexus3:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8081
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: "/nexus-data"
+          name: nexus-storage
+      volumes:
+      - name: nexus-storage
+        persistentVolumeClaim:
+          claimName: nexus-storage-claim
