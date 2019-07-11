@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin-deployment
+  namespace: common
+  labels:
+    app: zipkin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+      - name: zipkin
+        image: tasktrack.telekom.at/remote-docker/openzipkin/zipkin
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: STORAGE_TYPE
+          value: "elasticsearch"
+        - name: ES_HOSTS
+          value: "http://elasticsearch-service.common:9200"
+        ports:
+        - containerPort: 9410
+        - containerPort: 9411
+        resources:
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+      imagePullSecrets:
+      - name: tasktrack.telekom.at
