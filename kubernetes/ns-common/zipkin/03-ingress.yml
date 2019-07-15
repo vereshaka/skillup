@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: zipkin-ingress
+  namespace: common
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  tls:
+  - hosts:
+    - zipkin.sytoss.intra
+    secretName: traefik-ui-tls-cert
+  rules:
+  - host: zipkin.sytoss.intra
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: zipkin-service
+          servicePort: 9411

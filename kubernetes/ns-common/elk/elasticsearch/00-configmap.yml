@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-configmap
+data:
+  elasticsearch.yml: |
+    cluster.name: "local-k8s-cluster"
+    network.host: 0.0.0.0
+    discovery.type: single-node

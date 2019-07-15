@@ -1,0 +1,33 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: elasticsearch-storage
+  namespace: common
+  labels:
+    type: local
+    app_name: elasticsearch
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 70Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kube-vol/elasticsearch"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elastic-storage-claim
+  namespace: common
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 70Gi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      app_name: "elasticsearch"

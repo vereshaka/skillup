@@ -1,0 +1,31 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: jenkins-storage
+  labels:
+    type: local
+    app_name: jenkins
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kube-vol/jenkins/"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-storage-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      app_name: "jenkins"

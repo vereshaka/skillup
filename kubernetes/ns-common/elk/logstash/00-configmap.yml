@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-conf-configmap
+data:
+  logstash.conf: |
+    input {
+      beats {
+        port => "5044" 
+      }
+    }
+    filter {
+      if [widget] =~ /.+/ {
+        grok {
+            match => { "message" => "\[(?<timestamp>\d{,4}-?\d{,4}-?\d{,4}[T]?\d{,4}:?\d{,4}:?\d{,4}[.,]?\d{,4})\] \[%{WORD:loglevel}\] %{WORD:proc} - %{GREEDYDATA:tail}"}
+            }
+        if [tail] =~ /^([Ss]tart|[Ff]inish)\s(esb call for operation).*$/ {
+            grok {
+                match => { "tail" => "%{WORD:action} (esb call for operation=)%{WORD:esb-method}. %{WORD:event-type} (=> ) %{GREEDYDATA:event-payload}"}
+            }
+        }
+    }
+      else {
+        grok {
+            match => ["message", "^.?\[(?<tempdate>%{YEAR}[./-]%{MONTHNUM}[./-]%{MONTHDAY}[- ]%{TIME})\]\[%{LOGLEVEL:level}\]\[%{DATA:clazz}\]\[%{DATA:operation}\]\[%{DATA:requestId}\]\[%{DATA:userId}\]%{GREEDYDATA:tail}"]
+            tag_on_failure => ["grok_fail"]
+        }
+        if [level] == "ERROR"{
+            grok{
+                match => {"tail" => "\[%{GREEDYDATA:msg}\]\[%{GREEDYDATA:trace}\]"}
+            }
+        } else {
+            grok{
+                match => {"tail" => "\[%{GREEDYDATA:msg}\]"}
+            }
+        }
+        if "Performance details:" in [message] {
+            grok {
+                match => ["tail", "Performance details: '(?:%{DATA:apiName}[.]|)%{DATA:className}[.]%{DATA:methodName}(?: %{DATA:objectId}|)':'%{NUMBER:timing:int} ms'"]
+                tag_on_failure => ["grok_fail"]
+                }
+            mutate {
+                replace => {type => "performance-timing"}
+            }
+        }
+        if [tail] {
+            mutate {
+                remove_field => ["tail"]
+            }
+        }
+        # if [tempmsg] {
+        #     mutate {
+        #         remove_field => ["tempmsg"]
+        #     }
+        # }
+        if [tempdate] {
+            date {
+                match => ["tempdate", "yyyy.MM.dd HH:mm:ss.SSS"]
+                target => "eventdate"
+                remove_field => ["tempdate"]
+            }
+          }
+        }
+      }
+    output {
+      if [widget] =~ /.+/ {
+        elasticsearch {
+            hosts => [ "elasticsearch-service.common:9200" ]
+            index => "widget-%{[environment]}-%{[widget]}-%{+YYYY.MM.dd}"
+            }
+        }
+      else {
+        elasticsearch {
+            hosts => [ "elasticsearch-service.common:9200" ]
+            }
+          }   
+        }

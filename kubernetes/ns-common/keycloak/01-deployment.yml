@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-deployment
+  namespace: common
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image:  tasktrack.telekom.at/remote-docker/jboss/keycloak
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DB_VENDOR
+          value: "mariadb"
+        - name: DB_ADDR
+          value: "mysql-service.db"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_USER
+          value: "keycloak"
+        - name: DB_PASSWORD
+          value: "keycloak"
+        - name: DB_DATABASE
+          value: "keycloak?useSSL=false"
+        - name: KEYCLOAK_USER
+          value: "admin"
+        - name: KEYCLOAK_PASSWORD
+          value: "password"
+        resources:
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        args: ["-b", "0.0.0.0", "-Djboss.as.management.blocking.timeout=4800"]
+      imagePullSecrets:
+      - name: tasktrack.telekom.at

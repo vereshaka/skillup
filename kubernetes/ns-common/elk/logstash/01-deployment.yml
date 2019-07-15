@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash-deployment
+  namespace: common
+  labels:
+    app: logstash-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash-app
+  template:
+    metadata:
+      labels:
+        app: logstash-app
+    spec:
+      containers:
+      - name: logstash
+        image: docker.elastic.co/logstash/logstash:7.1.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5044
+        volumeMounts:
+        - mountPath: "/usr/share/logstash/pipeline/"
+          name: logstash-conf
+      volumes:
+        - name: logstash-conf
+          configMap:
+            name: logstash-conf-configmap

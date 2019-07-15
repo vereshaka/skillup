@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-service
+  namespace: common
+spec:
+  selector:
+    app: elasticsearch-db
+  ports:
+  - port: 9200
+    targetPort: 9200
+    name: elastic

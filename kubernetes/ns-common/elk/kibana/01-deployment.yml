@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-deployment
+  namespace: common
+  labels:
+    app: kibana-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana-app
+  template:
+    metadata:
+      labels:
+        app: kibana-app
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:7.1.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          value: "http://elasticsearch-service.common:9200"
+        resources:
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5601

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gucci-portal
+  namespace: gucci
+  labels:
+    service: gucci-portal
+    A1.project: GUCCI_core
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      service: gucci-portal
+  template:
+    metadata:
+      labels:
+        service: gucci-portal
+    spec:
+      containers:
+      - name: gucci-portal
+        image: tasktrack.telekom.at/gucci-docker/gucci-portal:latest
+        env:
+        - name: NODE_ENV
+          value: $NODE_ENV
+        - name: GUCCI_PORTAL_URL
+          valueFrom:
+            configMapKeyRef:
+              name: gucci-config
+              key: GUCCI_PORTAL_URL
+        - name: KEYCLOAK_URL
+          valueFrom:
+            configMapKeyRef:
+              name: gucci-config
+              key: KEYCLOAK_URL
+        - name: ZIPKIN_URL
+          valueFrom:
+            configMapKeyRef:
+              name: gucci-config
+              key: TRACING_ORIGIN
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-client-secret-portal
+              key: token
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: tasktrack.telekom.at

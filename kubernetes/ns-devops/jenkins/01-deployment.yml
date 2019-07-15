@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-deployment
+  namespace: devops
+  labels:
+    app: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-ci
+  template:
+    metadata:
+      labels:
+        app: jenkins-ci
+    spec:
+      containers:
+      - name: jenkins-app
+        image: jenkins/jenkins:2.176.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+        volumeMounts:
+        - mountPath: "/var/jenkins_home"
+          name: jenkins-storage
+      volumes:
+      - name: jenkins-storage
+        persistentVolumeClaim:
+          claimName: jenkins-storage-claim

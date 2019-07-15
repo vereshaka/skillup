@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soap-mock-deployment
+  namespace: gucci
+  labels:
+    app: soap-mock
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soap-mock-app
+  template:
+    metadata:
+      labels:
+        app: soap-mock-app
+    spec:
+      containers:
+      - name: soap-mock-app
+        image: tasktrack.telekom.at/gucci-docker-local/gucci-soap-mock:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NODE_ENV
+          value: "local-docker"
+        ports:
+        - containerPort: 6081
+      imagePullSecrets:
+      - name: tasktrack.telekom.at
