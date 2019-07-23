@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: jenkins-deployment
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: jenkins-app
-        image: jenkins/jenkins:2.176.1
+        image: jenkinsci/blueocean:1.17.0
         imagePullPolicy: IfNotPresent
         resources:
           limits:
