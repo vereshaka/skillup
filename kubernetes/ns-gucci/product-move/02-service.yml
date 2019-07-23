@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: microfrontend-product-move
+  namespace: gucci
+  labels: {
+    A1.project: HSHF
+  }
+spec:
+  selector:
+    app: microfrontend-product-move
+  ports:
+    - protocol: TCP
+      port: 6102
+      targetPort: 6102
