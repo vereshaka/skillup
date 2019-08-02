@@ -3,6 +3,7 @@ module.exports = {
     async checkSourceAccount(table) {
         let result = [];
         const accounts = await driver.findElements(By.xpath('//div[@class="ProductSection Info"]'));
+        console.log(accounts.length);
         for (account of accounts) {
             async (account) => (
                 result.push({
@@ -12,9 +13,8 @@ module.exports = {
                     AccountType: await account.findElement('/div[@class="ProductItemMove"]/div/span[3]').getText(),
                 }));
         }
-        ;
         console.log(JSON.stringify(result));
-        expect(result).to.be.equal(result, table.hashes);
+        expect(result).to.be.equal(result, table.hashes());
     },
     async checkEffectiveDate(effectiveDate) {
 

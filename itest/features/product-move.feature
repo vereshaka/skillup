@@ -15,7 +15,7 @@ Feature: A1 Search Product
     And add all products founded by 'KDNR:100883236'
     And specify 'A604916027,00002' account founded by 'KDNR:103777119' for 'PRI' group
     When 'Order validation' is open
-    Then The following source account should be selected:
+    Then The following source account should be selected
       | Product       | Subscription      | AccountNumber | AccountType | LockedOrders |
       | Mombi_Desiree | 43/9740/201554877 | A548334966    | PRI         |              |
       | Bombi_Desiree | 43/9740/201554878 | A548334966    | PRI         |              |

@@ -33,7 +33,9 @@ var producMoveStepsDefinition = function () {
     this.Given(/add all products founded by '(.*)'/, async (query) => await page.productMoveWidget.addProducts(query, null));
     this.Given(/^specify '(.*)' account founded by '(.*)' for '(\w*)' group$/, (accountId, query, accountType) => page.productMoveWidget.setAccount(accountType, query, accountId));
     this.When(/^'(.*)' is open$/, (stepName) => page.productMoveWidget.openStep(stepName));
-    this.Then(/^The following source account should be selected:$/, (table) => page.OrderValidationStep.checkSourceAccount(table));
+    this.Then(/^The following source account should be selected$/, function (table) {
+        return page.OrderValidationStep.checkSourceAccount(table);
+    });
     this.Then(/^Effective date is '(.*)'$/, (effectiveDate) => page.OrderValidationStep.checkEffectiveDate(effectiveDate));
     this.Then(/^Target account should be$/, (table) => page.OrderValidationStep.checkTargetAccount(table));
 };
