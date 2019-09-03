@@ -1,6 +1,6 @@
 Boolean isReleaseNeeded(String packageVersion){
     String prerelease_regex = /\d+\.{1}\d+\.{1}\d+\-.*/
-    if (packageVersion ==~ prerelease_regex ) return true
+    if ((packageVersion ==~ prerelease_regex) || (packageVersion == "" )) return true
     else return false
 }
 
@@ -216,7 +216,7 @@ pipeline{
                                     steps{
                                         dir("search-product/"){
                                             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh 'npm version prerelease'
+                                                sh "npm version ${base_build['baseVersion']}"
                                                 // sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
                                                 // sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
                                                 // sh "npm publish"
@@ -276,6 +276,7 @@ pipeline{
                                         dir("product-move/"){
                                             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                                 sh 'git status'
+                                                sh "npm version ${base_build['baseVersion']}"
                                                 // sh 'npm version prerelease'
                                                 // sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
                                                 // sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
@@ -333,6 +334,7 @@ pipeline{
                                         dir("microfrontend-hfhs-toolbar/"){
                                             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                                 sh 'git status'
+                                                sh "npm version ${base_build['baseVersion']}"
                                                 // sh 'npm version prerelease'
                                                 // sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
                                                 // sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
@@ -391,6 +393,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             sh 'git status'
+                                            sh "npm version ${base_build['baseVersion']}"
                                             // withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                             //     sh 'npm version prerelease'
                                             //     sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
@@ -450,6 +453,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
                                             sh 'git status && git checkout develop && git status'
+                                            sh "npm version ${base_build['baseVersion']}"
                                             // withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                             //     sh 'npm version prerelease'
                                             //     sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
@@ -501,10 +505,10 @@ pipeline{
                                 stage('Publish'){
                                     steps{
                                         withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                            sh 'npm version prerelease'
-                                            sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
-                                            sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
-                                            sh "npm run docker-push-image"
+                                            sh "npm version ${base_build['baseVersion']}"
+                                            //sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                            //sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                            //sh "npm run docker-push-image"
                                         }
                                     }
                                 }
