@@ -54,10 +54,11 @@ pipeline{
                     steps{
                         deleteDir()
                         withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                            sh "docker login -u ${USERNAME} -p ${PASSWORD} tasktrack.telekom.at/gucci-docker-local"
                             script{
-                            projects.each {k,v ->
-                                sh "git clone https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${k}.git"
-                            }
+                                projects.each {k,v ->
+                                    sh "git clone https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${k}.git"
+                                }
                             }
                         }
                         sh 'ls -la'
@@ -133,6 +134,7 @@ pipeline{
                                         def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
                                         echo "${command}"
                                         sh "${command}"
+                                        sh "git add package.json && git commit -m 'Update base version' || true"
                                     }
                                 }
                             }
@@ -143,13 +145,6 @@ pipeline{
         }
         stage('Build'){
             stages{
-                stage('Log in docker repo'){
-                    steps{
-                        withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                            sh "docker login -u ${USERNAME} -p ${PASSWORD} tasktrack.telekom.at/gucci-docker-local/"
-                        }
-                    }
-                }
                 stage('Build Base widget'){
                     when{
                         expression{
