@@ -10,6 +10,7 @@ String Conclusion(String ver){
 }
 
 def projects = [
+    "microfrontend-product-details": "",
     "microfrontend-hfhs-base" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
@@ -480,6 +481,46 @@ pipeline{
                                     //         sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
                                     //     }
                                     // }
+                                }
+                            }
+                        }
+                        stage('Widget: Product Details'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "microfrontend-product-details" }?.value) == true
+                                }
+                            }
+                            stages{
+                                stage('Install deps'){
+                                    steps{
+                                        sh 'git checkout develop && git status'
+                                        sh 'npm i'
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        sh 'git status'
+                                        sh 'npm run build'
+                                    }
+                                }
+                                stage('Publish'){
+                                    steps{
+                                        withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                            sh 'npm version prerelease'
+                                            sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                            sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                            sh "npm run docker-push-image"
+                                        }
+                                    }
+                                }
+                            }
+                            post{
+                                always{
+                                    sh 'docker container prune -f'
+                                }
+                                success{
+                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-details:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                                    sh "docker container prune -f"
                                 }
                             }
                         }
