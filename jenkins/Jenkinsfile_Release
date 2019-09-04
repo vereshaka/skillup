@@ -1,0 +1,518 @@
+Boolean isReleaseNeeded(String packageVersion){
+    String prerelease_regex = /\d+\.{1}\d+\.{1}\d+\-.*/
+    if ((packageVersion ==~ prerelease_regex) || (packageVersion == "" )) return true
+    else return false
+}
+
+String Conclusion(String ver){
+    if (isReleaseNeeded(ver) == true ) return "Release Needed (" + ver + ")"
+    else return "Release Not Needed (" + ver + ")"
+}
+
+def projects = [
+    "microfrontend-product-details": "",
+    "microfrontend-hfhs-base" : "",
+    "microfrontend-hfhs-business-transaction-detail" : "",
+    "microfrontend-hfhs-business-transaction-history" : "",
+    "microfrontend-hfhs-toolbar" : "",
+    "product-move" : "",
+    "search-product" : "",
+];
+
+def k8s_host = "192.168.20.70"
+
+
+def proposal_version = ""
+def overview = "Version proposal"
+def ver_list = ""
+def base_ver = ""
+def base_build = null
+def isBaseVerValid = true
+
+pipeline{
+    agent{
+        node{
+            label 'node'
+        }
+    }
+    options{
+        disableConcurrentBuilds()
+    }
+    stages{
+        stage('Prepare to build'){
+            stages{
+                stage('Check requirements'){
+                    steps{
+                        sh 'docker version && node -v && npm -v'
+                        sh 'apt list | grep "sshpass"'
+                    }
+                }
+                stage('Clone repos'){
+                    steps{
+                        deleteDir()
+                        withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                            sh "docker login -u ${USERNAME} -p ${PASSWORD} tasktrack.telekom.at/gucci-docker-local"
+                            script{
+                                projects.each {k,v ->
+                                    sh "git clone https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${k}.git"
+                                }
+                            }
+                        }
+                        sh 'ls -la'
+                    }
+                }
+                stage('Get versions of widgets'){
+                    steps{
+                        script{
+                            projects.each { k,v ->
+                                dir(k + "/") {
+                                    sh 'git status && git checkout develop && git status'
+                                    projects[k] = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
+                                    ver_list = ver_list + sh(returnStdout: true, script: 'git describe --tags | cut -c 2- | cut -d- -f1' ).trim() + "\\n"
+                                } 
+                            }
+                            withEnv(["LIST_VER=${ver_list}" ]){
+                                proposal_version = sh(returnStdout: true, script: "printf \'$LIST_VER\' | sort -V | tail -1").trim()
+                            }
+                            overview = overview + ": " + proposal_version + "\n    "
+                            projects.each { k,v ->
+                                overview = overview + k + ": " + Conclusion(v) + "\n    "
+                            }
+                            echo "${overview}"
+                            base_ver = (base_ver + projects.find{ it.key == "microfrontend-hfhs-base" }?.value).split('-')[0]
+                        }
+                    }
+                }
+                stage('Prerelease check'){
+                    steps{
+                        script{
+                            base_build = input(
+                                id: 'base_build', message: 'HFHS Release',
+                                parameters: [
+                                        booleanParam(defaultValue: true,
+                                                    description: "Release base",
+                                                    name: 'isBaseRelease'),
+                                        string(defaultValue: "$base_ver",
+                                            description: 'with version',
+                                            name: 'baseVersion'),
+                                ])
+                            if (!(base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/)){
+                                error("Bad base version. Release will be stopped")
+                            }
+                            overview = "Base versions in package.json\n    "
+                            if (base_build['isBaseRelease'] == false){
+                                projects.each{ k,v ->
+                                    echo "${k}"
+                                    if (k == 'microfrontend-hfhs-base') return
+                                    dir(k + "/") {
+                                        def ver_check = "" + sh(returnStdout: true, script: "cat package.json | grep '\"@a1/microfrontend-hfhs-base\"' | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
+                                        isBaseVerValid = isBaseVerValid && ((ver_check  ==~ /\d+\.{1}\d+\.{1}\d+/) || (ver_check  == ""))
+                                        overview = overview + k + ": " + ver_check + "\n    "
+                                    }
+                                }
+                                echo "${overview}"
+                                echo "${isBaseVerValid}" // TODO Remove debug info
+                                if (isBaseVerValid == false) {
+                                    error("Some widgets has wrong version of base. Release will be stopped")
+                                }
+                            }
+                            else{
+                                echo "Now will be set actual version of base in 'package.json' of widgets"
+                                projects.each{ k,v ->
+                                    dir(k + "/"){
+                                        def comm1 = 'sed -r \'s|'
+                                        def comm2 = '\\s{4}\\"(@a1\\/microfrontend-hfhs-base)\\"\\:\\s*\\"\\^?[0-9]*\\.[0-9]*\\.[0-9]*.*\\"\\,|'
+                                        def comm3 = '    \"@a1/microfrontend-hfhs-base\": \"^'
+                                        def comm4 = '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
+                                        def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
+                                        echo "${command}"
+                                        sh "${command}"
+                                        sh "git add package.json && git commit -m 'Update base version' || true"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build'){
+            stages{
+                stage('Build Base widget'){
+                    when{
+                        expression{
+                            base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                        }
+                    }
+                    stages{
+                        stage('Prepare'){
+                            steps{
+                                dir("microfrontend-hfhs-base/"){
+                                    sh 'git status'
+                                    sh 'npm i'
+                                }
+                            }
+                        }
+                        stage('Build'){
+                            steps{
+                                dir("microfrontend-hfhs-base/"){
+                                    sh 'git status' //TODO remove debug info
+                                    sh 'npm run build'
+                                    sh 'git checkout package-lock.json'
+                                }
+                            }
+                        }
+                        stage('Push tags'){
+                            steps{
+                                dir("microfrontend-hfhs-base/"){
+                                    sh 'git status' //TODO Remove debug info
+                                    withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                        sh "npm version ${base_build['baseVersion']}"
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
+                                        sh "npm publish"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Build widgets'){
+                    parallel{
+                        stage('Widget: Search Product'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "search-product" }?.value) == true
+                                    
+                                }
+                            }
+                            stages{
+                                stage('Install deps'){
+                                    steps{
+                                        dir("search-product/"){
+                                            sh 'git status'
+                                            sh 'npm i'
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("search-product/"){
+                                            sh 'npm run build'
+                                            sh 'git checkout package-lock.json'
+                                        }
+                                    }
+                                }
+                                stage('Publish'){
+                                    steps{
+                                        dir("search-product/"){
+                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                                sh "npm version ${base_build['baseVersion']}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                                sh "npm publish"
+                                                sh "npm run docker-push-image"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            post{
+                                always{
+                                    sh 'docker container prune -f'
+                                }
+                                success{
+                                        sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-localmicrofrontend-search-product:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                                        sh "docker container prune -f"
+                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                        script{
+                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-search-product microfrontend-search-product=tasktrack.telekom.at/gucci-docker/microfrontend-search-product:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-search-product.gucci%3A6101&_action=refresh"'
+                                            echo "${command}"
+                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Widget: Product Move'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "product-move" }?.value) == true
+                                    
+                                }
+                            }
+                            stages{
+                                stage('Install deps'){
+                                    steps{
+                                        dir("product-move/"){
+                                            sh 'git status'
+                                            sh 'npm i'
+                                        }
+                                        
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("product-move/"){
+                                            sh 'git status'                
+                                            sh 'npm run build'
+                                        }
+                                    }
+                                }
+                                stage('Publish'){
+                                    steps{
+                                        dir("product-move/"){
+                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                                sh 'git status'
+                                                sh "npm version ${base_build['baseVersion']}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                                sh "npm publish"
+                                                sh "npm run docker-push-image"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            post{
+                                always{
+                                    sh 'docker container prune -f'
+                                }
+                                success{
+                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                                    sh "docker container prune -f"
+                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                        script{
+                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-product-move microfrontend-product-move=tasktrack.telekom.at/gucci-docker/microfrontend-product-move:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-product-move.gucci%3A6102&_action=refresh"'
+                                            echo "${command}"
+                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@{k8s_host} 'bash -c \"${command} \" '"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Widget: Toolbar'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-toolbar" }?.value) == true
+                                    
+                                }
+                            }
+                            stages{
+                                stage('Install deps'){
+                                    steps{
+                                        dir("microfrontend-hfhs-toolbar/"){
+                                            sh 'git status'
+                                            sh 'npm i'
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("microfrontend-hfhs-toolbar/"){
+                                            sh 'git status'                
+                                            sh 'npm run build'
+                                        }
+                                    }
+                                }
+                                stage('Publish'){
+                                    steps{
+                                        dir("microfrontend-hfhs-toolbar/"){
+                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                                sh 'git status'
+                                                sh "npm version ${base_build['baseVersion']}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                                sh "npm publish"
+                                                sh "npm run docker-push-image"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            post{
+                                always{
+                                    sh 'docker container prune -f'
+                                }
+                                success{
+                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                                    sh "docker container prune -f"
+                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                        script{
+                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-hfhs-toolbar microfrontend-hfhs-toolbar=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-toolbar:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-toolbar.gucci%3A6110&_action=refresh"'
+                                            echo "${command}"
+                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Widget: Business Transaction History'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-business-transaction-history" }?.value) == true
+                                    
+                                }
+                            }
+                            stages{
+                                stage('Install deps'){
+                                    steps{
+                                        dir("microfrontend-hfhs-business-transaction-history/"){
+                                            sh 'git status'
+                                            sh 'npm i'
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("microfrontend-hfhs-business-transaction-history/"){
+                                            sh 'git status'
+                                            sh 'npm run build'
+                                        }
+                                    }
+                                }
+                                stage('Publish'){
+                                    steps{
+                                        dir("microfrontend-hfhs-business-transaction-history/"){
+                                            sh 'git status'
+                                            
+                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                                sh "npm version ${base_build['baseVersion']}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                                sh "npm publish"
+                                                sh "npm run docker-push-image"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            post{
+                                always{
+                                    sh 'docker container prune -f'
+                                }
+                                success{
+                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                                    sh "docker container prune -f"
+                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                        script{
+                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image -n gucci deployment/microfrontend-hfhs-business-transaction-history microfrontend-hfhs-business-transaction-history=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-business-transaction-history:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-business-transaction-history.gucci%3A6104&_action=refresh"'
+                                            echo "${command}"
+                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Widget: Business Transaction Detail'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-business-transaction-detail" }?.value) == true
+                                }
+                            }
+                            stages{
+                                stage('Install deps'){
+                                    steps{
+                                        dir("microfrontend-hfhs-business-transaction-detail/"){
+                                            sh 'git status'
+                                            sh 'npm i'
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("microfrontend-hfhs-business-transaction-detail/"){
+                                            sh 'npm run build'
+                                            sh 'git status'
+                                        }
+                                    }
+                                }
+                                stage('Publish'){
+                                    steps{
+                                        dir("microfrontend-hfhs-business-transaction-detail/"){
+                                            sh 'git status'
+                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                                sh "npm version ${base_build['baseVersion']}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                                sh "npm publish"
+                                                sh "npm run docker-push-image"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            post{
+                                always{
+                                    sh 'docker container prune -f'
+                                }
+                                success{
+                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-detail:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                                    sh "docker container prune -f"
+                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                        script{
+                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image -n gucci deployment/microfrontend-hfhs-business-transaction-detail microfrontend-hfhs-business-transaction-detail=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-business-transaction-detail:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-business-transaction-detail.gucci%3A6105&_action=refresh"'
+                                            echo "${command}"
+                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Widget: Product Details'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "microfrontend-product-details" }?.value) == true
+                                }
+                            }
+                            stages{
+                                stage('Install deps'){
+                                    steps{
+                                        sh 'git status'
+                                        sh 'npm i'
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        sh 'git status'
+                                        sh 'npm run build'
+                                    }
+                                }
+                                stage('Publish'){
+                                    steps{
+                                        withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                            sh "npm version ${base_build['baseVersion']}"
+                                            sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                            sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                            sh "npm publish"
+                                            sh "npm run docker-push-image"
+                                        }
+                                    }
+                                }
+                            }
+                            post{
+                                always{
+                                    sh 'docker container prune -f'
+                                }
+                                success{
+                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-details:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                                    sh "docker container prune -f"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            post{
+                always{
+                    sh "docker logout tasktrack.telekom.at/gucci-docker-local/ "
+                }
+            }
+        }
+    }
+}

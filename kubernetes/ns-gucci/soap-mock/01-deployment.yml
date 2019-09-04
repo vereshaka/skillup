@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: soap-mock-deployment
@@ -18,7 +18,6 @@ spec:
       containers:
       - name: soap-mock-app
         image: tasktrack.telekom.at/gucci-docker-local/gucci-soap-mock:latest
-        imagePullPolicy: IfNotPresent
         env:
         - name: NODE_ENV
           value: "local-docker"
