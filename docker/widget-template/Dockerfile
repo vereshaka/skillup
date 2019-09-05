@@ -6,7 +6,7 @@ ARG LOGGING_LOGSTASH_HOST
 ARG LOG_FOLDER
 ENV LOGGING_LOGSTASH_HOST=$LOGGING_LOGSTASH_HOST
 ENV LOG_FOLDER=$LOG_FOLDER
-ENV ELK_VER=6.7.0
+ENV ELK_VER=6.8.0
 
 RUN apt-get update && \
     apt-get install -y supervisor --no-install-recommends && \
