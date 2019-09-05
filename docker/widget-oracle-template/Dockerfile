@@ -6,7 +6,7 @@ RUN apk add unzip && mkdir /opt/oracle && \
 
 
 
-FROM widget-template:latest
+FROM tasktrack.telekom.at/gucci-docker-local/widget-template:latest
 
 RUN mkdir -p /usr/share/man/man1 && \
     mkdir -p /opt/oracle/instantclient
