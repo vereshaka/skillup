@@ -1,23 +1,28 @@
+FROM alpine:latest as unpacker
+COPY ./oracle/ /tmp/oracle-files
+
+RUN apk add unzip && mkdir /opt/oracle && \
+    unzip '/tmp/oracle-files/instantclient-*.zip' -d /opt/oracle
+
+
+
 FROM tasktrack.telekom.at/gucci-docker-local/widget-template:latest
 
 RUN mkdir -p /usr/share/man/man1 && \
-    mkdir -p /opt/oracle
+    mkdir -p /opt/oracle/instantclient
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt update && \
-    apt install -y libaio1 build-essential unzip curl default-jre && \
+    apt install -y libaio1 build-essential default-jre --no-install-recommends && \
     apt clean autoclean && \
     apt autoremove --yes && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/
+    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
+    rm -rf /var/log/*
     
-COPY ./oracle/ /tmp/oracle-files
+COPY --from=unpacker /opt/oracle/instantclient_12_2 /opt/oracle/instantclient
 
-RUN unzip /tmp/oracle-files/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /opt/oracle && \
-    unzip /tmp/oracle-files/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /opt/oracle &&  \
-    mv /opt/oracle/instantclient_12_2 /opt/oracle/instantclient && \
-    ln -s /opt/oracle/instantclient/libclntsh.so.12.2 /opt/oracle/instantclient/libclntsh.so && \
-    ln -s /opt/oracle/instantclient/libocci.so.12.2 /opt/oracle/instantclient/libocci.so && \
-    rm -rf /tmp/oracle-files
+RUN ln -s /opt/oracle/instantclient/libclntsh.so.12.2 /opt/oracle/instantclient/libclntsh.so && \
+    ln -s /opt/oracle/instantclient/libocci.so.12.2 /opt/oracle/instantclient/libocci.so
 
 ENV LD_LIBRARY_PATH="/opt/oracle/instantclient"
 ENV OCI_HOME="/opt/oracle/instantclient"

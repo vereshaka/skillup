@@ -6,16 +6,17 @@ ARG LOGGING_LOGSTASH_HOST
 ARG LOG_FOLDER
 ENV LOGGING_LOGSTASH_HOST=$LOGGING_LOGSTASH_HOST
 ENV LOG_FOLDER=$LOG_FOLDER
-ENV ELK_VER=6.7.0
+ENV ELK_VER=6.8.0
 
 RUN apt-get update && \
-    apt-get install -y supervisor && \
+    apt-get install -y supervisor --no-install-recommends && \
     curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-$ELK_VER-amd64.deb && \
     dpkg -i filebeat-$ELK_VER-amd64.deb && \
     rm filebeat-$ELK_VER-amd64.deb && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/
+    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
+    rm -rf /var/log/*
 
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'user=root' >> /etc/supervisor/conf.d/supervisord.conf && \
