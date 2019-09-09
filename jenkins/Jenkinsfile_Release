@@ -473,24 +473,30 @@ pipeline{
                             stages{
                                 stage('Install deps'){
                                     steps{
-                                        sh 'git status'
-                                        sh 'npm i'
+                                        dir("microfrontend-product-details/"){
+                                            sh 'git status'
+                                            sh 'npm i'
+                                        }
                                     }
                                 }
                                 stage('Build'){
                                     steps{
-                                        sh 'git status'
-                                        sh 'npm run build'
+                                        dir("microfrontend-product-details/"){
+                                            sh 'git status'
+                                            sh 'npm run build'
+                                        }
                                     }
                                 }
                                 stage('Publish'){
                                     steps{
-                                        withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                            sh "npm version ${base_build['baseVersion']}"
-                                            sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
-                                            sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
-                                            sh "npm publish"
-                                            sh "npm run docker-push-image"
+                                        dir("microfrontend-product-details/"){
+                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                                sh "npm version ${base_build['baseVersion']}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                                sh "npm publish"
+                                                sh "npm run docker-push-image"
+                                            }
                                         }
                                     }
                                 }
