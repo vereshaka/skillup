@@ -162,23 +162,23 @@ pipeline{
                                 }
                             }
                         }
-                        stage('Push tags'){
-                            steps{
-                                dir("microfrontend-hfhs-base/"){
-                                    sh 'git status' //TODO Remove debug info
-                                    withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "npm version ${base_build['baseVersion']}"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
-                                        sh "npm publish"
-                                    }
-                                }
-                            }
-                        }
+                        // stage('Push tags'){
+                        //     steps{
+                        //         dir("microfrontend-hfhs-base/"){
+                        //             sh 'git status' //TODO Remove debug info
+                        //             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        //                 sh "npm version ${base_build['baseVersion']}"
+                        //                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
+                        //                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
+                        //                 sh "npm publish"
+                        //             }
+                        //         }
+                        //     }
+                        // }
                     }
                 }
                 stage('Build widgets'){
-                    parallel{
+                    stages{
                         stage('Widget: Search Product'){
                             when{
                                 expression{
@@ -200,22 +200,23 @@ pipeline{
                                         dir("search-product/"){
                                             sh 'npm run build'
                                             sh 'git checkout package-lock.json'
+                                            sh "npm version ${base_build['baseVersion']}"
                                         }
                                     }
                                 }
-                                stage('Publish'){
-                                    steps{
-                                        dir("search-product/"){
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh "npm version ${base_build['baseVersion']}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
-                                            }
-                                        }
-                                    }
-                                }
+                                // stage('Publish'){
+                                //     steps{
+                                //         dir("search-product/"){
+                                //             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                //                 sh "npm version ${base_build['baseVersion']}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                //                 sh "npm publish"
+                                //                 sh "npm run docker-push-image"
+                                //             }
+                                //         }
+                                //     }
+                                // }
                             }
                             post{
                                 always{
@@ -257,23 +258,24 @@ pipeline{
                                         dir("product-move/"){
                                             sh 'git status'                
                                             sh 'npm run build'
+                                            sh "npm version ${base_build['baseVersion']}"
                                         }
                                     }
                                 }
-                                stage('Publish'){
-                                    steps{
-                                        dir("product-move/"){
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh 'git status'
-                                                sh "npm version ${base_build['baseVersion']}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
-                                            }
-                                        }
-                                    }
-                                }
+                                // stage('Publish'){
+                                //     steps{
+                                //         dir("product-move/"){
+                                //             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                //                 sh 'git status'
+                                //                 sh "npm version ${base_build['baseVersion']}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                //                 sh "npm publish"
+                                //                 sh "npm run docker-push-image"
+                                //             }
+                                //         }
+                                //     }
+                                // }
                             }
                             post{
                                 always{
@@ -287,7 +289,7 @@ pipeline{
                                             def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
                                             def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-product-move microfrontend-product-move=tasktrack.telekom.at/gucci-docker/microfrontend-product-move:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-product-move.gucci%3A6102&_action=refresh"'
                                             echo "${command}"
-                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@{k8s_host} 'bash -c \"${command} \" '"
+                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
                                         }
                                     }
                                 }
@@ -314,23 +316,24 @@ pipeline{
                                         dir("microfrontend-hfhs-toolbar/"){
                                             sh 'git status'                
                                             sh 'npm run build'
+                                            sh "npm version ${base_build['baseVersion']}"
                                         }
                                     }
                                 }
-                                stage('Publish'){
-                                    steps{
-                                        dir("microfrontend-hfhs-toolbar/"){
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh 'git status'
-                                                sh "npm version ${base_build['baseVersion']}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
-                                            }
-                                        }
-                                    }
-                                }
+                                // stage('Publish'){
+                                //     steps{
+                                //         dir("microfrontend-hfhs-toolbar/"){
+                                //             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                //                 sh 'git status'
+                                //                 sh "npm version ${base_build['baseVersion']}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                //                 sh "npm publish"
+                                //                 sh "npm run docker-push-image"
+                                //             }
+                                //         }
+                                //     }
+                                // }
                             }
                             post{
                                 always{
@@ -342,7 +345,7 @@ pipeline{
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         script{
                                             def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-hfhs-toolbar microfrontend-hfhs-toolbar=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-toolbar:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-toolbar.gucci%3A6110&_action=refresh"'
+                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-hfhs-toolbar microfrontend-hfhs-toolbar=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-toolbar:' + ver + ' -n gucci; sleep 15; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-toolbar.gucci%3A6110&_action=refresh"'
                                             echo "${command}"
                                             sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
                                         }
@@ -371,24 +374,25 @@ pipeline{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             sh 'git status'
                                             sh 'npm run build'
+                                            sh "npm version ${base_build['baseVersion']}"
                                         }
                                     }
                                 }
-                                stage('Publish'){
-                                    steps{
-                                        dir("microfrontend-hfhs-business-transaction-history/"){
-                                            sh 'git status'
+                                // stage('Publish'){
+                                //     steps{
+                                //         dir("microfrontend-hfhs-business-transaction-history/"){
+                                //             sh 'git status'
                                             
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh "npm version ${base_build['baseVersion']}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
-                                            }
-                                        }
-                                    }
-                                }
+                                //             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                //                 sh "npm version ${base_build['baseVersion']}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                //                 sh "npm publish"
+                                //                 sh "npm run docker-push-image"
+                                //             }
+                                //         }
+                                //     }
+                                // }
                             }
                             post{
                                 always{
@@ -400,7 +404,7 @@ pipeline{
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         script{
                                             def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image -n gucci deployment/microfrontend-hfhs-business-transaction-history microfrontend-hfhs-business-transaction-history=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-business-transaction-history:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-business-transaction-history.gucci%3A6104&_action=refresh"'
+                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image -n gucci deployment/microfrontend-hfhs-business-transaction-history microfrontend-hfhs-business-transaction-history=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-business-transaction-history:' + ver + ' -n gucci; sleep 15; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-business-transaction-history.gucci%3A6104&_action=refresh"'
                                             echo "${command}"
                                             sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
                                         }
@@ -428,23 +432,24 @@ pipeline{
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
                                             sh 'npm run build'
                                             sh 'git status'
+                                            sh "npm version ${base_build['baseVersion']}"
                                         }
                                     }
                                 }
-                                stage('Publish'){
-                                    steps{
-                                        dir("microfrontend-hfhs-business-transaction-detail/"){
-                                            sh 'git status'
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh "npm version ${base_build['baseVersion']}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
-                                            }
-                                        }
-                                    }
-                                }
+                                // stage('Publish'){
+                                //     steps{
+                                //         dir("microfrontend-hfhs-business-transaction-detail/"){
+                                //             sh 'git status'
+                                //             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                //                 sh "npm version ${base_build['baseVersion']}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                //                 sh "npm publish"
+                                //                 sh "npm run docker-push-image"
+                                //             }
+                                //         }
+                                //     }
+                                // }
                             }
                             post{
                                 always{
@@ -484,22 +489,23 @@ pipeline{
                                         dir("microfrontend-product-details/"){
                                             sh 'git status'
                                             sh 'npm run build'
+                                            sh "npm version ${base_build['baseVersion']}"
                                         }
                                     }
                                 }
-                                stage('Publish'){
-                                    steps{
-                                        dir("microfrontend-product-details/"){
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh "npm version ${base_build['baseVersion']}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
-                                                sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
-                                            }
-                                        }
-                                    }
-                                }
+                                // stage('Publish'){
+                                //     steps{
+                                //         dir("microfrontend-product-details/"){
+                                //             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                //                 sh "npm version ${base_build['baseVersion']}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo}"
+                                //                 sh "git push https://${USERNAME}:${PASSWORD}@${repo} --tags"
+                                //                 sh "npm publish"
+                                //                 sh "npm run docker-push-image"
+                                //             }
+                                //         }
+                                //     }
+                                // }
                             }
                             post{
                                 always{
