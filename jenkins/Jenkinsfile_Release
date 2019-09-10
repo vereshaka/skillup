@@ -1,3 +1,14 @@
+/*
+Jenkinsfile for building of HFHS widgets release versions.
+
+Build node requirements:
+* Docker (user must have access to Docker CLI without 'sudo')
+* NodeJS (it was tested on LTS version)
+* sshpass
+
+Build starts manually.
+*/
+
 Boolean isReleaseNeeded(String packageVersion){
     String prerelease_regex = /\d+\.{1}\d+\.{1}\d+\-.*/
     if ((packageVersion ==~ prerelease_regex) || (packageVersion == "" )) return true
@@ -9,18 +20,22 @@ String Conclusion(String ver){
     else return "Release Not Needed (" + ver + ")"
 }
 
+/* 
+Variable 'projects' contains list of widgets that can be released.
+
+Build of Product Details and Business Transaction Detail temporary disabled.
+*/
 def projects = [
-    "microfrontend-product-details": "",
+//    "microfrontend-product-details": "",
     "microfrontend-hfhs-base" : "",
-    "microfrontend-hfhs-business-transaction-detail" : "",
+//    "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
     "product-move" : "",
     "search-product" : "",
 ];
 
-def k8s_host = "192.168.20.70"
-
+def k8s_host = "192.168.20.70" // IP or FQDN of host that have possibility of deploying to Kubernetes
 
 def proposal_version = ""
 def overview = "Version proposal"
@@ -29,6 +44,7 @@ def base_ver = ""
 def base_build = null
 def isBaseVerValid = true
 
+// TODO Add check of tag existing 
 pipeline{
     agent{
         node{
@@ -66,7 +82,7 @@ pipeline{
                         script{
                             projects.each { k,v ->
                                 dir(k + "/") {
-                                    sh 'git status && git checkout develop && git status'
+                                    sh 'git status && git checkout develop && git status' //TODO Reduce output
                                     projects[k] = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
                                     ver_list = ver_list + sh(returnStdout: true, script: 'git describe --tags | cut -c 2- | cut -d- -f1' ).trim() + "\\n"
                                 } 
@@ -102,7 +118,7 @@ pipeline{
                             overview = "Base versions in package.json\n    "
                             if (base_build['isBaseRelease'] == false){
                                 projects.each{ k,v ->
-                                    echo "${k}"
+                                    echo "${k}" // TODO Remove debug info
                                     if (k == 'microfrontend-hfhs-base') return
                                     dir(k + "/") {
                                         def ver_check = "" + sh(returnStdout: true, script: "cat package.json | grep '\"@a1/microfrontend-hfhs-base\"' | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
@@ -125,7 +141,7 @@ pipeline{
                                         def comm3 = '    \"@a1/microfrontend-hfhs-base\": \"^'
                                         def comm4 = '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
                                         def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
-                                        echo "${command}"
+                                        echo "${command}" // TODO Remove debug info
                                         sh "${command}"
                                         sh "git add package.json && git commit -m 'Update base version' || true"
                                     }
@@ -220,7 +236,7 @@ pipeline{
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git --tags"
                                                 sh "npm publish"
                                                 sh "npm run docker-push-image"
-                                                sh "git status"
+                                                sh "git status" //TODO Remove debug info
                                             }
                                         }
                                     }
@@ -264,7 +280,7 @@ pipeline{
                                 stage('Build'){
                                     steps{
                                         dir("product-move/"){
-                                            sh 'git status'                
+                                            sh 'git status' //TODO Remove debug info
                                             sh 'npm run build'
                                             script{
                                                 def set_version = "npm version " + base_build['baseVersion']
@@ -278,7 +294,7 @@ pipeline{
                                     steps{
                                         dir("product-move/"){
                                             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh 'git status'
+                                                sh 'git status' //TODO Remove debug info
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git --tags"
                                                 sh "npm publish"
@@ -325,7 +341,7 @@ pipeline{
                                 stage('Build'){
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
-                                            sh 'git status'                
+                                            sh 'git status' //TODO Remove debug info            
                                             sh 'npm run build'
                                             script{
                                                 def set_version = "npm version " + base_build['baseVersion']
@@ -339,7 +355,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
                                             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh 'git status'
+                                                sh 'git status' //TODO Remove debug info
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-toolbar.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-toolbar.git --tags"
                                                 sh "npm publish"
@@ -386,7 +402,7 @@ pipeline{
                                 stage('Build'){
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
-                                            sh 'git status'
+                                            sh 'git status' //TODO Remove debug info
                                             sh 'npm run build'
                                             script{
                                                 def set_version = "npm version " + base_build['baseVersion']
@@ -400,7 +416,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh "git status"
+                                                sh "git status" //TODO Remove debug info
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-history.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-history.git --tags"
                                                 sh "npm publish"
@@ -428,6 +444,8 @@ pipeline{
                                 }
                             }
                         }
+                        //TODO Add build of Business Transaction Detail
+                        //TODO Add build of Product Details
                     }
                 }
             }
