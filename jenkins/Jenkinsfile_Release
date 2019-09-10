@@ -250,11 +250,13 @@ pipeline{
                                         sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-search-product:latest | tail -n +2 | awk '{print \$3}') -f || true"
                                         sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                        script{
-                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-search-product microfrontend-search-product=tasktrack.telekom.at/gucci-docker/microfrontend-search-product:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-search-product.gucci%3A6101&_action=refresh"'
-                                            echo "${command}"
-                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                        dir("search-product/"){
+                                            script{
+                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-search-product microfrontend-search-product=tasktrack.telekom.at/gucci-docker/microfrontend-search-product:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-search-product.gucci%3A6101&_action=refresh"'
+                                                echo "${command}"
+                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            }
                                         }
                                     }
                                 }
@@ -312,11 +314,13 @@ pipeline{
                                     sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
                                     sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                        script{
-                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-product-move microfrontend-product-move=tasktrack.telekom.at/gucci-docker/microfrontend-product-move:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-product-move.gucci%3A6102&_action=refresh"'
-                                            echo "${command}"
-                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                        dir("product-move/"){
+                                            script{
+                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-product-move microfrontend-product-move=tasktrack.telekom.at/gucci-docker/microfrontend-product-move:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-product-move.gucci%3A6102&_action=refresh"'
+                                                echo "${command}"
+                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            }
                                         }
                                     }
                                 }
@@ -373,11 +377,13 @@ pipeline{
                                     sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
                                     sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                        script{
-                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-hfhs-toolbar microfrontend-hfhs-toolbar=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-toolbar:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-toolbar.gucci%3A6110&_action=refresh"'
-                                            echo "${command}"
-                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                        dir("microfrontend-hfhs-toolbar/"){
+                                            script{
+                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-hfhs-toolbar microfrontend-hfhs-toolbar=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-toolbar:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-toolbar.gucci%3A6110&_action=refresh"'
+                                                echo "${command}"
+                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            }
                                         }
                                     }
                                 }
@@ -434,11 +440,13 @@ pipeline{
                                     sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
                                     sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                        script{
-                                            def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                            def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image -n gucci deployment/microfrontend-hfhs-business-transaction-history microfrontend-hfhs-business-transaction-history=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-business-transaction-history:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-business-transaction-history.gucci%3A6104&_action=refresh"'
-                                            echo "${command}"
-                                            sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                        dir("microfrontend-hfhs-business-transaction-history/"){
+                                            script{
+                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image -n gucci deployment/microfrontend-hfhs-business-transaction-history microfrontend-hfhs-business-transaction-history=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-business-transaction-history:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-business-transaction-history.gucci%3A6104&_action=refresh"'
+                                                echo "${command}"
+                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            }
                                         }
                                     }
                                 }
