@@ -53,6 +53,7 @@ pipeline{
     }
     options{
         disableConcurrentBuilds()
+        parallelsAlwaysFailFast()
     }
     stages{
         stage('Prepare to build'){
