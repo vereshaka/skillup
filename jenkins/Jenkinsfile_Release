@@ -115,6 +115,22 @@ pipeline{
                             if (!(base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/)){
                                 error("Bad base version. Release will be stopped")
                             }
+                            echo "Check if tag not exist"
+                            def notValidTag = 0
+                            projects.each{ k,v ->
+                                dir(k + "/"){
+                                    def check_tag = '\'refs/tags/v' + base_build['baseVersion'] + '\''
+                                    withEnv(["CHECK_VER=${check_tag}"]){
+                                        if (sh(returnStdout: true, script: "git ls-remote -q --tags | awk '{print \$2}'| grep '^$CHECK_VER\$' | wc -l").trim().toInteger() > 0){
+                                            echo "${k} already have tag ${base_build['baseVersion']}"
+                                            notValidTag += 1
+                                        }
+                                    }
+                                }
+                            }
+                            if (notValidTag > 0){
+                                error("Some projects have tag ${base_build['baseVersion']}. Release build will be interrupted.")
+                            }
                             overview = "Base versions in package.json\n    "
                             if (base_build['isBaseRelease'] == false){
                                 projects.each{ k,v ->
