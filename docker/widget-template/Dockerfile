@@ -29,7 +29,8 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'autorestart=true' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'startretries=5' >> /etc/supervisor/conf.d/supervisord.conf
 
-RUN echo "output.logstash:" > /etc/filebeat/filebeat.yml && \
+RUN echo "# Last update of this config file was 17.09.19" > /etc/filebeat/filebeat.yml && \
+    echo "output.logstash:" >> /etc/filebeat/filebeat.yml && \
     echo "  hosts: \${LOGGING_LOGSTASH_HOST}:\${LOGGING_LOGSTASH_PORT:5044}" >> /etc/filebeat/filebeat.yml && \
     echo "filebeat.inputs:" >> /etc/filebeat/filebeat.yml && \
     echo "- type: log" >> /etc/filebeat/filebeat.yml && \
