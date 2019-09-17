@@ -15,8 +15,7 @@ RUN apt-get update && \
     rm filebeat-$ELK_VER-amd64.deb && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
-    rm -rf /var/log/*
+    rm -rf /var/lib/{apt,dpkg,cache,log}/ /var/log/*
 
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'user=root' >> /etc/supervisor/conf.d/supervisord.conf && \
@@ -43,6 +42,5 @@ RUN echo "# Last update of this config file was 17.09.19" > /etc/filebeat/filebe
     echo '  multiline.negate: true' >> /etc/filebeat/filebeat.yml && \
     echo '  multiline.match: after' >> /etc/filebeat/filebeat.yml && \
     chmod 0644 /etc/filebeat/filebeat.yml
-
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
