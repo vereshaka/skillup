@@ -36,8 +36,9 @@ RUN echo "output.logstash:" > /etc/filebeat/filebeat.yml && \
     echo "  paths: \${LOG_FOLDER}" >> /etc/filebeat/filebeat.yml && \
     echo "  fields_under_root: true"  >> /etc/filebeat/filebeat.yml && \
     echo "  fields:" >> /etc/filebeat/filebeat.yml && \
-    echo "    widget: \${WIDGET_NAME:unknown} " >> /etc/filebeat/filebeat.yml && \
-    echo "  multiline.pattern: '^\['" >> /etc/filebeat/filebeat.yml && \
+    echo "    widget: \${WIDGET_NAME:unknown}" >> /etc/filebeat/filebeat.yml && \
+    echo "    environment: \${NODE_ENV:not_specified}" >> /etc/filebeat/filebeat.yml && \
+    echo "  multiline.pattern: '^\[\d'" >> /etc/filebeat/filebeat.yml && \
     echo '  multiline.negate: true' >> /etc/filebeat/filebeat.yml && \
     echo '  multiline.match: after' >> /etc/filebeat/filebeat.yml && \
     chmod 0644 /etc/filebeat/filebeat.yml
