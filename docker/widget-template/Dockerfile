@@ -15,8 +15,7 @@ RUN apt-get update && \
     rm filebeat-$ELK_VER-amd64.deb && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
-    rm -rf /var/log/*
+    rm -rf /var/lib/{apt,dpkg,cache,log}/ /var/log/*
 
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'user=root' >> /etc/supervisor/conf.d/supervisord.conf && \
@@ -29,18 +28,19 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'autorestart=true' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'startretries=5' >> /etc/supervisor/conf.d/supervisord.conf
 
-RUN echo "output.logstash:" > /etc/filebeat/filebeat.yml && \
+RUN echo "# Last update of this config file was 17.09.19" > /etc/filebeat/filebeat.yml && \
+    echo "output.logstash:" >> /etc/filebeat/filebeat.yml && \
     echo "  hosts: \${LOGGING_LOGSTASH_HOST}:\${LOGGING_LOGSTASH_PORT:5044}" >> /etc/filebeat/filebeat.yml && \
     echo "filebeat.inputs:" >> /etc/filebeat/filebeat.yml && \
     echo "- type: log" >> /etc/filebeat/filebeat.yml && \
     echo "  paths: \${LOG_FOLDER}" >> /etc/filebeat/filebeat.yml && \
     echo "  fields_under_root: true"  >> /etc/filebeat/filebeat.yml && \
     echo "  fields:" >> /etc/filebeat/filebeat.yml && \
-    echo "    widget: \${WIDGET_NAME:unknown} " >> /etc/filebeat/filebeat.yml && \
-    echo "  multiline.pattern: '^\['" >> /etc/filebeat/filebeat.yml && \
+    echo "    widget: \${WIDGET_NAME:unknown}" >> /etc/filebeat/filebeat.yml && \
+    echo "    environment: \${NODE_ENV:not_specified}" >> /etc/filebeat/filebeat.yml && \
+    echo "  multiline.pattern: '^\[\d'" >> /etc/filebeat/filebeat.yml && \
     echo '  multiline.negate: true' >> /etc/filebeat/filebeat.yml && \
     echo '  multiline.match: after' >> /etc/filebeat/filebeat.yml && \
     chmod 0644 /etc/filebeat/filebeat.yml
-
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
