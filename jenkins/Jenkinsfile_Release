@@ -42,7 +42,8 @@ def base_ver = ""
 def base_build = null
 def isBaseVerValid = true
 
-// TODO Add check of tag existing 
+// TODO: Add check of tag existing  
+// TODO: Add notification about build result via e-mail or other channel
 pipeline{
     agent{
         node{
