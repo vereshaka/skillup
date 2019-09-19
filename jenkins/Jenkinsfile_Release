@@ -260,8 +260,6 @@ pipeline{
                                     sh 'docker container prune -f'
                                 }
                                 success{
-                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-detail:latest | tail -n +2 | awk '{print \$3}') -f"
-                                    sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
                                             script{
@@ -316,8 +314,6 @@ pipeline{
                                     sh 'docker container prune -f'
                                 }
                                 success{
-                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/gucci-docker/microfrontend-product-details:latest | tail -n +2 | awk '{print \$3}') -f"
-                                    sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         dir("microfrontend-product-details/"){
                                             script{
@@ -335,7 +331,6 @@ pipeline{
                             when{
                                 expression{
                                     isReleaseNeeded(projects.find{it.key == "search-product" }?.value) == true
-                                    
                                 }
                             }
                             stages{
@@ -379,8 +374,6 @@ pipeline{
                                     sh 'docker container prune -f'
                                 }
                                 success{
-                                        sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-search-product:latest | tail -n +2 | awk '{print \$3}') -f || true"
-                                        sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         dir("search-product/"){
                                             script{
@@ -398,7 +391,6 @@ pipeline{
                             when{
                                 expression{
                                     isReleaseNeeded(projects.find{it.key == "product-move" }?.value) == true
-                                    
                                 }
                             }
                             stages{
@@ -443,8 +435,6 @@ pipeline{
                                     sh 'docker container prune -f'
                                 }
                                 success{
-                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
-                                    sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         dir("product-move/"){
                                             script{
@@ -506,8 +496,6 @@ pipeline{
                                     sh 'docker container prune -f'
                                 }
                                 success{
-                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
-                                    sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         dir("microfrontend-hfhs-toolbar/"){
                                             script{
@@ -569,8 +557,6 @@ pipeline{
                                     sh 'docker container prune -f'
                                 }
                                 success{
-                                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
-                                    sh "docker container prune -f"
                                     withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             script{
@@ -587,6 +573,17 @@ pipeline{
                     }
                 }
             }
+        }
+    }
+    post{
+        success{
+            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-detail:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-details:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-search-product:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            sh "docker container prune -f"
         }
     }
 }
