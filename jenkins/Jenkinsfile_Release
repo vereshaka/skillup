@@ -82,7 +82,7 @@ pipeline{
                         script{
                             projects.each { k,v ->
                                 dir(k + "/") {
-                                    sh 'git status && git checkout develop && git status' //TODO Reduce output
+                                    sh 'git checkout develop && git status' //TODO: Reduce output
                                     projects[k] = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
                                     ver_list = ver_list + sh(returnStdout: true, script: 'git describe --tags | cut -c 2- | cut -d- -f1' ).trim() + "\\n"
                                 } 
@@ -134,7 +134,6 @@ pipeline{
                             overview = "Base versions in package.json\n    "
                             if (base_build['isBaseRelease'] == false){
                                 projects.each{ k,v ->
-                                    echo "${k}" // TODO Remove debug info
                                     if (k == 'microfrontend-hfhs-base') return
                                     dir(k + "/") {
                                         def ver_check = "" + sh(returnStdout: true, script: "cat package.json | grep '\"@a1/microfrontend-hfhs-base\"' | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
@@ -143,7 +142,6 @@ pipeline{
                                     }
                                 }
                                 echo "${overview}"
-                                echo "${isBaseVerValid}" // TODO Remove debug info
                                 if (isBaseVerValid == false) {
                                     error("Some widgets has wrong version of base. Release will be stopped")
                                 }
@@ -157,7 +155,6 @@ pipeline{
                                         def comm3 = '    \"@a1/microfrontend-hfhs-base\": \"^'
                                         def comm4 = '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
                                         def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
-                                        echo "${command}" // TODO Remove debug info
                                         sh "${command}"
                                         sh "git add package.json && git commit -m 'Update base version' || true"
                                     }
