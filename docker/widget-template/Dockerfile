@@ -50,6 +50,10 @@ RUN echo "# Version: 26092019" > /etc/filebeat/filebeat.yml && \
     echo '  multiline.match: after' >> /etc/filebeat/filebeat.yml && \
     echo "- type: log" >> /etc/filebeat/filebeat.yml && \
     echo "  paths: /var/log/supervisord/supervisord.log" >> /etc/filebeat/filebeat.yml && \
+    echo "  fields_under_root: true"  >> /etc/filebeat/filebeat.yml && \
+    echo "  fields:" >> /etc/filebeat/filebeat.yml && \
+    echo "    widget: \${WIDGET_NAME:unknown}" >> /etc/filebeat/filebeat.yml && \
+    echo "    environment: \${NODE_ENV:not_specified}" >> /etc/filebeat/filebeat.yml && \
     chmod 0644 /etc/filebeat/filebeat.yml
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
