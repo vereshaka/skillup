@@ -20,13 +20,19 @@ RUN apt-get update && \
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'user=root' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'nodaemon=true' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'loglevel=info' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'logfile_backups=5' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'logfile_maxbytes=5MB' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'logfile=/var/log/supervisord/supervisord.log' >> /etc/supervisor/conf.d/supervisord.conf && \
+    echo 'childlogdir=/var/log/supervisord/' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'environment=LOGGING_LOGSTASH_HOST="%(ENV_LOGGING_LOGSTASH_HOST)s",LOG_FOLDER="%(ENV_LOG_FOLDER)s"\n' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo '[program:filebeat-app]' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'command=/usr/bin/filebeat -e' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo "autostart=true" >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'startsecs=5' >> /etc/supervisor/conf.d/supervisord.conf && \
     echo 'autorestart=true' >> /etc/supervisor/conf.d/supervisord.conf && \
-    echo 'startretries=5' >> /etc/supervisor/conf.d/supervisord.conf
+    echo 'startretries=5' >> /etc/supervisor/conf.d/supervisord.conf && \
+    mkdir /var/log/supervisord
 
 RUN echo "# Last update of this config file was 17.09.19" > /etc/filebeat/filebeat.yml && \
     echo "output.logstash:" >> /etc/filebeat/filebeat.yml && \
@@ -41,6 +47,8 @@ RUN echo "# Last update of this config file was 17.09.19" > /etc/filebeat/filebe
     echo "  multiline.pattern: '^\[\d'" >> /etc/filebeat/filebeat.yml && \
     echo '  multiline.negate: true' >> /etc/filebeat/filebeat.yml && \
     echo '  multiline.match: after' >> /etc/filebeat/filebeat.yml && \
+    echo "- type: log" >> /etc/filebeat/filebeat.yml && \
+    echo "  paths: /var/log/supervisord/supervisord.log" >> /etc/filebeat/filebeat.yml && \
     chmod 0644 /etc/filebeat/filebeat.yml
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
