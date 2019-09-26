@@ -35,7 +35,7 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
     echo 'startretries=5' >> /etc/supervisor/conf.d/supervisord.conf && \
     mkdir /var/log/supervisord
 
-RUN echo "# Last update of this config file was 17.09.19" > /etc/filebeat/filebeat.yml && \
+RUN echo "# Version: 26092019" > /etc/filebeat/filebeat.yml && \
     echo "output.logstash:" >> /etc/filebeat/filebeat.yml && \
     echo "  hosts: \${LOGGING_LOGSTASH_HOST}:\${LOGGING_LOGSTASH_PORT:5044}" >> /etc/filebeat/filebeat.yml && \
     echo "filebeat.inputs:" >> /etc/filebeat/filebeat.yml && \
