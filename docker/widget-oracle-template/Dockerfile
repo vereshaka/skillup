@@ -15,7 +15,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y libaio1 build-essential default-jre --no-install-recommends && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/ /var/log/*
+    rm -rf /var/lib/{apt,dpkg,cache,log}/
     
 COPY --from=unpacker /opt/oracle/instantclient_12_2 /opt/oracle/instantclient
 
