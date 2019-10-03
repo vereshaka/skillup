@@ -272,6 +272,11 @@ pipeline{
                             }
                         }
                         stage('Widget: Product Details'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "microfrontend-product-details" }?.value) == true
+                                }
+                            }
                             stages{
                                 stage('Prepare'){
                                     steps{
