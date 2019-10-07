@@ -1,10 +1,6 @@
 /*
 Jenkinsfile for building of HFHS widgets release versions.
 
-Build node requirements:
-* Docker (user must have access to Docker CLI without 'sudo')
-* NodeJS (it was tested on LTS version)
-
 Build starts manually.
 */
 
@@ -32,7 +28,6 @@ def projects = [
     "search-product" : "",
 ];
 
-//def k8s_host = "192.168.20.70" // IP or FQDN of host that have possibility of deploying to Kubernetes
 def JENKIN_GIT_CREDENTIALS_ID = "8c90ce01-4736-4b5a-8661-ab6299330151"
 def JENKIN_K8S_CREDENTIALS_ID = 'kubernetes-gucci-dev'
 def INFORM_ABOUT_FAILURE = 'grp.hfhs@sytoss.com'
@@ -60,12 +55,6 @@ pipeline{
     stages{
         stage('Prepare to build'){
             stages{
-                // stage('Check requirements'){
-                //     steps{
-                //         sh 'docker version && node -v && npm -v'
-                //         sh 'apt list | grep "sshpass"'
-                //     }
-                // }
                 stage('Clone repos'){
                     steps{
                         deleteDir()
@@ -84,7 +73,7 @@ pipeline{
                         script{
                             projects.each { k,v ->
                                 dir(k + "/") {
-                                    sh 'git checkout develop && git status' //TODO: Reduce output
+                                    sh 'git checkout develop && git status'
                                     projects[k] = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
                                     ver_list = ver_list + sh(returnStdout: true, script: 'git describe --tags | cut -c 2- | cut -d- -f1' ).trim() + "\\n"
                                 } 
