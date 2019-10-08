@@ -260,8 +260,8 @@ pipeline{
                                 }
                                 stage("Deploy to Kubernetes"){
                                     environment {
-                                        NODE_ENV = 'development'
-                                        NAMESPACE = 'gucci-dev'
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
                                         REPLICA_COUNT = '1'
                                     }
                                     steps{
@@ -329,8 +329,8 @@ pipeline{
                                 }
                                 stage("Deploy to Kubernetes"){
                                     environment {
-                                        NODE_ENV = 'development'
-                                        NAMESPACE = 'gucci-dev'
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
                                         REPLICA_COUNT = '1'
                                     }
                                     steps{
@@ -397,8 +397,8 @@ pipeline{
                                 }
                                 stage("Deploy to Kubernetes"){
                                     environment {
-                                        NODE_ENV = 'development'
-                                        NAMESPACE = 'gucci-dev'
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
                                         REPLICA_COUNT = '1'
                                     }
                                     steps{
@@ -466,8 +466,8 @@ pipeline{
                                 }
                                 stage("Deploy to Kubernetes"){
                                     environment {
-                                        NODE_ENV = 'development'
-                                        NAMESPACE = 'gucci-dev'
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
                                         REPLICA_COUNT = '1'
                                     }
                                     steps{
@@ -535,8 +535,8 @@ pipeline{
                                 }
                                 stage("Deploy to Kubernetes"){
                                     environment {
-                                        NODE_ENV = 'development'
-                                        NAMESPACE = 'gucci-dev'
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
                                         REPLICA_COUNT = '1'
                                     }
                                     steps{
@@ -604,8 +604,8 @@ pipeline{
                                 }
                                 stage("Deploy to Kubernetes"){
                                     environment {
-                                        NODE_ENV = 'development'
-                                        NAMESPACE = 'gucci-dev'
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
                                         REPLICA_COUNT = '1'
                                     }
                                     steps{
