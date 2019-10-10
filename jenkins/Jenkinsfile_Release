@@ -1,11 +1,6 @@
 /*
 Jenkinsfile for building of HFHS widgets release versions.
 
-Build node requirements:
-* Docker (user must have access to Docker CLI without 'sudo')
-* NodeJS (it was tested on LTS version)
-* sshpass
-
 Build starts manually.
 */
 
@@ -33,7 +28,10 @@ def projects = [
     "search-product" : "",
 ];
 
-def k8s_host = "192.168.20.70" // IP or FQDN of host that have possibility of deploying to Kubernetes
+def JENKIN_GIT_CREDENTIALS_ID = "8c90ce01-4736-4b5a-8661-ab6299330151"
+def JENKIN_K8S_CREDENTIALS_ID = 'kubernetes-gucci-dev'
+def INFORM_ABOUT_FAILURE = 'grp.hfhs@sytoss.com'
+def JENKINS_NODE_JS_INSTALLATION_LABEL = 'node10.16.3'
 
 def proposal_version = ""
 def overview = "Version proposal"
@@ -47,7 +45,7 @@ def isBaseVerValid = true
 pipeline{
     agent{
         node{
-            label 'node'
+            label null
         }
     }
     options{
@@ -57,16 +55,10 @@ pipeline{
     stages{
         stage('Prepare to build'){
             stages{
-                stage('Check requirements'){
-                    steps{
-                        sh 'docker version && node -v && npm -v'
-                        sh 'apt list | grep "sshpass"'
-                    }
-                }
                 stage('Clone repos'){
                     steps{
                         deleteDir()
-                        withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                        withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                             sh "docker login -u ${USERNAME} -p ${PASSWORD} tasktrack.telekom.at/gucci-docker-local"
                             script{
                                 projects.each {k,v ->
@@ -74,7 +66,6 @@ pipeline{
                                 }
                             }
                         }
-                        sh 'ls -la'
                     }
                 }
                 stage('Get versions of widgets'){
@@ -82,7 +73,7 @@ pipeline{
                         script{
                             projects.each { k,v ->
                                 dir(k + "/") {
-                                    sh 'git checkout develop && git status' //TODO: Reduce output
+                                    sh 'git checkout develop && git status'
                                     projects[k] = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
                                     ver_list = ver_list + sh(returnStdout: true, script: 'git describe --tags | cut -c 2- | cut -d- -f1' ).trim() + "\\n"
                                 } 
@@ -113,7 +104,7 @@ pipeline{
                                             name: 'baseVersion'),
                                 ])
                             if (!(base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/)){
-                                error("Bad base version. Release will be stopped")
+                                error("Inappropriate base version. Release build will be interrupted.")
                             }
                             echo "Check if tag not exist"
                             def notValidTag = 0
@@ -129,7 +120,7 @@ pipeline{
                                 }
                             }
                             if (notValidTag > 0 ){
-                                error("Some projects have tag ${base_build['baseVersion']}. Release build will be interrupted.")
+                                error("Some projects already have tag ${base_build['baseVersion']}. Release build will be interrupted.")
                             }
                             overview = "Base versions in package.json\n    "
                             if (base_build['isBaseRelease'] == false){
@@ -143,7 +134,7 @@ pipeline{
                                 }
                                 echo "${overview}"
                                 if (isBaseVerValid == false) {
-                                    error("Some widgets has wrong version of base. Release will be stopped")
+                                    error("Some widgets has wrong version of base. Release build will be interrupted.")
                                 }
                             }
                             else{
@@ -178,7 +169,9 @@ pipeline{
                             steps{
                                 dir("microfrontend-hfhs-base/"){
                                     sh 'git status'
-                                    sh 'npm i'
+                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                        sh 'npm i'
+                                    }
                                 }
                             }
                         }
@@ -186,12 +179,14 @@ pipeline{
                             steps{
                                 dir("microfrontend-hfhs-base/"){
                                     sh 'git status' //TODO remove debug info
-                                    sh 'npm run build'
-                                    sh 'git checkout package-lock.json'
-                                    script{
-                                        def set_version = "npm version " + base_build['baseVersion']
-                                        echo "${set_version}"
-                                        sh "${set_version}"
+                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                        sh 'npm run build'
+                                        sh 'git checkout package-lock.json'
+                                        script{
+                                            def set_version = "npm version " + base_build['baseVersion']
+                                            echo "${set_version}"
+                                            sh "${set_version}"
+                                        }
                                     }
                                 }
                             }
@@ -200,10 +195,13 @@ pipeline{
                             steps{
                                 dir("microfrontend-hfhs-base/"){
                                     sh 'git status' //TODO Remove debug info
-                                    withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
-                                        sh "npm publish"
+                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                            sh "npm publish"
+                                        }
                                     }
                                 }
                             }
@@ -211,7 +209,7 @@ pipeline{
                     }
                 }
                 stage('Build widgets'){
-                    stages{
+                    stages{ //set parallel
                         stage('Widget: Business Transaction Detail'){
                             when{
                                 expression{
@@ -223,7 +221,9 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
                                             sh 'git status'
-                                            sh 'npm i'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
                                         }
                                     }
                                 }
@@ -231,11 +231,13 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
                                             sh 'git status'
-                                            sh 'npm run build'
-                                            script{
-                                                def set_version = "npm version " + base_build['baseVersion']
-                                                echo "${set_version}"
-                                                sh "${set_version}"
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
                                             }
                                         }
                                     }
@@ -244,27 +246,33 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
                                             sh 'git status'
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-detail.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-detail.git --tags"
-                                                sh "npm run docker-push-image"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm run docker-push-image"
+                                                    sh "npm publish"
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            post{
-                                always{
-                                    sh 'docker container prune -f'
-                                }
-                                success{
-                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                stage("Deploy to Kubernetes"){
+                                    environment {
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
+                                        REPLICA_COUNT = '1'
+                                    }
+                                    steps{
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
-                                            script{
-                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image -n gucci deployment/microfrontend-hfhs-business-transaction-detail microfrontend-hfhs-business-transaction-detail=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-business-transaction-detail:' + ver + ' -n gucci; sleep 60; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-business-transaction-detail.gucci%3A6105&_action=refresh"'
-                                                echo "${command}"
-                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            script {
+                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            }
+                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
+                                                sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
+                                                sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
                                             }
                                         }
                                     }
@@ -282,7 +290,9 @@ pipeline{
                                     steps{
                                         dir("microfrontend-product-details/"){
                                             sh 'git status'
-                                            sh 'npm i'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
                                         }
                                     }
                                 }
@@ -290,11 +300,13 @@ pipeline{
                                     steps{
                                         dir("microfrontend-product-details/"){
                                             sh 'git status'
-                                            sh 'npm run build'
-                                            script{
-                                                def set_version = "npm version " + base_build['baseVersion']
-                                                echo "${set_version}"
-                                                sh "${set_version}"
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
                                             }
                                         }
                                     }
@@ -303,27 +315,33 @@ pipeline{
                                     steps{
                                         dir("microfrontend-product-details/"){
                                             sh 'git status'
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-product-details.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-product-details.git --tags"
-                                                sh "npm run docker-push-image"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm run docker-push-image"
+                                                    sh "npm publish"
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            post{
-                                always{
-                                    sh 'docker container prune -f'
-                                }
-                                success{
-                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                stage("Deploy to Kubernetes"){
+                                    environment {
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
+                                        REPLICA_COUNT = '1'
+                                    }
+                                    steps{
                                         dir("microfrontend-product-details/"){
-                                            script{
-                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-product-details microfrontend-product-details=tasktrack.telekom.at/gucci-docker/microfrontend-product-details:' + ver + ' -n gucci; sleep 20; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-product-details.gucci%3A6103&_action=refresh"'
-                                                echo "${command}"
-                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            script {
+                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            }
+                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
+                                                sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
+                                                sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
                                             }
                                         }
                                     }
@@ -341,19 +359,23 @@ pipeline{
                                     steps{
                                         dir("search-product/"){
                                             sh 'git status'
-                                            sh 'npm i'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
                                         }
                                     }
                                 }
                                 stage('Build'){
                                     steps{
                                         dir("search-product/"){
-                                            sh 'npm run build'
-                                            sh 'git checkout package-lock.json'
-                                            script{
-                                                def set_version = "npm version " + base_build['baseVersion']
-                                                echo "${set_version}"
-                                                sh "${set_version}"
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                sh 'git checkout package-lock.json'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
                                             }
                                         }
                                     }
@@ -361,29 +383,33 @@ pipeline{
                                 stage('Publish'){
                                     steps{
                                         dir("search-product/"){
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
-                                                sh "git status" //TODO Remove debug info
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm publish"
+                                                    sh "npm run docker-push-image"
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            post{
-                                always{
-                                    sh 'docker container prune -f'
-                                }
-                                success{
-                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                stage("Deploy to Kubernetes"){
+                                    environment {
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
+                                        REPLICA_COUNT = '1'
+                                    }
+                                    steps{
                                         dir("search-product/"){
-                                            script{
-                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-search-product microfrontend-search-product=tasktrack.telekom.at/gucci-docker/microfrontend-search-product:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-search-product.gucci%3A6101&_action=refresh"'
-                                                echo "${command}"
-                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            script {
+                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            }
+                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
+                                                sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
+                                                sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
                                             }
                                         }
                                     }
@@ -401,20 +427,23 @@ pipeline{
                                     steps{
                                         dir("product-move/"){
                                             sh 'git status'
-                                            sh 'npm i'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
                                         }
-                                        
                                     }
                                 }
                                 stage('Build'){
                                     steps{
                                         dir("product-move/"){
                                             sh 'git status' //TODO Remove debug info
-                                            sh 'npm run build'
-                                            script{
-                                                def set_version = "npm version " + base_build['baseVersion']
-                                                echo "${set_version}"
-                                                sh "${set_version}"
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
                                             }
                                         }
                                     }
@@ -422,29 +451,34 @@ pipeline{
                                 stage('Publish'){
                                     steps{
                                         dir("product-move/"){
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                                 sh 'git status' //TODO Remove debug info
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm publish"
+                                                    sh "npm run docker-push-image"
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            post{
-                                always{
-                                    sh 'docker container prune -f'
-                                }
-                                success{
-                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                stage("Deploy to Kubernetes"){
+                                    environment {
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
+                                        REPLICA_COUNT = '1'
+                                    }
+                                    steps{
                                         dir("product-move/"){
-                                            script{
-                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-product-move microfrontend-product-move=tasktrack.telekom.at/gucci-docker/microfrontend-product-move:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-product-move.gucci%3A6102&_action=refresh"'
-                                                echo "${command}"
-                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            script {
+                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            }
+                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
+                                                sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
+                                                sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
                                             }
                                         }
                                     }
@@ -455,7 +489,6 @@ pipeline{
                             when{
                                 expression{
                                     isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-toolbar" }?.value) == true
-                                    
                                 }
                             }
                             stages{
@@ -463,19 +496,23 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
                                             sh 'git status'
-                                            sh 'npm i'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
                                         }
                                     }
                                 }
                                 stage('Build'){
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
-                                            sh 'git status' //TODO Remove debug info            
-                                            sh 'npm run build'
-                                            script{
-                                                def set_version = "npm version " + base_build['baseVersion']
-                                                echo "${set_version}"
-                                                sh "${set_version}"
+                                            sh 'git status' //TODO Remove debug info   
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {         
+                                                sh 'npm run build'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
                                             }
                                         }
                                     }
@@ -483,29 +520,34 @@ pipeline{
                                 stage('Publish'){
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                                 sh 'git status' //TODO Remove debug info
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-toolbar.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-toolbar.git --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm publish"
+                                                    sh "npm run docker-push-image"
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            post{
-                                always{
-                                    sh 'docker container prune -f'
-                                }
-                                success{
-                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                stage("Deploy to Kubernetes"){
+                                    environment {
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
+                                        REPLICA_COUNT = '1'
+                                    }
+                                    steps{
                                         dir("microfrontend-hfhs-toolbar/"){
-                                            script{
-                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image deployment/microfrontend-hfhs-toolbar microfrontend-hfhs-toolbar=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-toolbar:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-toolbar.gucci%3A6110&_action=refresh"'
-                                                echo "${command}"
-                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            script {
+                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            }
+                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
+                                                sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
+                                                sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
                                             }
                                         }
                                     }
@@ -516,7 +558,6 @@ pipeline{
                             when{
                                 expression{
                                     isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-business-transaction-history" }?.value) == true
-                                    
                                 }
                             }
                             stages{
@@ -524,7 +565,9 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             sh 'git status'
-                                            sh 'npm i'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
                                         }
                                     }
                                 }
@@ -532,11 +575,13 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             sh 'git status' //TODO Remove debug info
-                                            sh 'npm run build'
-                                            script{
-                                                def set_version = "npm version " + base_build['baseVersion']
-                                                echo "${set_version}"
-                                                sh "${set_version}"
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
                                             }
                                         }
                                     }
@@ -544,29 +589,34 @@ pipeline{
                                 stage('Publish'){
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
-                                            withCredentials([usernamePassword(credentialsId: 'a1-bitbucket', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                                 sh "git status" //TODO Remove debug info
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-history.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-history.git --tags"
-                                                sh "npm publish"
-                                                sh "npm run docker-push-image"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm publish"
+                                                    sh "npm run docker-push-image"
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            post{
-                                always{
-                                    sh 'docker container prune -f'
-                                }
-                                success{
-                                    withCredentials([usernamePassword(credentialsId: '78448329-a67a-41f3-8ffb-76292d5457eb', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+                                stage("Deploy to Kubernetes"){
+                                    environment {
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
+                                        REPLICA_COUNT = '1'
+                                    }
+                                    steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
-                                            script{
-                                                def ver = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
-                                                def command = 'export KUBECONFIG=$HOME/.kube/admin.conf; kubectl set image -n gucci deployment/microfrontend-hfhs-business-transaction-history microfrontend-hfhs-business-transaction-history=tasktrack.telekom.at/gucci-docker/microfrontend-hfhs-business-transaction-history:' + ver + ' -n gucci; sleep 45; curl -X POST http://gucci-portal.k8s.sytoss.intra/portal-remote-app-registry/admin/ -H "Content-Type:application/x-www-form-urlencoded" -d "_url=http%3A%2F%2Fmicrofrontend-hfhs-business-transaction-history.gucci%3A6104&_action=refresh"'
-                                                echo "${command}"
-                                                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no  ${USERNAME}@${k8s_host} 'bash -c \"${command} \" '"
+                                            script {
+                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            }
+                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
+                                                sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
+                                                sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
                                             }
                                         }
                                     }
@@ -586,7 +636,12 @@ pipeline{
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker container prune -f"
+        }
+        failure {
+            emailext to: INFORM_ABOUT_FAILURE,
+                    subject: "Jenkins Pipeline '${JOB_NAME}' (${BUILD_NUMBER}) failed",
+                    body: "Please go to ${BUILD_URL} and verify the build",
+                    attachLog: true
         }
     }
 }
