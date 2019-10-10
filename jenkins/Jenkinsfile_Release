@@ -40,8 +40,6 @@ def base_ver = ""
 def base_build = null
 def isBaseVerValid = true
 
-// TODO: Add check of tag existing  
-// TODO: Add notification about build result via e-mail or other channel
 pipeline{
     agent{
         node{
@@ -269,7 +267,7 @@ pipeline{
                                             script {
                                                 env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
                                             }
-                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
                                                 sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
                                                 sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
@@ -338,7 +336,7 @@ pipeline{
                                             script {
                                                 env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
                                             }
-                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
                                                 sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
                                                 sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
@@ -406,7 +404,7 @@ pipeline{
                                             script {
                                                 env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
                                             }
-                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
                                                 sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
                                                 sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
@@ -475,7 +473,7 @@ pipeline{
                                             script {
                                                 env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
                                             }
-                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
                                                 sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
                                                 sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
@@ -544,7 +542,7 @@ pipeline{
                                             script {
                                                 env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
                                             }
-                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
                                                 sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
                                                 sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
@@ -613,7 +611,7 @@ pipeline{
                                             script {
                                                 env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
                                             }
-                                            echo "Deploying version: ${IMAGE_VERSION} on DEV"
+                                            echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
                                                 sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
                                                 sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
