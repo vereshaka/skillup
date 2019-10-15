@@ -1,13 +1,13 @@
-FROM node:8-slim
+FROM node:10.16.3-slim
 
 LABEL "maintainer"="viacheslav.nezamai@sytoss.com"
 
 ARG LOGGING_LOGSTASH_HOST
 ARG LOG_FOLDER
-ARG ELK_VER=6.8.0
+ARG ELK_VER=6.8.3
 
-ENV LOGGING_LOGSTASH_HOST=$LOGGING_LOGSTASH_HOST
-ENV LOG_FOLDER=$LOG_FOLDER
+ENV LOGGING_LOGSTASH_HOST=$LOGGING_LOGSTASH_HOST \
+    LOG_FOLDER=$LOG_FOLDER
 
 RUN apt-get update && \
     apt-get install -y supervisor --no-install-recommends && \
