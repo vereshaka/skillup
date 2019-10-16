@@ -208,6 +208,75 @@ pipeline{
                 }
                 stage('Build widgets'){
                     stages{ //set parallel
+                        stage('Widget: Change Ownership'){
+                            when{
+                                expression{
+                                    isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-changeownership" }?.value) == true
+                                }
+                            }
+                            stages{
+                                stage('Prepare'){
+                                    steps{
+                                        dir("microfrontend-hfhs-changeownership/"){
+                                            sh 'git status'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("microfrontend-hfhs-changeownership/"){
+                                            sh 'git status'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Publish'){
+                                    steps{
+                                        dir("microfrontend-hfhs-changeownership/"){
+                                            sh 'git status'
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-changeownership.git"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-changeownership.git --tags"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm run docker-push-image"
+                                                    sh "npm publish"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                stage("Deploy to Kubernetes"){
+                                    environment {
+                                        NODE_ENV = 'integration'
+                                        NAMESPACE = 'gucci-int'
+                                        REPLICA_COUNT = '1'
+                                    }
+                                    steps{
+                                        dir("microfrontend-hfhs-changeownership/"){
+                                            script {
+                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                            }
+                                            echo "Deploying version: ${IMAGE_VERSION} to INT"
+                                            withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
+                                                sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
+                                                sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         stage('Widget: Business Transaction Detail'){
                             when{
                                 expression{
