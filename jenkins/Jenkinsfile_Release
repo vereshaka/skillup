@@ -96,11 +96,11 @@ pipeline{
                             base_build = input(
                                 id: 'base_build', message: 'HFHS Release',
                                 parameters: [
-                                        booleanParam(defaultValue: true,
-                                                    description: "Release base",
+                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-base" }?.value),
+                                                    description: "Make release of Base",
                                                     name: 'isBaseRelease'),
-                                        booleanParam(defaultValue: true,
-                                                    description: "Release common ui",
+                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-common-ui" }?.value),
+                                                    description: "Make release of Common UI",
                                                     name: 'isCUIRelease'),
                                         string(defaultValue: "$base_ver",
                                             description: 'with version',
