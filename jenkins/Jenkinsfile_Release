@@ -19,9 +19,10 @@ String Conclusion(String ver){
 Variable 'projects' contains list of widgets that can be released.
 */
 def projects = [
-    "microfrontend-hfhs-changeownership", "",
-    "microfrontend-product-details": "",
+    "microfrontend-hfhs-changeownership" : "",
+    "microfrontend-product-details" : "",
     "microfrontend-hfhs-base" : "",
+    "microfrontend-hfhs-common-ui" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
@@ -95,9 +96,12 @@ pipeline{
                             base_build = input(
                                 id: 'base_build', message: 'HFHS Release',
                                 parameters: [
-                                        booleanParam(defaultValue: true,
-                                                    description: "Release base",
+                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-base" }?.value),
+                                                    description: "Make release of Base",
                                                     name: 'isBaseRelease'),
+                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-common-ui" }?.value),
+                                                    description: "Make release of Common UI",
+                                                    name: 'isCUIRelease'),
                                         string(defaultValue: "$base_ver",
                                             description: 'with version',
                                             name: 'baseVersion'),
@@ -122,6 +126,7 @@ pipeline{
                                 error("Some projects already have tag ${base_build['baseVersion']}. Release build will be interrupted.")
                             }
                             overview = "Base versions in package.json\n    "
+
                             if (base_build['isBaseRelease'] == false){
                                 projects.each{ k,v ->
                                     if (k == 'microfrontend-hfhs-base') return
@@ -150,6 +155,35 @@ pipeline{
                                     }
                                 }
                             }
+                            overview = "Common UI versions in package.json\n    "
+                            if (base_build['isCUIRelease'] == false){
+                                projects.each{ k,v ->
+                                    if (k == 'microfrontend-hfhs-base') return
+                                    dir(k + "/") {
+                                        def ver_check = "" + sh(returnStdout: true, script: "cat package.json | grep '\"@a1/microfrontend-hfhs-common-ui\"' | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
+                                        isBaseVerValid = isBaseVerValid && ((ver_check  ==~ /\d+\.{1}\d+\.{1}\d+/) || (ver_check  == ""))
+                                        overview = overview + k + ": " + ver_check + "\n    "
+                                    }
+                                }
+                                echo "${overview}"
+                                if (isBaseVerValid == false) {
+                                    error("Some widgets has wrong version of common-ui. Release build will be interrupted.")
+                                }
+                            }
+                            else{
+                                echo "Now will be set actual version of common-ui in 'package.json' of widgets"
+                                projects.each{ k,v ->
+                                    dir(k + "/"){
+                                        def comm1 = 'sed -r \'s|'
+                                        def comm2 = '\\s{4}\\"(@a1\\/microfrontend-hfhs-common-ui)\\"\\:\\s*\\"\\^?[0-9]*\\.[0-9]*\\.[0-9]*.*\\"\\,|'
+                                        def comm3 = '    \"@a1/microfrontend-hfhs-common-ui\": \"^'
+                                        def comm4 = '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
+                                        def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
+                                        sh "${command}"
+                                        sh "git add package.json && git commit -m 'Update common-ui version' || true"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -157,54 +191,109 @@ pipeline{
         }
         stage('Build'){
             stages{
-                stage('Build Base widget'){
-                    when{
-                        expression{
-                            base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                        }
-                    }
+                stage('Build components'){
                     stages{
-                        stage('Prepare'){
-                            steps{
-                                dir("microfrontend-hfhs-base/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
+                        stage('Component: Base'){
+                            when{
+                                expression{
+                                    base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
                                 }
                             }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-base/"){
-                                    sh 'git status' //TODO remove debug info
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh 'git checkout package-lock.json'
-                                        script{
-                                            def set_version = "npm version " + base_build['baseVersion']
-                                            echo "${set_version}"
-                                            sh "${set_version}"
+                            stages{
+                                stage('Prepare'){
+                                    steps{
+                                        dir("microfrontend-hfhs-base/"){
+                                            sh 'git status'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("microfrontend-hfhs-base/"){
+                                            sh 'git status' //TODO remove debug info
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                sh 'git checkout package-lock.json'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Push tags'){
+                                    steps{
+                                        dir("microfrontend-hfhs-base/"){
+                                            sh 'git status' //TODO Remove debug info
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm publish"
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                        stage('Push tags'){
-                            steps{
-                                dir("microfrontend-hfhs-base/"){
-                                    sh 'git status' //TODO Remove debug info
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm publish"
+                        stage('Component: Common UI'){
+                            when{
+                                expression{
+                                    base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                }
+                            }
+                            stages{
+                                stage('Prepare'){
+                                    steps{
+                                        dir("microfrontend-hfhs-common-ui/"){
+                                            sh 'git status'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("microfrontend-hfhs-common-ui/"){
+                                            sh 'git status' //TODO remove debug info
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                sh 'git checkout package-lock.json'
+                                                script{
+                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    echo "${set_version}"
+                                                    sh "${set_version}"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Push tags'){
+                                    steps{
+                                        dir("microfrontend-hfhs-common-ui/"){
+                                            sh 'git status' //TODO Remove debug info
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common-ui.git"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common-ui.git --tags"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm publish"
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+
                     }
                 }
                 stage('Build widgets'){
