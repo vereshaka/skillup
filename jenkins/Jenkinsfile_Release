@@ -126,6 +126,7 @@ pipeline{
                                 error("Some projects already have tag ${base_build['baseVersion']}. Release build will be interrupted.")
                             }
                             overview = "Base versions in package.json\n    "
+
                             if (base_build['isBaseRelease'] == false){
                                 projects.each{ k,v ->
                                     if (k == 'microfrontend-hfhs-base') return
@@ -151,6 +152,35 @@ pipeline{
                                         def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
                                         sh "${command}"
                                         sh "git add package.json && git commit -m 'Update base version' || true"
+                                    }
+                                }
+                            }
+                            overview = "Common UI versions in package.json\n    "
+                            if (base_build['isCUIRelease'] == false){
+                                projects.each{ k,v ->
+                                    if (k == 'microfrontend-hfhs-base') return
+                                    dir(k + "/") {
+                                        def ver_check = "" + sh(returnStdout: true, script: "cat package.json | grep '\"@a1/microfrontend-hfhs-common-ui\"' | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
+                                        isBaseVerValid = isBaseVerValid && ((ver_check  ==~ /\d+\.{1}\d+\.{1}\d+/) || (ver_check  == ""))
+                                        overview = overview + k + ": " + ver_check + "\n    "
+                                    }
+                                }
+                                echo "${overview}"
+                                if (isBaseVerValid == false) {
+                                    error("Some widgets has wrong version of common-ui. Release build will be interrupted.")
+                                }
+                            }
+                            else{
+                                echo "Now will be set actual version of common-ui in 'package.json' of widgets"
+                                projects.each{ k,v ->
+                                    dir(k + "/"){
+                                        def comm1 = 'sed -r \'s|'
+                                        def comm2 = '\\s{4}\\"(@a1\\/microfrontend-hfhs-common-ui)\\"\\:\\s*\\"\\^?[0-9]*\\.[0-9]*\\.[0-9]*.*\\"\\,|'
+                                        def comm3 = '    \"@a1/microfrontend-hfhs-common-ui\": \"^'
+                                        def comm4 = '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
+                                        def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
+                                        sh "${command}"
+                                        sh "git add package.json && git commit -m 'Update common-ui version' || true"
                                     }
                                 }
                             }
@@ -216,7 +246,7 @@ pipeline{
                         stage('Component: Common UI'){
                             when{
                                 expression{
-                                    base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/ && false
+                                    base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
                                 }
                             }
                             stages{
