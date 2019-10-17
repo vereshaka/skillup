@@ -159,7 +159,7 @@ pipeline{
             stages{
                 stage('Build components'){
                     stages{
-                        stage('Build Base widget'){
+                        stage('Component: Base'){
                             when{
                                 expression{
                                     base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
