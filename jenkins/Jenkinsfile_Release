@@ -19,10 +19,10 @@ String Conclusion(String ver){
 Variable 'projects' contains list of widgets that can be released.
 */
 def projects = [
-    "microfrontend-hfhs-changeownership", "",
-    "microfrontend-product-details": "",
+    "microfrontend-hfhs-changeownership" : "",
+    "microfrontend-product-details" : "",
     "microfrontend-hfhs-base" : "",
-    "microfrontend-hfhs-common-ui", "",
+    "microfrontend-hfhs-common-ui" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
