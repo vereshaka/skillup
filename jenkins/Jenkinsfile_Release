@@ -43,6 +43,13 @@ Boolean isTagExist(String version){
     if(tag_count > 0) return true
     else return false
 }
+
+String getComponentVersion(String component_name){
+    def mod_component_name = '\'\"' + component_name + '\"\''
+    def ver = "" + sh(returnStdout: true, script: "cat package.json | grep ${mod_component_name} | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
+    return ver
+}
+
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
@@ -154,9 +161,9 @@ pipeline{
                                 projects.each{ k,v ->
                                     if (k == 'microfrontend-hfhs-base') return
                                     dir(k + "/") {
-                                        def ver_check = "" + sh(returnStdout: true, script: "cat package.json | grep '\"@a1/microfrontend-hfhs-base\"' | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
-                                        isBaseVerValid = isBaseVerValid && ((ver_check  ==~ /\d+\.{1}\d+\.{1}\d+/) || (ver_check  == ""))
-                                        overview = overview + k + ": " + ver_check + "\n    "
+                                        def component_version = getComponentVersion('@a1/microfrontend-hfhs-base')
+                                        isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
+                                        overview = overview + k + ": " + component_version + "\n    "
                                     }
                                 }
                                 echo "${overview}"
