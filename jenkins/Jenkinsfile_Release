@@ -36,6 +36,13 @@ String getMostHighVersion(String version_list){
     return sh(returnStdout: true, script: "printf ${mod_version_list} | sort -V | tail -1").trim()
 }
 
+Boolean isTagExist(String version){
+    def tag = '\'refs/tags/' + 'v' + version + '\''
+    def grep_statement = '\'^' + tag + '\$\''
+    def tag_count = sh(returnStdout: true, script: "git ls-remote -q --tags | awk '{print \$2}'| grep ${grep_statement} | wc -l").trim().toInteger()
+    if(tag_count > 0) return true
+    else return false
+}
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
@@ -132,12 +139,9 @@ pipeline{
                             def notValidTag = 0
                             projects.each{ k,v ->
                                 dir(k + "/"){
-                                    def check_tag = '\'refs/tags/v' + base_build['baseVersion'] + '\''
-                                    withEnv(["CHECK_VER=${check_tag}"]){
-                                        if (sh(returnStdout: true, script: "git ls-remote -q --tags | awk '{print \$2}'| grep '^$CHECK_VER\$' | wc -l").trim().toInteger() > 0){
-                                            echo "${k} already have tag ${base_build['baseVersion']}"
-                                            notValidTag += 1
-                                        }
+                                    if(isTagExist(base_build['baseVersion']) == true){
+                                        echo "${k} already have tag ${base_build['baseVersion']}"
+                                        notValidTag += 1
                                     }
                                 }
                             }
