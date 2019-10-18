@@ -31,6 +31,11 @@ String ComponentVersion(String name, String version){
     return command
 }
 
+String getMostHighVersion(String version_list){
+    def mod_version_list = "\'" + version_list + "\'"
+    return sh(returnStdout: true, script: "printf ${mod_version_list} | sort -V | tail -1").trim()
+}
+
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
@@ -94,9 +99,7 @@ pipeline{
                                     ver_list = ver_list + sh(returnStdout: true, script: 'git describe --tags | cut -c 2- | cut -d- -f1' ).trim() + "\\n"
                                 } 
                             }
-                            withEnv(["LIST_VER=${ver_list}" ]){
-                                proposal_version = sh(returnStdout: true, script: "printf \'$LIST_VER\' | sort -V | tail -1").trim()
-                            }
+                            proposal_version = getMostHighVersion(ver_list)
                             overview = overview + ": " + proposal_version + "\n    "
                             projects.each { k,v ->
                                 overview = overview + k + ": " + Conclusion(v) + "\n    "
