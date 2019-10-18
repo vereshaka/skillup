@@ -15,6 +15,22 @@ String Conclusion(String ver){
     else return "Release Not Needed (" + ver + ")"
 }
 
+String ComponentVersion(String name, String version){
+    def command_parts = [ 
+        'sed -r \'s|', 
+        '\\s{4}\\"(@a1\\/',
+        // name
+        ')\\"\\:\\s*\\"\\^?[0-9]*\\.[0-9]*\\.[0-9]*.*\\"\\,|',
+        '    \"@a1/',
+        // name
+        '\": \"^',
+        // version
+        '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
+    ]
+    def command = command_parts[0] + command_parts[1] + name + command_parts[2] + command_parts[3] + name + command_parts[4] + version + command_parts[5]
+    return command
+}
+
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
@@ -145,12 +161,8 @@ pipeline{
                                 echo "Now will be set actual version of base in 'package.json' of widgets"
                                 projects.each{ k,v ->
                                     dir(k + "/"){
-                                        def comm1 = 'sed -r \'s|'
-                                        def comm2 = '\\s{4}\\"(@a1\\/microfrontend-hfhs-base)\\"\\:\\s*\\"\\^?[0-9]*\\.[0-9]*\\.[0-9]*.*\\"\\,|'
-                                        def comm3 = '    \"@a1/microfrontend-hfhs-base\": \"^'
-                                        def comm4 = '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
-                                        def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
-                                        sh "${command}"
+                                        def set_version = ComponentVersion('microfrontend-hfhs-base', base_build['baseVersion'])
+                                        sh "${set_version}"
                                         sh "git add package.json && git commit -m 'Update base version' || true"
                                     }
                                 }
