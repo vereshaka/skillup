@@ -177,7 +177,8 @@ pipeline{
                                     dir(k + "/"){
                                         def set_version = ComponentVersion('microfrontend-hfhs-base', base_build['baseVersion'])
                                         sh "${set_version}"
-                                        sh "git add package.json && git commit -m 'Update base version' || true"
+                                        //sh "git add package.json && git commit -m 'Update base version' || true"
+                                        sh "git add package.json || true"
                                     }
                                 }
                             }
@@ -319,7 +320,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -388,7 +389,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -457,7 +458,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -526,7 +527,7 @@ pipeline{
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -594,7 +595,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -663,7 +664,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {         
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -732,7 +733,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
