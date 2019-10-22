@@ -15,6 +15,41 @@ String Conclusion(String ver){
     else return "Release Not Needed (" + ver + ")"
 }
 
+String ComponentVersion(String name, String version){
+    def command_parts = [ 
+        'sed -r \'s|', 
+        '\\s{4}\\"(@a1\\/',
+        // name
+        ')\\"\\:\\s*\\"\\^?[0-9]*\\.[0-9]*\\.[0-9]*.*\\"\\,|',
+        '    \"@a1/',
+        // name
+        '\": \"^',
+        // version
+        '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
+    ]
+    def command = command_parts[0] + command_parts[1] + name + command_parts[2] + command_parts[3] + name + command_parts[4] + version + command_parts[5]
+    return command
+}
+
+String getMostHighVersion(String version_list){
+    def mod_version_list = "\'" + version_list + "\'"
+    return sh(returnStdout: true, script: "printf ${mod_version_list} | sort -V | tail -1").trim()
+}
+
+Boolean isTagExist(String version){
+    def tag = '\'refs/tags/' + 'v' + version + '\''
+    def grep_statement = '\'^' + tag + '\$\''
+    def tag_count = sh(returnStdout: true, script: "git ls-remote -q --tags | awk '{print \$2}'| grep ${grep_statement} | wc -l").trim().toInteger()
+    if(tag_count > 0) return true
+    else return false
+}
+
+String getComponentVersion(String component_name){
+    def mod_component_name = '\'\"' + component_name + '\"\''
+    def ver = "" + sh(returnStdout: true, script: "cat package.json | grep ${mod_component_name} | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
+    return ver
+}
+
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
@@ -78,9 +113,7 @@ pipeline{
                                     ver_list = ver_list + sh(returnStdout: true, script: 'git describe --tags | cut -c 2- | cut -d- -f1' ).trim() + "\\n"
                                 } 
                             }
-                            withEnv(["LIST_VER=${ver_list}" ]){
-                                proposal_version = sh(returnStdout: true, script: "printf \'$LIST_VER\' | sort -V | tail -1").trim()
-                            }
+                            proposal_version = getMostHighVersion(ver_list)
                             overview = overview + ": " + proposal_version + "\n    "
                             projects.each { k,v ->
                                 overview = overview + k + ": " + Conclusion(v) + "\n    "
@@ -113,12 +146,9 @@ pipeline{
                             def notValidTag = 0
                             projects.each{ k,v ->
                                 dir(k + "/"){
-                                    def check_tag = '\'refs/tags/v' + base_build['baseVersion'] + '\''
-                                    withEnv(["CHECK_VER=${check_tag}"]){
-                                        if (sh(returnStdout: true, script: "git ls-remote -q --tags | awk '{print \$2}'| grep '^$CHECK_VER\$' | wc -l").trim().toInteger() > 0){
-                                            echo "${k} already have tag ${base_build['baseVersion']}"
-                                            notValidTag += 1
-                                        }
+                                    if(isTagExist(base_build['baseVersion']) == true){
+                                        echo "${k} already have tag ${base_build['baseVersion']}"
+                                        notValidTag += 1
                                     }
                                 }
                             }
@@ -131,9 +161,9 @@ pipeline{
                                 projects.each{ k,v ->
                                     if (k == 'microfrontend-hfhs-base') return
                                     dir(k + "/") {
-                                        def ver_check = "" + sh(returnStdout: true, script: "cat package.json | grep '\"@a1/microfrontend-hfhs-base\"' | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
-                                        isBaseVerValid = isBaseVerValid && ((ver_check  ==~ /\d+\.{1}\d+\.{1}\d+/) || (ver_check  == ""))
-                                        overview = overview + k + ": " + ver_check + "\n    "
+                                        def component_version = getComponentVersion('@a1/microfrontend-hfhs-base')
+                                        isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
+                                        overview = overview + k + ": " + component_version + "\n    "
                                     }
                                 }
                                 echo "${overview}"
@@ -145,13 +175,10 @@ pipeline{
                                 echo "Now will be set actual version of base in 'package.json' of widgets"
                                 projects.each{ k,v ->
                                     dir(k + "/"){
-                                        def comm1 = 'sed -r \'s|'
-                                        def comm2 = '\\s{4}\\"(@a1\\/microfrontend-hfhs-base)\\"\\:\\s*\\"\\^?[0-9]*\\.[0-9]*\\.[0-9]*.*\\"\\,|'
-                                        def comm3 = '    \"@a1/microfrontend-hfhs-base\": \"^'
-                                        def comm4 = '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
-                                        def command = "" + comm1 + comm2 + comm3 + base_build['baseVersion'] + comm4
-                                        sh "${command}"
-                                        sh "git add package.json && git commit -m 'Update base version' || true"
+                                        def set_version = ComponentVersion('microfrontend-hfhs-base', base_build['baseVersion'])
+                                        sh "${set_version}"
+                                        //sh "git add package.json && git commit -m 'Update base version' || true"
+                                        sh "git add package.json || true"
                                     }
                                 }
                             }
@@ -293,7 +320,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -362,7 +389,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -431,7 +458,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -500,7 +527,7 @@ pipeline{
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -568,7 +595,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -637,7 +664,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {         
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -706,7 +733,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
