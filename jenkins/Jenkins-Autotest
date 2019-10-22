@@ -1,0 +1,41 @@
+/*
+Jenkinsfile for automation testing
+
+*/
+
+pipeline{
+    agent{
+        node{
+            label 'node'
+        }
+    }
+    stages{
+        stage('Clone repo'){
+            steps{
+                deleteDir()
+                checkout([$class: 'GitSCM', branches: [[name: '*/develop']], 
+                        doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
+                        userRemoteConfigs: [[credentialsId: 'a1-bitbucket', url: 'https://tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common.git']]])
+            }
+        }
+        stage('Install deps'){
+            steps{
+                nodejs('node10.16.3-aqa'){
+                    dir('itest/'){
+                        sh 'npm i'
+                    }
+                }
+            }
+        }
+        stage('Perform tests'){
+            steps{
+                nodejs('node10.16.3-aqa'){
+                    dir('itest/'){
+                        sh './node_modules/.bin/cypress run'
+                        archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: true
+                    }
+                }
+            }
+        }
+    }
+}
