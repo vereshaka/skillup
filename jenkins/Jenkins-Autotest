@@ -1,6 +1,7 @@
 /*
 Jenkinsfile for automation testing
 
+The tests performs every workday at 03:00
 */
 
 pipeline{
@@ -8,6 +9,9 @@ pipeline{
         node{
             label 'node'
         }
+    }
+    triggers {
+        cron 'H 3 * * 1-5'
     }
     stages{
         stage('Clone repo'){
