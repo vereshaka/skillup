@@ -8,5 +8,5 @@
     function (errorMessage) {checkLogin(errorMessage)});
   Then('I should see {string} Cockpit',
     function (mainTitle) {checkWelcomeCockpit(mainTitle)});
-  And('{string} is not available',
-    function (cockpitName) {cockpitExistence(cockpitName)});
+  And('{string} is {string} available',
+    function (cockpitName, rights) {cockpitExistence(cockpitName, rights)});

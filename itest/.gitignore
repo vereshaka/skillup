@@ -8,3 +8,4 @@ node_modules
 *lock*
 src/server/logs
 coverage
+*.mp4
