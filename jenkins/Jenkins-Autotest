@@ -42,4 +42,12 @@ pipeline{
             }
         }
     }
+    post{
+        failure {
+            emailext to: 'grp.hfhs@sytoss.com',
+                    subject: "Jenkins Pipeline '${JOB_NAME}' (${BUILD_NUMBER}) failed",
+                    body: "Please go to ${BUILD_URL} and verify the build",
+                    attachLog: true
+        }
+    }
 }
