@@ -1,4 +1,4 @@
-const getUrl = () => 'http://gucci-portal.k8s.sytoss.intra';
+const getPortalURL = () => 'http://gucci-portal.k8s.sytoss.intra';
 
 const getPassword = (username) => {
   if (username === 'admin') {
@@ -20,8 +20,16 @@ const login = (username) => {
 };
 
 module.exports = {
+  openLoginForm() {
+    cy.visit(getPortalURL());
+    cy.get('body').then(($body) => {
+      if ($body.find('div.logout').length) {
+        cy.get('a[href="/portal/_/api/logout"]').click();
+      }
+    });
+  },
   openCockpitPage(username, cockpitName) {
-    cy.visit(getUrl());
+    cy.visit(getPortalURL());
     login(username);
     cy
       .get('div[title="Navigation"]')

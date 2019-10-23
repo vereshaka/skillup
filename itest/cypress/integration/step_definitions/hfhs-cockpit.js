@@ -3,7 +3,7 @@ import {
   checkBusinessTransactionWidgetExistence,
   checkUserCredentials, isGroupExist,
   isGroupNotExist,
-} from '../page_objects/product-move';
+} from '../page_objects/hfhs-cockpit';
 import { checkButtonExistence, openCockpitPage, openWidget } from '../page_objects/common';
 
 Given(/^(.*) exists in (.*) keycloak with the following groups:$/,

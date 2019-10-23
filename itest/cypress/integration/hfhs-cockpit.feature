@@ -1,5 +1,4 @@
-Feature: Product Move
-
+Feature: HFHS Cockpit check
   Scenario: Login with admin rights
     Given user3 exists in GUCCI keycloak with the following groups:
       | Group |
