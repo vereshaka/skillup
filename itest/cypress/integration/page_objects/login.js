@@ -1,6 +1,4 @@
-const getPassword = (username) => {
-  return username;
-};
+const getPassword = (username) => username;
 module.exports = {
   login(username, type) {
     cy.get("input[id='username']").type(username);
@@ -22,13 +20,12 @@ module.exports = {
   },
 
   isCockpitExist(cockpitName) {
-    // TODO: yevgenyv: replace contains on equals
-     cy.get('ul>li').find(`a:contains(${cockpitName})`).should('have.text', cockpitName);
+    cy.get('ul>li').find(`a:contains(${cockpitName})`).should('have.text', cockpitName);
   },
 
   isCockpitNotExist(cockpitName) {
-    cy.get(`ul>li>a`).each(($el) => {
-      cy.get($el).should('not.have.text', cockpitName)
+    cy.get('ul>li>a').each(($el) => {
+      cy.get($el).should('not.have.text', cockpitName);
     });
   },
 };
