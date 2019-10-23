@@ -8,4 +8,11 @@ module.exports = {
       }
     });
   },
+  openCockpit(cockpitName) {
+    cy.get('div.menu-drawer').click();
+    cy.get(`a:contains(${cockpitName})`).click();
+  },
+  openWidget(widgetName) {
+    cy.get(`span:contains(${widgetName})`).click();
+  },
 };
