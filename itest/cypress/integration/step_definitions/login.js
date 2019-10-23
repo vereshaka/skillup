@@ -11,7 +11,7 @@
   And(/'(.*)' is (not |)available/,
     function (cockpitName, rights) {
    if(rights === 'not '){
-    isCockpitNotExist(cockpitName, rights)
+    isCockpitNotExist(cockpitName)
     } if (rights === '') {
-     isCockpitExist(cockpitName, rights)}
+     isCockpitExist(cockpitName)}
   });
