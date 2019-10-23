@@ -1,12 +1,22 @@
- import { And, Given, Then, When } from 'cypress-cucumber-preprocessor/steps';
- import {checkLogin, checkWelcomeCockpit, cockpitExistence, login} from "../page_objects/login";
+import {
+  And, Then, When,
+} from 'cypress-cucumber-preprocessor/steps';
+import {
+  containsError, checkCockpit, isCockpitExist, login, isCockpitNotExist,
+} from '../page_objects/login';
 
 
-  When('I have try to login as {string} with {string} credential',
-    function (username, type) {login(username, type)});
-  Then('I should receive {string} message on login form',
-    function (errorMessage) {checkLogin(errorMessage)});
-  Then('I should see {string} Cockpit',
-    function (mainTitle) {checkWelcomeCockpit(mainTitle)});
-  And('{string} is not available',
-    function (cockpitName) {cockpitExistence(cockpitName)});
+When(/I have try to login as (.*) with (.*) credential/,
+  (username, type) => { login(username, type); });
+Then('I should receive {string} message on login form',
+  (errorMessage) => { containsError(errorMessage); });
+Then('I should see {string} Cockpit',
+  (mainTitle) => { checkCockpit(mainTitle); });
+And(/'(.*)' is (not |)available/,
+  (cockpitName, rights) => {
+    if (rights === 'not ') {
+      isCockpitNotExist(cockpitName);
+    } if (rights === '') {
+      isCockpitExist(cockpitName);
+    }
+  });
