@@ -1,0 +1,55 @@
+/*
+Jenkinsfile for automation testing
+
+The tests performs every workday at 03:00
+*/
+
+pipeline{
+    agent{
+        node{
+            label 'node'
+        }
+    }
+    triggers {
+        cron 'H 3 * * 1-5'
+    }
+    stages{
+        stage('Clone repo'){
+            steps{
+                deleteDir()
+                checkout([$class: 'GitSCM', branches: [[name: '*/develop']], 
+                        doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
+                        userRemoteConfigs: [[credentialsId: 'a1-bitbucket', url: 'https://tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common.git']]])
+            }
+        }
+        stage('Install deps'){
+            steps{
+                nodejs('node10.16.3-aqa'){
+                    dir('itest/'){
+                        sh 'npm i'
+                    }
+                }
+            }
+        }
+        stage('Perform tests'){
+            steps{
+                nodejs('node10.16.3-aqa'){
+                    dir('itest/'){
+                        sh 'npm run clean'
+                        sh 'npm run test:run'
+                        sh 'npm run cucumber:reporter'
+                        archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: true
+                    }
+                }
+            }
+        }
+    }
+    post{
+        failure {
+            emailext to: 'grp.hfhs@sytoss.com',
+                    subject: "Jenkins Pipeline '${JOB_NAME}' (${BUILD_NUMBER}) failed",
+                    body: "Please go to ${BUILD_URL} and verify the build",
+                    attachLog: true
+        }
+    }
+}
