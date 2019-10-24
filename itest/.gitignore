@@ -2,11 +2,9 @@
 .idea
 dist
 *.iml
-target
-reports
 node_modules
 *lock*
-src/server/logs
+*logs*
 coverage
 *videos*
 *reports*
