@@ -119,7 +119,7 @@ pipeline{
                                 overview = overview + k + ": " + Conclusion(v) + "\n    "
                             }
                             echo "${overview}"
-                            base_ver = (base_ver + projects.find{ it.key == "microfrontend-hfhs-base" }?.value).split('-')[0]
+                            base_ver = base_ver + proposal_version
                         }
                     }
                 }
