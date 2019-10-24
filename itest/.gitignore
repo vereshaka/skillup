@@ -8,3 +8,6 @@ node_modules
 *lock*
 src/server/logs
 coverage
+*videos*
+*reports*
+*screenshots*
