@@ -8,7 +8,8 @@
     "cucumber:reporter": "node cucumber-reporter.js",
     "test:open": "./node_modules/.bin/cypress open",
     "test:run": "./node_modules/.bin/cypress run",
-    "build": "npm run clean && npm run test:run & npm run cucumber:reporter"
+    "build": "npm run clean && npm run test:run & npm run cucumber:reporter",
+    "lint": "eslint --ext .js --fix ./cypress"
   },
   "devDependencies": {
     "eslint": "^6.5.1",

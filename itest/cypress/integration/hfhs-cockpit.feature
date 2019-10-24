@@ -21,5 +21,5 @@ Feature: HFHS Cockpit check
     Given user2 exists in GUCCI keycloak with the following groups:
       | Group |
       | hfhs-user|
-    And  user2 have open HFHS Cockpit
+    And user2 have open HFHS Cockpit
     And I open 'Product Move' Widget from toolbar
