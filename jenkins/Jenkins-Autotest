@@ -35,7 +35,9 @@ pipeline{
             steps{
                 nodejs('node10.16.3-aqa'){
                     dir('itest/'){
-                        sh './node_modules/.bin/cypress run'
+                        sh 'npm run clean'
+                        sh 'npm run test:run'
+                        sh 'npm run cucumber:reporter'
                         archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: true
                     }
                 }
