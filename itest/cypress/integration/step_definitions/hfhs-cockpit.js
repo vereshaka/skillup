@@ -1,10 +1,11 @@
 import { Given, And, Then } from 'cypress-cucumber-preprocessor/steps';
 import {
   checkBusinessTransactionWidgetExistence,
-  checkUserCredentials, isGroupExist,
-  isGroupNotExist,
+  checkUserCredentials, openWidget,
 } from '../page_objects/hfhs-cockpit';
-import { checkButtonExistence, openCockpitPage, openWidget } from '../page_objects/common';
+import { openCockpitPage } from '../page_objects/common';
+import { checkButtonExistence } from '../../check-utils';
+import { isGroupExist, isGroupNotExist } from '../page_objects/business_transaction_widget';
 
 Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
   (username, keycloakName, table) => { checkUserCredentials(username, keycloakName, table); });

@@ -38,15 +38,4 @@ module.exports = {
       .get(`a[href="/portal/web/${cockpitName.toLowerCase()}"]`)
       .click();
   },
-  checkButtonExistence(buttonName) {
-    cy
-      .get('button')
-      .contains(buttonName);
-  },
-  openWidget(widgetName) {
-    cy.get('button')
-      .contains(widgetName)
-      .click();
-  },
 };
-
