@@ -8,4 +8,19 @@ module.exports = {
       }
     });
   },
+  openCockpit(cockpitName) {
+    cy.get('div.menu-drawer').click();
+    cy.get(`a:contains(${cockpitName})`).click();
+    cy.wait(200);
+  },
+  openWidget(widgetName) {
+    cy.wait(200);
+    cy.get('body').then(($body) => {
+      if ($body.find(`span:contains(${widgetName})`).length) {
+        cy.get(`span:contains(${widgetName})`).click();
+      } if (widgetName === 'Search Product') {
+        cy.get('span[class="Icon faPlusSquare fa2x AddProduct "]').click();
+      }
+    });
+  },
 };

@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "test:run": "./node_modules/.bin/cypress run",
-    "test:open": "./node_modules/.bin/cypress open"
+    "test:open": "./node_modules/.bin/cypress open",
+    "lint": "eslint --ext .js --fix ./cypress"
   },
   "devDependencies": {
     "eslint": "^6.5.1",
