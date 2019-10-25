@@ -1,4 +1,11 @@
 module.exports = {
+  elements: {
+    product_move: 'openPM',
+    search_product: 'openPM',
+  },
+  getElementIdByName(elementName) {
+    return module.exports.elements[elementName];
+  },
   checkUserCredentials(username, keycloakName, table) {
   },
   checkBusinessTransactionWidgetExistence() {
@@ -6,12 +13,12 @@ module.exports = {
   },
   openWidget(widgetName) {
     cy.wait(500);
-    cy.get('body').then(($body) => {
-      if ($body.find(`span:contains(${widgetName})`).length) {
-        cy.get(`span:contains(${widgetName})`).click();
-      } if (widgetName === 'Search Product') {
-        cy.get('span[class="Icon faPlusSquare fa2x AddProduct "]').click();
-      }
-    });
+    if (widgetName === 'search_product') {
+      cy.get('span[class="Icon faPlusSquare fa2x AddProduct "]').click();
+    } else {
+      cy
+        .get(`button[id=${module.exports.getElementIdByName(widgetName)}]`)
+        .click();
+    }
   },
 };
