@@ -4,7 +4,7 @@ Feature: HFHS Cockpit check
       | Group |
       | hfhs-superuser|
     And user3 have open HFHS Cockpit
-    Then I should see active 'product_move' button
+    Then I should see active 'Product Move' button
     And business transaction widget is displayed
     And transaction list mode group is presented
 
@@ -13,7 +13,7 @@ Feature: HFHS Cockpit check
       | Group |
       | hfhs-user|
     And  user2 have open HFHS Cockpit
-    Then I should see active 'product_move' button
+    Then I should see active 'Product Move' button
     And business transaction widget is displayed
     And transaction list mode group is not presented
 
@@ -22,4 +22,4 @@ Feature: HFHS Cockpit check
       | Group |
       | hfhs-user|
     And user2 have open HFHS Cockpit
-    And I open 'product_move' Widget from toolbar
+    And I open 'Product Move' Widget from toolbar

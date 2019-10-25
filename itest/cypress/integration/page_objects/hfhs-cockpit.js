@@ -1,7 +1,7 @@
 
 module.exports = {
   elements: {
-    product_move: 'openPM',
+    'Product Move': 'openPM',
   },
   getElementIdByName(elementName) {
     return module.exports.elements[elementName];

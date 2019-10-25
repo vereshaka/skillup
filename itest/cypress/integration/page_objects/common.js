@@ -1,23 +1,6 @@
+import { login } from './login';
+
 const getPortalURL = () => 'http://gucci-portal.k8s.sytoss.intra';
-
-const getPassword = (username) => {
-  if (username === 'admin') {
-    return 'password';
-  }
-  return username;
-};
-
-const login = (username) => {
-  cy
-    .get('input[name="username"]')
-    .type(username);
-  cy
-    .get('input[name="password"]')
-    .type(getPassword(username));
-  cy
-    .get('input[name="login"]')
-    .click();
-};
 
 module.exports = {
   openLoginForm() {
@@ -30,7 +13,7 @@ module.exports = {
   },
   openCockpitPage(username, cockpitName) {
     cy.visit(getPortalURL());
-    login(username);
+    login(username, 'correct');
     cy
       .get('div[title="Navigation"]')
       .click();
