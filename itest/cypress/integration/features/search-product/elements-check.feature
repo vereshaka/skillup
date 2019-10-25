@@ -32,16 +32,16 @@ Feature: Search Product Widget: Elements Check
     Given As user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     When I open 'Search Product' widget
-    Then 'query_input' should be active
-    And 'search_button' should be disabled
-    And 'help_button' should be active
-    And 'select' should be active
-    And 'checkbox' should be disabled and checked
+    Then 'Search input' should be active
+    And 'Search run' should be disabled
+    And 'Help' should be active
+    And 'History' should be active
+    And 'Product State Filter' should be disabled and checked
 
   @focus
   Scenario: Check Help Button
     Given As user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     When I open 'Search Product' widget
-    And Click on 'help_button'
-    Then 'helper_page' and 'close_button' should be opened
+    And Click on Help Button
+    Then Help Page and Close Button should be exist
