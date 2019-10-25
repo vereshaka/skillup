@@ -1,5 +1,11 @@
 // internal usage
-const elements = {
+export const wait = {
+  shortWait: 200,
+  mediumWait: 500,
+  normalWait: 1000,
+  longWait: 3000,
+};
+export const elements = {
   'Search input': 'searchForm_searchInput',
   'Search run': 'searchForm_searchButton',
   Help: 'searchForm_helpButton',
@@ -7,18 +13,19 @@ const elements = {
   'Product State Filter': 'searchForm_isActiveCheckbox',
   Close: 'HelperPageClose',
   'Help Dialog': 'HelperPageWrapper',
+  'Product Move': 'openPM',
 };
 
 // business methods
 const clearSearch = () => {
-  cy.get('input[id="searchForm_searchInput"]').clear();
+  cy.get(`input[id="${elements['Search input']}"]`).clear();
 };
 
 export const search = (query) => {
   clearSearch();
-  cy.get('input[id="searchForm_searchInput"]').type(query);
-  cy.get('button[id="searchForm_searchButton"]').click();
-  cy.wait(500);
+  cy.get(`input[id="${elements['Search input']}"]`).type(query);
+  cy.get(`button[id="${elements['Search run']}"]`).click();
+  cy.wait(wait.mediumWait);
 };
 
 // page checks
@@ -31,7 +38,7 @@ export const isHistoryExists = (table) => {
   length = Number(length);
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < length; i++) {
-    cy.get(`select[id="id_of_select"]>option:eq(${i})`).should('have.text', table.hashes()[i].Search);
+    cy.get(`select[id="${elements.History}"]>option:eq(${i})`).should('have.text', table.hashes()[i].Search);
   }
 };
 

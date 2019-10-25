@@ -2,7 +2,6 @@ import { Then } from 'cypress-cucumber-preprocessor/steps';
 import {
   checkCockpit, containsError, isCockpitExist, isCockpitNotExist,
 } from '../page_objects/portal-home';
-import { openWidget } from '../page_objects/hfhs-cockpit';
 import * as BusinessTransactionHistory from '../page_objects/business_transaction_history';
 import {
   checkField,
@@ -11,6 +10,8 @@ import {
   isHistoryExists,
   isSearchElementExists,
 } from '../page_objects/search-product';
+import { checkButtonExistence } from '../../check-utils';
+import { openWidget } from '../page_objects/utils/portal-utils';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => { containsError(errorMessage); });
@@ -25,7 +26,7 @@ Then(/'(.*)' is (not |)available/,
     }
   });
 Then(/^I should see active '(.*)' button$/,
-  (buttonName) => { });
+  (buttonName) => { checkButtonExistence(buttonName); });
 
 Then(/^business transaction widget is displayed$/,
   () => { BusinessTransactionHistory.isWidgetExists(); });
