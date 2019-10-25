@@ -4,4 +4,4 @@ import {
 } from '../page_objects/query-validation';
 
 When(/I try to search by '(.*)' query/, (query) => { checkQuery(query); });
-Then(/'(.*)' should be displayed/, (error) => { checkError(error); });
+Then(/^'(.*)' should be displayed$/, (error) => { checkError(error); });

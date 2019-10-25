@@ -5,6 +5,8 @@ module.exports = {
     help_button: 'searchForm_helpButton',
     select: 'id_of_select',
     checkbox: 'searchForm_isActiveCheckbox',
+    close_button: 'HelperPageClose',
+    helper_page: 'HelperPageWrapper',
   },
   getElementIdByName(elementName) {
     return module.exports.elements[elementName];
@@ -37,5 +39,12 @@ module.exports = {
     } if (state === 'unchecked') {
       cy.get(`[id="${module.exports.getElementIdByName(field)}"]`).should('not.be.checked');
     }
+  },
+  buttonClick(buttonName) {
+    cy.get(`[id="${module.exports.getElementIdByName(buttonName)}"]`).click();
+  },
+  checkHelpOpened(wrapperName, buttonName) {
+    cy.get(`div.${module.exports.getElementIdByName(wrapperName)}`).should('exist');
+    cy.get(`button.${module.exports.getElementIdByName(buttonName)}`).should('exist');
   },
 };
