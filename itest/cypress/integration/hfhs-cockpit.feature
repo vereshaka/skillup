@@ -3,6 +3,8 @@ Feature: HFHS Cockpit check
     Given user3 exists in GUCCI keycloak with the following groups:
       | Group |
       | hfhs-superuser|
+    And As anonymous user I open GUCCI Portal
+    When I have try to login as user3 with correct credential
     And user3 have open HFHS Cockpit
     Then I should see active 'Product Move' button
     And business transaction widget is displayed
@@ -12,6 +14,8 @@ Feature: HFHS Cockpit check
     Given user2 exists in GUCCI keycloak with the following groups:
       | Group |
       | hfhs-user|
+    And As anonymous user I open GUCCI Portal
+    When I have try to login as user3 with correct credential
     And  user2 have open HFHS Cockpit
     Then I should see active 'Product Move' button
     And business transaction widget is displayed
@@ -21,5 +25,7 @@ Feature: HFHS Cockpit check
     Given user2 exists in GUCCI keycloak with the following groups:
       | Group |
       | hfhs-user|
+    And As anonymous user I open GUCCI Portal
+    When I have try to login as user3 with correct credential
     And user2 have open HFHS Cockpit
     And I open 'Product Move' Widget from toolbar
