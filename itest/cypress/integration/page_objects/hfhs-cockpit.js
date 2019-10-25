@@ -1,7 +1,7 @@
 module.exports = {
   elements: {
-    product_move: 'openPM',
-    search_product: 'openPM',
+    'Product Move': 'openPM',
+    'Search Product': 'openPM',
   },
   getElementIdByName(elementName) {
     return module.exports.elements[elementName];
@@ -13,7 +13,7 @@ module.exports = {
   },
   openWidget(widgetName) {
     cy.wait(500);
-    if (widgetName === 'search_product') {
+    if (widgetName === 'Search Product') {
       cy.get('span[class="Icon faPlusSquare fa2x AddProduct "]').click();
     } else {
       cy

@@ -3,7 +3,7 @@ Feature: Multiple search
     Given As anonymous user I open GUCCI Portal
     When I have try to login as user2 with correct credential
     And user2 have open HFHS Cockpit
-    Then I open 'product_move' Widget from toolbar
-    And I open 'search_product' Widget from toolbar
+    Then I open 'Product Move' Widget from toolbar
+    And I open 'Search Product' Widget from toolbar
     And I try to search by 'billa' query
 
