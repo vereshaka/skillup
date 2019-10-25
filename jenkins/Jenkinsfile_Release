@@ -119,7 +119,7 @@ pipeline{
                                 overview = overview + k + ": " + Conclusion(v) + "\n    "
                             }
                             echo "${overview}"
-                            base_ver = (base_ver + projects.find{ it.key == "microfrontend-hfhs-base" }?.value).split('-')[0]
+                            base_ver = base_ver + proposal_version
                         }
                     }
                 }
@@ -216,7 +216,7 @@ pipeline{
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
@@ -266,7 +266,7 @@ pipeline{
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
                                                 script{
-                                                    def set_version = "npm version " + base_build['baseVersion']
+                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
                                                     echo "${set_version}"
                                                     sh "${set_version}"
                                                 }
