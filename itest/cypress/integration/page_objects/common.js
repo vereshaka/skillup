@@ -1,6 +1,9 @@
+import { login } from './login';
+
+const getPortalURL = () => 'http://gucci-portal.k8s.sytoss.intra';
+
 module.exports = {
   openLoginForm() {
-    const getPortalURL = () => 'http://gucci-portal.k8s.sytoss.intra';
     cy.visit(getPortalURL());
     cy.wait(200);
     cy.get('body').then(($body) => {
@@ -23,5 +26,15 @@ module.exports = {
         cy.get('span[class="Icon faPlusSquare fa2x AddProduct "]').click();
       }
     });
+  },
+  openCockpitPage(username, cockpitName) {
+    cy.visit(getPortalURL());
+    login(username, 'correct');
+    cy
+      .get('div[title="Navigation"]')
+      .click();
+    cy
+      .get(`a[href="/portal/web/${cockpitName.toLowerCase()}"]`)
+      .click();
   },
 };
