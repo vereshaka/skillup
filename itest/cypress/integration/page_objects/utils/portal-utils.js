@@ -34,8 +34,7 @@ export const openCockpit = (cockpitName) => {
   cy.wait(wait.shortWait);
 };
 
-export const openCockpitPage = (username, cockpitName) => {
-  login(username, 'correct');
+export const openCockpitPage = (cockpitName) => {
   cy
     .get('div[title="Navigation"]')
     .click();

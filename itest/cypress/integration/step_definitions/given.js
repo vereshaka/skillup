@@ -21,9 +21,9 @@ Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
   (username, keycloakName, table) => {
     checkUserCredentials(username, keycloakName, table);
   });
-Given(/^(.*) have open (.*) Cockpit$/,
-  (username, cockpitName) => {
-    openCockpitPage(username, cockpitName);
+Given(/^User have open (.*) Cockpit$/,
+  (cockpitName) => {
+    openCockpitPage(cockpitName);
   });
 Given(/open '([a-zA-Z ]*)' widget from '([a-zA-Z ]*)'/, (widgetName, cockpitName) => {
   openCockpit(cockpitName);
