@@ -12,8 +12,6 @@ module.exports = {
     });
   },
   openCockpitPage(username, cockpitName) {
-    cy.visit(getPortalURL());
-    login(username, 'correct');
     cy
       .get('div[title="Navigation"]')
       .click();
