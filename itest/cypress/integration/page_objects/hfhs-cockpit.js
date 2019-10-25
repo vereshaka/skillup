@@ -1,10 +1,8 @@
 module.exports = {
   checkUserCredentials(username, keycloakName, table) {
   },
-  checkButtonExistence(buttonName) {
-    cy
-      .get('button')
-      .contains(buttonName);
+  checkBusinessTransactionWidgetExistence() {
+    cy.get('div.BusinessTransactionsWrapper');
   },
   openWidget(widgetName) {
     cy.wait(500);

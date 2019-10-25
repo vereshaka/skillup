@@ -1,12 +1,5 @@
 const getPortalURL = () => 'http://gucci-portal.k8s.sytoss.intra';
 
-const getPassword = (username) => {
-  if (username === 'admin') {
-    return 'password';
-  }
-  return username;
-};
-
 module.exports = {
   openLoginForm() {
     cy.visit(getPortalURL());
