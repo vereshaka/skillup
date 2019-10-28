@@ -6,7 +6,7 @@ Feature: HFHS Cockpit check
       | hfhs-superuser|
     And As anonymous user I open GUCCI Portal
     When I have try to login as user3 with correct credential
-    And User have open HFHS Cockpit
+    And switch to HFHS Cockpit
     Then I should see active 'Product Move' button
     And business transaction widget is displayed
     And transaction list mode group is presented
