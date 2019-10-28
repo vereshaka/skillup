@@ -1,14 +1,8 @@
 module.exports = {
-  search(query) {
-    cy.get('input[name="search-field"]')
-      .type(query);
-    cy.get('button[name="search-button"]')
-      .click();
+  checkItemListExistence() {
     cy
       .get('a[name="productCountButton"]')
       .contains('...');
-  },
-  checkItemListExistence() {
     cy
       .get('div#searchResult')
       .should('have.length', '1')

@@ -1,4 +1,3 @@
-import { login } from '../portal-home';
 import { getPortalURL } from './config';
 import {
   elements,

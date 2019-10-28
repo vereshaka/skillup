@@ -1,3 +1,4 @@
+import { Then } from 'cypress-cucumber-preprocessor/steps';
 import {
   checkCockpit, containsError, isCockpitExist, isCockpitNotExist,
 } from '../page_objects/portal-home';
@@ -8,23 +9,24 @@ import {
   isHelpOpened,
   isHistoryExists,
   isSearchElementExists,
+  search,
 } from '../page_objects/search-product';
 import { checkButtonExistence } from '../../check-utils';
-import { Then, When } from 'cypress-cucumber-preprocessor/steps';
-import { openWidget } from '../page_objects/hfhs-cockpit';
-import { checkItemListExistence, search } from '../page_objects/multiple_search';
+import { openWidget } from '../page_objects/utils/portal-utils';
+import { checkItemListExistence } from '../page_objects/multiple_search';
 
-When(/^I try to search by '(.*)' query$/,
+Then(/^I try to search by '(.*)' query$/,
   (query) => { search(query); });
 
 Then(/^I should see item list$/,
   () => { checkItemListExistence(); });
 
-
 Then('I should receive {string} message on login form',
   (errorMessage) => { containsError(errorMessage); });
+
 Then('I should see {string} Cockpit',
   (mainTitle) => { checkCockpit(mainTitle); });
+
 Then(/'(.*)' is (not |)available/,
   (cockpitName, rights) => {
     if (rights === 'not ') {
@@ -50,8 +52,18 @@ Then(/transaction list mode group is (not |)presented/,
 
 Then(/^I open '(.*)' Widget from toolbar$/,
   (widgetName) => { openWidget(widgetName); });
-Then(/^'(.*)' should be displayed$/, (error) => { isErrorExists(error); });
-Then(/(^\d+) element should be '(.*)'/, (index, searchItem) => { isSearchElementExists(index, searchItem); });
-Then(/History should be/, (table) => { isHistoryExists(table); });
-Then(/'(.*)' should be (active|disabled)( and (checked|unchecked)|)/, (field, status, state) => { checkField(field, status, state); });
-Then(/Help Page and Close Button should be exist/, (wrapperName, buttonName) => { isHelpOpened(wrapperName, buttonName); });
+
+Then(/^'(.*)' should be displayed$/,
+  (error) => { isErrorExists(error); });
+
+Then(/(^\d+) element should be '(.*)'/,
+  (index, searchItem) => { isSearchElementExists(index, searchItem); });
+
+Then(/History should be/,
+  (table) => { isHistoryExists(table); });
+
+Then(/'(.*)' should be (active|disabled)( and (checked|unchecked)|)/,
+  (field, status, state) => { checkField(field, status, state); });
+
+Then(/Help Page and Close Button should be exist/,
+  (wrapperName, buttonName) => { isHelpOpened(wrapperName, buttonName); });
