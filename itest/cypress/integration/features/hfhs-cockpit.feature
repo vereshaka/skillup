@@ -1,11 +1,12 @@
 Feature: HFHS Cockpit check
+
   Scenario: Login with admin rights
     Given user3 exists in GUCCI keycloak with the following groups:
       | Group |
       | hfhs-superuser|
     And As anonymous user I open GUCCI Portal
     When I have try to login as user3 with correct credential
-    And user3 have open HFHS Cockpit
+    And User have open HFHS Cockpit
     Then I should see active 'Product Move' button
     And business transaction widget is displayed
     And transaction list mode group is presented
@@ -16,7 +17,7 @@ Feature: HFHS Cockpit check
       | hfhs-user|
     And As anonymous user I open GUCCI Portal
     When I have try to login as user2 with correct credential
-    And user2 have open HFHS Cockpit
+    And switch to HFHS Cockpit
     Then I should see active 'Product Move' button
     And business transaction widget is displayed
     And transaction list mode group is not presented
@@ -27,5 +28,5 @@ Feature: HFHS Cockpit check
       | hfhs-user|
     And As anonymous user I open GUCCI Portal
     When I have try to login as user2 with correct credential
-    And user2 have open HFHS Cockpit
+    And switch to HFHS Cockpit
     And I open 'Product Move' Widget from toolbar
