@@ -21,7 +21,7 @@ Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
   (username, keycloakName, table) => {
     checkUserCredentials(username, keycloakName, table);
   });
-Given(/^User have open (.*) Cockpit$/,
+Given(/^switch to (.*) Cockpit$/,
   (cockpitName) => {
     openCockpitPage(cockpitName);
   });
