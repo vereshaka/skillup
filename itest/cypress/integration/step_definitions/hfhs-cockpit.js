@@ -1,4 +1,6 @@
-import { Given, And, Then } from 'cypress-cucumber-preprocessor/steps';
+import {
+  Given, And, Then, When,
+} from 'cypress-cucumber-preprocessor/steps';
 import {
   checkBusinessTransactionWidgetExistence,
   checkUserCredentials, openWidget,
@@ -10,7 +12,7 @@ import { isGroupExist, isGroupNotExist } from '../page_objects/business_transact
 Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
   (username, keycloakName, table) => { checkUserCredentials(username, keycloakName, table); });
 
-And(/^(.*) have open (.*) Cockpit$/,
+When(/^(.*) have open (.*) Cockpit$/,
   (username, cockpitName) => { openCockpitPage(username, cockpitName); });
 
 Then(/^I should see active '(.*)' button$/,

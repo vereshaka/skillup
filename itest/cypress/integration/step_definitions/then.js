@@ -1,9 +1,12 @@
-import { Then } from 'cypress-cucumber-preprocessor/steps';
+import { Then, When } from 'cypress-cucumber-preprocessor/steps';
 import { openWidget } from '../page_objects/hfhs-cockpit';
-import { search } from '../page_objects/multiple_search';
+import { checkItemListExistence, search } from '../page_objects/multiple_search';
 
-Then(/^I open '(.*)' Widget from toolbar$/,
+When(/^I open '(.*)' Widget from toolbar$/,
   (widgetName) => { openWidget(widgetName); });
 
-Then(/^I try to search by '(.*)' query$/,
+When(/^I try to search by '(.*)' query$/,
   (query) => { search(query); });
+
+Then(/^I should see item list$/,
+  () => { checkItemListExistence(); });

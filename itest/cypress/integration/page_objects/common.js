@@ -1,5 +1,3 @@
-import { login } from './login';
-
 const getPortalURL = () => 'http://gucci-portal.k8s.sytoss.intra';
 
 module.exports = {

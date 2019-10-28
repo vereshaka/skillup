@@ -14,7 +14,9 @@ module.exports = {
   openWidget(widgetName) {
     cy.wait(500);
     if (widgetName === 'Search Product') {
-      cy.get('span[class="Icon faPlusSquare fa2x AddProduct "]').click();
+      cy
+        .get('span[class="Icon faPlusSquare fa2x AddProduct "]')
+        .click();
     } else {
       cy
         .get(`button[id=${module.exports.getElementIdByName(widgetName)}]`)
