@@ -12,7 +12,7 @@ RUN mkdir -p /usr/share/man/man1 && \
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -y libaio1 build-essential default-jre --no-install-recommends && \
+    apt-get install -y libaio1 default-jre --no-install-recommends && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/
