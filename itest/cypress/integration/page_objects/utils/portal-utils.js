@@ -5,7 +5,7 @@ import {
 } from '../search-product';
 
 export const openWidget = (widgetName) => {
-  cy.wait(wait.shortWait);
+  cy.wait(wait.mediumWait);
   cy.get('body').then(($body) => {
     if ($body.find(`span:contains(${widgetName})`).length) {
       cy.get(`button[id=${elements[widgetName]}]`)

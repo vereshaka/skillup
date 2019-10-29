@@ -13,6 +13,19 @@ module.exports = {
       .find('div[class="CustomerItemSelection"]');
     cy
       .get('a[name="productCountButton"]')
-      .contains('9');
+      .contains('9')
+      .click();
+    // TODO: mikhailb: Should be removed when CCF-851 will be done
+    cy.wait(25000);
+    cy
+      .get('select#id_of_select')
+      .find('option[value="0"]')
+      .contains('billa && KDNR:103777118');
+    cy
+      .get('a[name="productCountButton"]')
+      .click();
+    cy
+      .get('button[name="process-button"]')
+      .click();
   },
 };
