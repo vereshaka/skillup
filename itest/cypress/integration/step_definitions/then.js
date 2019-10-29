@@ -55,3 +55,4 @@ Then(/Help Page and Close Button should be exist/, (wrapperName, buttonName) => 
 Then(/The following source account should be selected/, (table) => { isSelectedAccountsCorrect(table); });
 Then(/Effective date is '(.*)'$/, (date) => { isDateCorrect(date); });
 Then(/Target account should be/, (table) => { isTargetAccountCorrect(table); });
+Then(/The Product Move Widget will be reset to first page/, () => { cy.get('body'); });

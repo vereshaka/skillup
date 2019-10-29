@@ -45,3 +45,7 @@ export const isTargetAccountCorrect = (table) => {
     cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(5)').should('have.text', `IBAN:${row.IBAN}`);
   });
 };
+
+export const clickButton = (buttonName) => {
+  cy.get(`button#${elements[buttonName]}`).click();
+};

@@ -15,6 +15,7 @@ export const elements = {
   'Help Dialog': 'HelperPageWrapper',
   'Product Move': 'openPM',
   'Select Account': 'selectAccount_searchButton',
+  Confirm: 'restart_WidgetButton',
 };
 
 // business methods
