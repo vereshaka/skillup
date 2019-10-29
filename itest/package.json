@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "cypress-cucumber-preprocessor": "^1.16.2",
-    "cypress-xpath": "^1.4.0"
+    "cypress-xpath": "^1.4.0",
+    "moment": "^2.24.0"
   },
   "cypress-cucumber-preprocessor": {
     "step_definitions": "cypress/integration/step_definitions/",

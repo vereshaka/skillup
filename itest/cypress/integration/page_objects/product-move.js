@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   clearSearch,
   elements,
@@ -34,14 +35,29 @@ export const isSelectedAccountsCorrect = (table) => {
     cy.get(`div.ProductItemMove:eq(${i})>div>div>span:eq(0)`).contains(table.hashes()[i].Subscription).should('exist');
     cy.get(`div.ProductItemMove:eq(${i})>div>span:eq(1)`).contains(table.hashes()[i].AccountNumber).should('exist');
     cy.get(`div.ProductItemMove:eq(${i})>div>span:eq(2)`).contains(table.hashes()[i].AccountType).should('exist');
+    if (table.hashes()[i].LockedOrders === '') {
+      cy.get('div.OrderBlock').should('not.exist');
+    } else {
+
+    }
   }
 };
 export const isDateCorrect = (date) => {
-  cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${date}`);
+  if (date === 'now') {
+    const localDate = new Date();
+    cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${moment(localDate).format('DD/MM/YYYY')}`);
+  } else {
+    cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${date}`);
+  }
 };
 export const isTargetAccountCorrect = (table) => {
   table.hashes().forEach((row) => {
     cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(0)').should('have.text', row.AccountNumber);
     cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(5)').should('have.text', `IBAN:${row.IBAN}`);
+    if (row.LockedOrders === '') {
+      cy.get('div.OrderBlock').should('not.exist');
+    } else {
+
+    }
   });
 };
