@@ -1,4 +1,6 @@
-import { Given } from 'cypress-cucumber-preprocessor/steps';
+import {
+  Given,
+} from 'cypress-cucumber-preprocessor/steps';
 import { login } from '../page_objects/portal-home';
 import { checkUserCredentials } from '../page_objects/utils/user-management';
 import { search } from '../page_objects/search-product';
@@ -8,6 +10,10 @@ import {
   openCockpit,
   openCockpitPage,
 } from '../page_objects/utils/portal-utils';
+import {
+  addProducts,
+  specifyAccount,
+} from '../page_objects/product-move';
 
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
   openLoginForm();
@@ -34,4 +40,10 @@ Given(/^open '([a-zA-Z ]*)' widget$/, (widgetName) => {
 });
 Given(/^search '(.*)'/, (searchItem) => {
   search(searchItem);
+});
+Given(/add all products founded by '(.*)'/, (query) => {
+  addProducts(query);
+});
+Given(/specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, query, group) => {
+  specifyAccount(account, query, group);
 });

@@ -14,10 +14,11 @@ export const elements = {
   Close: 'HelperPageClose',
   'Help Dialog': 'HelperPageWrapper',
   'Product Move': 'openPM',
+  'Select Account': 'selectAccount_searchButton',
 };
 
 // business methods
-const clearSearch = () => {
+export const clearSearch = () => {
   cy.get(`input[id="${elements['Search input']}"]`).clear();
 };
 

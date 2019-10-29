@@ -12,6 +12,11 @@ import {
 } from '../page_objects/search-product';
 import { checkButtonExistence } from '../../check-utils';
 import { openWidget } from '../page_objects/utils/portal-utils';
+import {
+  isDateCorrect,
+  isTargetAccountCorrect,
+  isSelectedAccountsCorrect,
+} from '../page_objects/product-move';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => { containsError(errorMessage); });
@@ -47,3 +52,6 @@ Then(/(^\d+) element should be '(.*)'/, (index, searchItem) => { isSearchElement
 Then(/History should be/, (table) => { isHistoryExists(table); });
 Then(/'(.*)' should be (active|disabled)( and (checked|unchecked)|)/, (field, status, state) => { checkField(field, status, state); });
 Then(/Help Page and Close Button should be exist/, (wrapperName, buttonName) => { isHelpOpened(wrapperName, buttonName); });
+Then(/The following source account should be selected/, (table) => { isSelectedAccountsCorrect(table); });
+Then(/Effective date is '(.*)'$/, (date) => { isDateCorrect(date); });
+Then(/Target account should be/, (table) => { isTargetAccountCorrect(table); });
