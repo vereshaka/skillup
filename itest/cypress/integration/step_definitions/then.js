@@ -15,7 +15,7 @@ import { openWidget } from '../page_objects/utils/portal-utils';
 import {
   isDateCorrect,
   isTargetAccountCorrect,
-  isSelectedAccountsCorrect,
+  isSelectedAccountsCorrect, isPageReset,
 } from '../page_objects/product-move';
 
 Then('I should receive {string} message on login form',
@@ -55,4 +55,4 @@ Then(/Help Page and Close Button should be exist/, (wrapperName, buttonName) => 
 Then(/The following source account should be selected/, (table) => { isSelectedAccountsCorrect(table); });
 Then(/Effective date is '(.*)'$/, (date) => { isDateCorrect(date); });
 Then(/Target account should be/, (table) => { isTargetAccountCorrect(table); });
-Then(/The Product Move Widget will be reset to first page/, () => { cy.get('body'); });
+Then(/The Product Move Widget will be reset to first page/, () => { isPageReset(); });

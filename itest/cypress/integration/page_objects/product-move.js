@@ -49,3 +49,7 @@ export const isTargetAccountCorrect = (table) => {
 export const clickButton = (buttonName) => {
   cy.get(`button#${elements[buttonName]}`).click();
 };
+
+export const isPageReset = () => {
+
+};
