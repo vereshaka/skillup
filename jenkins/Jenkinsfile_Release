@@ -219,11 +219,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -269,11 +265,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -295,7 +287,6 @@ pipeline{
                                 }
                             }
                         }
-
                     }
                 }
                 stage('Build widgets'){
@@ -323,11 +314,7 @@ pipeline{
                                             sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -392,11 +379,7 @@ pipeline{
                                             sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -461,11 +444,7 @@ pipeline{
                                             sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -530,11 +509,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -598,11 +573,7 @@ pipeline{
                                             sh 'git status' //TODO Remove debug info
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -667,11 +638,7 @@ pipeline{
                                             sh 'git status' //TODO Remove debug info   
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {         
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -736,11 +703,7 @@ pipeline{
                                             sh 'git status' //TODO Remove debug info
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
