@@ -20,6 +20,7 @@ export const specifyAccount = (account, query, group) => {
   cy.get(`button[id="${elements['Search run']}"]`).click();
   cy.wait(wait.normalWait);
   cy.get(`div:contains(${account})>input[type="radio"]`).click();
+  // TODO: yevgenyv: add check that selected account has specified group
   cy.get('button[id="process-button"]').click();
 };
 export const isPageOpened = () => {
@@ -38,7 +39,7 @@ export const isSelectedAccountsCorrect = (table) => {
     if (table.hashes()[i].LockedOrders === '') {
       cy.get('div.OrderBlock').should('not.exist');
     } else {
-
+      // Do nothing
     }
   }
 };
@@ -57,7 +58,7 @@ export const isTargetAccountCorrect = (table) => {
     if (row.LockedOrders === '') {
       cy.get('div.OrderBlock').should('not.exist');
     } else {
-
+      // Do nothing
     }
   });
 };

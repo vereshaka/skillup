@@ -1,42 +1,35 @@
 import {
   Given,
 } from 'cypress-cucumber-preprocessor/steps';
-import { login } from '../page_objects/portal-home';
-import { checkUserCredentials } from '../page_objects/utils/user-management';
 import { search } from '../page_objects/search-product';
-import {
-  openLoginForm,
-  openWidget,
-  openCockpit,
-  openCockpitPage,
-} from '../page_objects/utils/portal-utils';
 import {
   addProducts,
   specifyAccount,
 } from '../page_objects/product-move';
+import gucciWorld from './hooks';
+
 
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
-  openLoginForm();
+  gucciWorld.openLoginForm();
 });
 // eslint-disable-next-line no-unused-vars
 Given(/As (.*) with permission '(.*)'/, (username, permission) => {
-  openLoginForm();
-  login(username, 'correct');
+  gucciWorld.login(username);
 });
 Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
-  (username, keycloakName, table) => {
-    checkUserCredentials(username, keycloakName, table);
+  () => { // username, keycloakName, table
+    // TODO: implement me
   });
 Given(/^switch to (.*) Cockpit$/,
   (cockpitName) => {
-    openCockpitPage(cockpitName);
+    gucciWorld.openCockpit(cockpitName);
   });
 Given(/open '([a-zA-Z ]*)' widget from '([a-zA-Z ]*)'/, (widgetName, cockpitName) => {
-  openCockpit(cockpitName);
-  openWidget(widgetName);
+  gucciWorld.openCockpit(cockpitName);
+  gucciWorld.getCurrentCockpit().openWidget(widgetName);
 });
 Given(/^open '([a-zA-Z ]*)' widget$/, (widgetName) => {
-  openWidget(widgetName);
+  gucciWorld.getCurrentCockpit().openWidget(widgetName);
 });
 Given(/^search '(.*)'/, (searchItem) => {
   search(searchItem);

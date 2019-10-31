@@ -1,5 +1,7 @@
-import { elements } from './integration/page_objects/search-product';
+export const checkButtonExistence = (id) => {
+  cy.get(`button[id=${id}]`);
+};
 
-export const checkButtonExistence = (buttonName) => {
-  cy.get(`button[id=${elements[buttonName]}]`);
+export const checkInputExistence = (id) => {
+  cy.get(`input[id=${id}]`);
 };

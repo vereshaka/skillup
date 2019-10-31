@@ -1,0 +1,78 @@
+import { Then } from 'cypress-cucumber-preprocessor/steps';
+import * as BusinessTransactionHistory from '../page_objects/business_transaction_history';
+import {
+  checkField,
+  isErrorExists,
+  isHelpOpened,
+  isHistoryExists,
+  isSearchElementExists,
+} from '../page_objects/search-product';
+import { checkButtonExistence } from '../../check-utils';
+import {
+  isDateCorrect,
+  isTargetAccountCorrect,
+  isSelectedAccountsCorrect,
+} from '../page_objects/product-move';
+import gucciWorld from './hooks';
+
+Then('I should receive {string} message on login form',
+  (errorMessage) => {
+    gucciWorld.hasLoginError(errorMessage);
+  });
+Then('I should see {string} Cockpit',
+  (mainTitle) => {
+    gucciWorld.isCurrentCockpit(mainTitle);
+  });
+Then(/'(.*)' is (not |)available/,
+  (cockpitName, rights) => {
+    if (rights === 'not ') {
+      gucciWorld.isCockpitNotExist(cockpitName);
+    }
+    if (rights === '') {
+      gucciWorld.isCockpitExist(cockpitName);
+    }
+  });
+Then(/^I should see active '(.*)' button$/,
+  (buttonName) => {
+    checkButtonExistence(buttonName);
+  });
+
+Then(/^business transaction widget is displayed$/,
+  () => {
+    BusinessTransactionHistory.isWidgetExists();
+  });
+
+Then(/transaction list mode group is (not |)presented/,
+  (existence) => {
+    if (existence === 'not ') {
+      BusinessTransactionHistory.isAdminGroupNotExist();
+    }
+    if (existence === '') {
+      BusinessTransactionHistory.isAdminGroupExist();
+    }
+  });
+
+Then(/^'(.*)' should be displayed$/, (error) => {
+  isErrorExists(error);
+});
+Then(/(^\d+) element should be '(.*)'/, (index, searchItem) => {
+  isSearchElementExists(index, searchItem);
+});
+Then(/History should be/, (table) => {
+  isHistoryExists(table);
+});
+Then(/'(.*)' should be (active|disabled)( and (checked|unchecked)|)/, (field, status, state) => {
+  checkField(field, status, state);
+});
+Then(/Help Page and Close Button should be exist/, (wrapperName, buttonName) => {
+  isHelpOpened(wrapperName, buttonName);
+});
+Then(/The following source account should be selected/, (table) => {
+  isSelectedAccountsCorrect(table);
+});
+Then(/Effective date is '(.*)'$/, (date) => {
+  isDateCorrect(date);
+});
+Then(/Target account should be/, (table) => {
+  isTargetAccountCorrect(table);
+});
