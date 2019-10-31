@@ -4,6 +4,19 @@ Jenkinsfile for building of HFHS widgets release versions.
 Build starts manually.
 */
 
+def projects = [
+    "microfrontend-hfhs-changeownership" : "",
+    "microfrontend-product-details" : "",
+    "microfrontend-hfhs-base" : "",
+    "microfrontend-hfhs-common-ui" : "",
+    "microfrontend-hfhs-connector" : "",
+    "microfrontend-hfhs-business-transaction-detail" : "",
+    "microfrontend-hfhs-business-transaction-history" : "",
+    "microfrontend-hfhs-toolbar" : "",
+    "product-move" : "",
+    "search-product" : "",
+];
+
 Boolean isReleaseNeeded(String packageVersion){
     String prerelease_regex = /\d+\.{1}\d+\.{1}\d+\-.*/
     if ((packageVersion ==~ prerelease_regex) || (packageVersion == "" )) return true
@@ -86,18 +99,6 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
-def projects = [
-    "microfrontend-hfhs-changeownership" : "",
-    "microfrontend-product-details" : "",
-    "microfrontend-hfhs-base" : "",
-    "microfrontend-hfhs-common-ui" : "",
-    "microfrontend-hfhs-connector" : "",
-    "microfrontend-hfhs-business-transaction-detail" : "",
-    "microfrontend-hfhs-business-transaction-history" : "",
-    "microfrontend-hfhs-toolbar" : "",
-    "product-move" : "",
-    "search-product" : "",
-];
 
 def JENKIN_GIT_CREDENTIALS_ID = "8c90ce01-4736-4b5a-8661-ab6299330151"
 def JENKIN_K8S_CREDENTIALS_ID = 'kubernetes-gucci-dev'
