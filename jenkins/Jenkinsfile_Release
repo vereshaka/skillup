@@ -67,7 +67,7 @@ String getPackageVersion(){
     return "" + sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | tr -d ',\"[:space:]' | cut -d: -f2").trim()
 }
 
-void checkPackageProperties(Boolean isRelease, String packageName, String packageVersion){
+void checkPackageProperties(Boolean isRelease, String packageName, String packageVersion, Map projects){
     overview = packageName + "versions in package.json\n    "
     if (isRelease == false){
         projects.each{ k,v ->
@@ -208,7 +208,7 @@ pipeline{
                                     steps{
                                         script{
                                             //
-                                            checkPackageProperties(base_build['isBaseRelease'], "microfrontend-hfhs-base", base_build['baseVersion'])
+                                            checkPackageProperties(base_build['isBaseRelease'], "microfrontend-hfhs-base", base_build['baseVersion'], projects)
                                             //
                                         }
                                     }
@@ -273,7 +273,7 @@ pipeline{
                                     steps{
                                         script{
                                             //
-                                            checkPackageProperties(base_build['isCUIRelease'], "microfrontend-hfhs-common-ui", base_build['baseVersion'])
+                                            checkPackageProperties(base_build['isCUIRelease'], "microfrontend-hfhs-common-ui", base_build['baseVersion'], projects)
                                             //
                                         }
                                     }
@@ -338,7 +338,7 @@ pipeline{
                                     steps{
                                         script{
                                             //
-                                            checkPackageProperties(base_build['isConnectorRelease'], "microfrontend-hfhs-connector", base_build['baseVersion'])
+                                            checkPackageProperties(base_build['isConnectorRelease'], "microfrontend-hfhs-connector", base_build['baseVersion'], projects)
                                             //
                                         }
                                     }
