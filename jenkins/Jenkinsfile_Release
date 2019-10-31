@@ -54,6 +54,35 @@ String getPackageVersion(){
     return "" + sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | tr -d ',\"[:space:]' | cut -d: -f2").trim()
 }
 
+void checkPackageProperties(Boolean isRelease, String packageName, String packageVersion){
+    overview = packageName + "versions in package.json\n    "
+    if (isRelease == false){
+        projects.each{ k,v ->
+            if (k == packageName) return
+                dir(k + "/") {
+                    def full_name = "@a1/" + packageName
+                    def component_version = getComponentVersion(full_name)
+                    isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
+                    overview = overview + k + ": " + component_version + "\n    "
+                }
+            }
+        echo "${overview}"
+        if (isBaseVerValid == false) {
+            error("Some widgets has wrong version. Release build will be interrupted.")
+        }
+    }
+    else{
+        echo "Now will be set actual version of ${packageName} in 'package.json' of widgets"
+        projects.each{ k,v ->
+            dir(k + "/"){
+                def set_version = ComponentVersion(packageName, packageVersion)
+                sh "${set_version}"
+                sh "git add package.json || true"
+            }
+        }
+    }
+}
+
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
@@ -178,31 +207,7 @@ pipeline{
                                     steps{
                                         script{
                                             //
-                                            overview = "Base versions in package.json\n    "
-                                            if (base_build['isBaseRelease'] == false){
-                                                projects.each{ k,v ->
-                                                    if (k == 'microfrontend-hfhs-base') return
-                                                    dir(k + "/") {
-                                                        def component_version = getComponentVersion('@a1/microfrontend-hfhs-base')
-                                                        isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
-                                                        overview = overview + k + ": " + component_version + "\n    "
-                                                    }
-                                                }
-                                                echo "${overview}"
-                                                if (isBaseVerValid == false) {
-                                                    error("Some widgets has wrong version of base. Release build will be interrupted.")
-                                                }
-                                            }
-                                            else{
-                                                echo "Now will be set actual version of base in 'package.json' of widgets"
-                                                projects.each{ k,v ->
-                                                    dir(k + "/"){
-                                                        def set_version = ComponentVersion('microfrontend-hfhs-base', base_build['baseVersion'])
-                                                        sh "${set_version}"
-                                                        sh "git add package.json || true"
-                                                    }
-                                                }
-                                            }
+                                            checkPackageProperties(base_build['isBaseRelease'], "microfrontend-hfhs-base", base_build['baseVersion'])
                                             //
                                         }
                                     }
@@ -267,31 +272,7 @@ pipeline{
                                     steps{
                                         script{
                                             //
-                                            overview = "Common UI versions in package.json\n    "
-                                            if (base_build['isCUIRelease'] == false){
-                                                projects.each{ k,v ->
-                                                    if (k == 'microfrontend-hfhs-common-ui') return
-                                                    dir(k + "/") {
-                                                        def component_version = getComponentVersion('@a1/microfrontend-hfhs-common-ui')
-                                                        isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
-                                                        overview = overview + k + ": " + component_version + "\n    "
-                                                    }
-                                                }
-                                                echo "${overview}"
-                                                if (isBaseVerValid == false) {
-                                                    error("Some widgets has wrong version of HFHS Common UI. Release build will be interrupted.")
-                                                }
-                                            }
-                                            else{
-                                                echo "Now will be set actual version of common-ui in 'package.json' of widgets"
-                                                projects.each{ k,v ->
-                                                    dir(k + "/"){
-                                                        def set_version = ComponentVersion('microfrontend-hfhs-common-ui', base_build['baseVersion'])
-                                                        sh "${set_version}"
-                                                        sh "git add package.json || true"
-                                                    }
-                                                }
-                                            }
+                                            checkPackageProperties(base_build['isCUIRelease'], "microfrontend-hfhs-common-ui", base_build['baseVersion'])
                                             //
                                         }
                                     }
@@ -356,32 +337,7 @@ pipeline{
                                     steps{
                                         script{
                                             //
-                                            overview = "Connector versions in package.json\n    "
-                                            if (base_build['isConnectorRelease'] == false){
-                                                projects.each{ k,v ->
-                                                    if (k == 'microfrontend-hfhs-connector') return
-                                                    dir(k + "/") {
-                                                        def component_version = getComponentVersion('@a1/microfrontend-hfhs-connector')
-                                                        isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
-                                                        overview = overview + k + ": " + component_version + "\n    "
-                                                    }
-                                                }
-                                                echo "${overview}"
-                                                if (isBaseVerValid == false) {
-                                                    error("Some widgets has wrong version of HFHS Connector. Release build will be interrupted.")
-                                                }
-                                            }
-                                            else{
-                                                echo "Now will be set actual version of connector in 'package.json' of widgets"
-                                                projects.each{ k,v ->
-                                                    dir(k + "/"){
-                                                        def set_version = ComponentVersion('microfrontend-hfhs-connector', base_build['baseVersion'])
-                                                        sh "${set_version}"
-                                                        //sh "git add package.json && git commit -m 'Update base version' || true"
-                                                        sh "git add package.json || true"
-                                                    }
-                                                }
-                                            }
+                                            checkPackageProperties(base_build['isConnectorRelease'], "microfrontend-hfhs-connector", base_build['baseVersion'])
                                             //
                                         }
                                     }
