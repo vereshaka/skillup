@@ -866,7 +866,7 @@ pipeline{
         }
         failure {
             emailext to: INFORM_ABOUT_FAILURE,
-                    subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been failed"
+                    subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been failed",
                     body: "Please go to ${BUILD_URL} and verify the build",
                     attachLog: true
         }
