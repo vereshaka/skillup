@@ -50,6 +50,10 @@ String getComponentVersion(String component_name){
     return ver
 }
 
+String getPackageVersion(){
+    return "" + sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | tr -d ',\"[:space:]' | cut -d: -f2").trim()
+}
+
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
@@ -353,7 +357,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-changeownership/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -422,7 +426,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -491,7 +495,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-product-details/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -559,7 +563,7 @@ pipeline{
                                     steps{
                                         dir("search-product/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -628,7 +632,7 @@ pipeline{
                                     steps{
                                         dir("product-move/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -697,7 +701,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -766,7 +770,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
