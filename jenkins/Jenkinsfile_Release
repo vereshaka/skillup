@@ -62,6 +62,7 @@ def projects = [
     "microfrontend-product-details" : "",
     "microfrontend-hfhs-base" : "",
     "microfrontend-hfhs-common-ui" : "",
+    "microfrontend-hfhs-connector" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
@@ -139,6 +140,9 @@ pipeline{
                                         booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-common-ui" }?.value),
                                                     description: "Make release of Common UI",
                                                     name: 'isCUIRelease'),
+                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
+                                                    description: "Make release of Common UI",
+                                                    name: 'isConnectorRelease'),
                                         string(defaultValue: "$base_ver",
                                             description: 'with version',
                                             name: 'baseVersion'),
@@ -287,6 +291,53 @@ pipeline{
                                 }
                             }
                         }
+                        stage('Component: Connector'){
+                            when{
+                                expression{
+                                    base_build['isConnectorRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                }
+                            }
+                            stages{
+                                stage('Prepare'){
+                                    steps{
+                                        dir("microfrontend-hfhs-connector/"){
+                                            sh 'git status'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    steps{
+                                        dir("microfrontend-hfhs-connector/"){
+                                            sh 'git status' //TODO remove debug info
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                sh 'git checkout package-lock.json'
+                                                sh "npm version ${base_build['baseVersion']} --force"
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Push tags'){
+                                    steps{
+                                        dir("microfrontend-hfhs-connector/"){
+                                            sh 'git status' //TODO Remove debug info
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-connector.git"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-connector.git --tags"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm publish"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
                 stage('Build widgets'){
