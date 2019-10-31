@@ -185,11 +185,64 @@ pipeline{
                                     dir(k + "/"){
                                         def set_version = ComponentVersion('microfrontend-hfhs-base', base_build['baseVersion'])
                                         sh "${set_version}"
+                                        sh "git add package.json || true"
+                                    }
+                                }
+                            }
+                            //
+                            overview = "Common UI versions in package.json\n    "
+                            if (base_build['isCUIRelease'] == false){
+                                projects.each{ k,v ->
+                                    if (k == 'microfrontend-hfhs-common-ui') return
+                                    dir(k + "/") {
+                                        def component_version = getComponentVersion('@a1/microfrontend-hfhs-common-ui')
+                                        isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
+                                        overview = overview + k + ": " + component_version + "\n    "
+                                    }
+                                }
+                                echo "${overview}"
+                                if (isBaseVerValid == false) {
+                                    error("Some widgets has wrong version of HFHS Common UI. Release build will be interrupted.")
+                                }
+                            }
+                            else{
+                                echo "Now will be set actual version of common-ui in 'package.json' of widgets"
+                                projects.each{ k,v ->
+                                    dir(k + "/"){
+                                        def set_version = ComponentVersion('microfrontend-hfhs-common-ui', base_build['baseVersion'])
+                                        sh "${set_version}"
+                                        sh "git add package.json || true"
+                                    }
+                                }
+                            }
+                            //
+                            overview = "Connector versions in package.json\n    "
+                            if (base_build['isConnectorRelease'] == false){
+                                projects.each{ k,v ->
+                                    if (k == 'microfrontend-hfhs-connector') return
+                                    dir(k + "/") {
+                                        def component_version = getComponentVersion('@a1/microfrontend-hfhs-connector')
+                                        isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
+                                        overview = overview + k + ": " + component_version + "\n    "
+                                    }
+                                }
+                                echo "${overview}"
+                                if (isBaseVerValid == false) {
+                                    error("Some widgets has wrong version of HFHS Connector. Release build will be interrupted.")
+                                }
+                            }
+                            else{
+                                echo "Now will be set actual version of connector in 'package.json' of widgets"
+                                projects.each{ k,v ->
+                                    dir(k + "/"){
+                                        def set_version = ComponentVersion('microfrontend-hfhs-connector', base_build['baseVersion'])
+                                        sh "${set_version}"
                                         //sh "git add package.json && git commit -m 'Update base version' || true"
                                         sh "git add package.json || true"
                                     }
                                 }
                             }
+                            //
                         }
                     }
                 }
