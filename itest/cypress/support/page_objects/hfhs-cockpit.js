@@ -1,46 +1,29 @@
 // @flow
 
 import AbstractCockpit from './common/abstract-cockpit';
-import {
-  elements,
-  wait,
-} from './search-product';
+import HfhsToolbarWidget from './hfhs-toolbar-widget';
+import ProductMoveWidget from './product-move-widget';
 
 class HfhsCockpit extends AbstractCockpit {
+  toolbar: HfhsToolbarWidget = new HfhsToolbarWidget();
+
   getName = (): string => 'HFHS Cockpit';
 
   getTitle = (): string => 'HFHS Cockpit';
 
-  openWidget(name: string) {
+  openWidget = (name: string) => {
     switch (name) {
       case 'Product Move':
-        this.openProductMove();
+        this.toolbar.clickToolbarButton(name);
+        this.currentWidget = new ProductMoveWidget();
         break;
       case 'Change Ownership':
-        this.openChangeOwnership();
+        this.toolbar.clickToolbarButton(name);
+        // TODO: yevgenyv: enable me later: this.currentWidget = new ChangeOwnershipWidget();
         break;
       default:
         throw new Error(`Unsupported widget. Name: ${name}`);
     }
-  }
-
-  openProductMove = () => {
-    const widgetName = 'Product Move';
-    cy.wait(wait.shortWait);
-    cy.get('body').then(($body) => {
-      if ($body.find(`span:contains(${widgetName})`).length) {
-        cy.get(`button[id=${elements[widgetName]}]`)
-          .click();
-      }
-      if (widgetName === 'Search Product') {
-        // TODO: ivanp: Should be refactored when CCF-840  will be done
-        cy.get('span[class="Icon faPlusSquare fa2x AddProduct "]').click();
-      }
-    });
-  };
-
-  openChangeOwnership = () => {
-    throw new Error('Implement me');
   };
 }
 

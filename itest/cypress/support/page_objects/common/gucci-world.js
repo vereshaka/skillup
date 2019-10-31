@@ -7,6 +7,7 @@ import {
 import { wait } from '../search-product';
 import AbstractCockpit from './abstract-cockpit';
 import HfhsCockpit from '../hfhs-cockpit';
+import GucciWelcomeCockpit from '../gucci-welcome-cockpit';
 
 class GucciWorld {
   user: user;
@@ -59,6 +60,8 @@ class GucciWorld {
     switch (name) {
       case 'HFHS Cockpit':
         return new HfhsCockpit();
+      case 'GUCCI Welcome':
+        return new GucciWelcomeCockpit();
       default:
         throw new Error(`Unsupported cockpit. Name: ${name}`);
     }
@@ -76,15 +79,15 @@ class GucciWorld {
     this.getCockpitByName(name).isOpen();
   }
 
-  isCockpitExist() {
-    cy.get('ul>li').find(`a:contains(${this.getName()})`).should('have.text', this.getName());
-  }
+  isCockpitExist = (cockpitName) => {
+    cy.get('ul>li').find(`a:contains(${cockpitName})`).should('have.text', cockpitName);
+  };
 
-  isCockpitNotExist() {
+  isCockpitNotExist = (cockpitName) => {
     cy.get('ul>li>a').each(($el) => {
-      cy.get($el).should('not.have.text', this.getName());
+      cy.get($el).should('not.have.text', cockpitName);
     });
-  }
+  };
 
   getCurrentCockpit() {
     if (this.cockpit) {

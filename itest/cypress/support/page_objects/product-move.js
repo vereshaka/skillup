@@ -1,28 +1,5 @@
 import moment from 'moment';
-import {
-  clearSearch,
-  elements,
-  wait,
-} from './search-product';
 
-export const addProducts = (query) => {
-  cy.get('span[class="Icon faPlusSquare fa2x AddProduct "]').click();
-  clearSearch();
-  cy.get(`input[id="${elements['Search input']}"]`).type(query);
-  cy.get(`button[id="${elements['Search run']}"]`).click();
-  cy.wait(200);
-  cy.get('a[href="#select-all"]').click();
-  cy.get('button[id="process-button"]').click();
-};
-export const specifyAccount = (account, query, group) => {
-  cy.get(`button[id="${elements['Select Account']}"]`).click();
-  cy.get(`input[id="${elements['Search input']}"]`).type(query);
-  cy.get(`button[id="${elements['Search run']}"]`).click();
-  cy.wait(wait.normalWait);
-  cy.get(`div:contains(${account})>input[type="radio"]`).click();
-  // TODO: yevgenyv: add check that selected account has specified group
-  cy.get('button[id="process-button"]').click();
-};
 export const isPageOpened = () => {
   cy.get('button.NavigationButton:contains(Next)').click();
   cy.get('ol.progtrckr>li:eq(2)').should('have.class', 'progtrckr-doing no-hl');

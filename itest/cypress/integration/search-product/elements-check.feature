@@ -4,11 +4,11 @@ Feature: Search Product Widget: Elements Check
   Scenario: First position
     Given As user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
-    And open 'Search Product' widget
-    When I search 'KDNR:1234'
-    Then 1 element should be 'KDNR:1234'
+#    And open 'Add Product' dialog
+#    When I search 'KDNR:1234'
+#    Then 1 element should be 'KDNR:1234'
 
-  @focus
+
   Scenario: Check size of history
     Given As user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
@@ -27,7 +27,7 @@ Feature: Search Product Widget: Elements Check
       | KDNR:12343 |
       | KDNR:12342 |
 
-  @focus
+
   Scenario: Check Elements
     Given As user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
@@ -38,7 +38,7 @@ Feature: Search Product Widget: Elements Check
     And 'History' should be active
     And 'Product State Filter' should be disabled and checked
 
-  @focus
+
   Scenario: Check Help Button
     Given As user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'

@@ -1,4 +1,4 @@
-// internal usage
+
 export const wait = {
   shortWait: 200,
   mediumWait: 500,
