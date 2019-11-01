@@ -5,11 +5,12 @@ import {
 } from './search-product';
 
 class HfhsToolbarWidget extends AbstractWidget {
-
-  createElements = (): Map<string, string> => ({
-    'Product Move': 'openPM',
-    'Change Ownership': 'openCO',
-  });
+  initElements() {
+    this.elements = {
+      'Product Move': 'openPM',
+      'Change Ownership': 'openCO',
+    };
+  }
 
   getName = () => 'HFHS Toolbar';
 

@@ -23,7 +23,7 @@ Given(/^switch to (.*)$/,
   });
 Given(/open '([a-zA-Z ]*)' widget from '([a-zA-Z ]*)'/, (widgetName, cockpitName) => {
   gucciWorld.openCockpit(cockpitName);
-  //gucciWorld.getCurrentCockpit().openWidget(widgetName);
+  gucciWorld.getCurrentCockpit().openWidget(widgetName);
 });
 Given(/^open '([a-zA-Z ]*)' widget$/, (widgetName) => {
   gucciWorld.getCurrentCockpit().openWidget(widgetName);

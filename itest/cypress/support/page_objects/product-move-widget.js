@@ -7,9 +7,12 @@ import {
 import SearchProductWidget from './search-product-widget';
 
 class ProductMoveWidget extends AbstractWidget {
-  createElements = (): Map<string, string> => ({
-    '': '',
-  });
+
+  initElements() {
+    this.elements = {
+      ' ': ' ',
+    };
+  }
 
   getName = () => 'Product Move';
 
