@@ -1,31 +1,33 @@
 import {
   When,
 } from 'cypress-cucumber-preprocessor/steps';
-import {
-  openHelp,
-  search,
-} from '../page_objects/search-product';
-import { isPageOpened } from '../page_objects/product-move';
+
 import gucciWorld from './hooks';
+import SearchProductWidget from '../page_objects/search-product-widget';
+import ProductMoveWidget from '../page_objects/product-move-widget';
 
 When(/I have try to login as (.*) with (.*) credential/,
   (username, type) => {
     gucciWorld.login(username, type === 'correct');
   });
 When(/I try to search by '(.*)' query/, (query) => {
-  search(query);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .search(query);
 });
 When(/I search '(.*)'/, (query) => {
-  search(query);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .search(query);
 });
 When(/Click on Help Button/, () => {
-  openHelp();
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .openHelp();
 });
 When(/^I open '([a-zA-Z ]*)' widget$/, (widgetName) => {
   gucciWorld.getCurrentCockpit().openWidget(widgetName);
 });
 When(/Order validation step is open/, () => {
-  isPageOpened();
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isPageOpened();
 });
 When(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
   gucciWorld.getCurrentCockpit().openWidget(widgetName);

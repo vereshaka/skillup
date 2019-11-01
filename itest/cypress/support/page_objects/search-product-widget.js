@@ -1,30 +1,30 @@
 // @flow
 import AbstractWidget from './common/abstract-widget';
-import {
-  elements,
-  wait,
-} from './search-product';
+import { wait } from '../../check-utils';
 
 class SearchProductWidget extends AbstractWidget {
-  createElements = (): Map<string, string> => ({
-    '': '',
-  });
+  initElements() {
+    this.elements = {
+      'Search input': 'searchForm_searchInput',
+      'Search run': 'searchForm_searchButton',
+      Help: 'searchForm_helpButton',
+      History: 'id_of_select',
+      'Product State Filter': 'searchForm_isActiveCheckbox',
+      Close: 'HelperPageClose',
+      'Help Dialog': 'HelperPageWrapper',
+      'Product Move': 'openPM',
+    };
+  }
 
   getName = () => 'Search Product';
 
-
-  isHistoryExists = (table) => {
-    let { length } = table.hashes();
-    length = Number(length);
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < length; i++) {
-      cy.get(`select[id="${elements.History}"]>option:eq(${i})`).should('have.text', table.hashes()[i].Search);
-    }
+  openHelp = () => {
+    cy.get(`button#${this.elements.Help}`).click();
   };
 
   isHelpOpened = () => {
-    cy.get(`div.${elements['Help Dialog']}`).should('exist');
-    cy.get(`button.${elements.Close}`).should('exist');
+    cy.get(`div.${this.elements['Help Dialog']}`).should('exist');
+    cy.get(`button.${this.elements.Close}`).should('exist');
   };
 
   isErrorExists = (error) => {
@@ -36,15 +36,27 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   clearSearch = () => {
-    cy.get(`input[id="${elements['Search input']}"]`).clear();
+    cy.get(`input[id="${this.elements['Search input']}"]`).clear();
   };
 
   search = (query: string) => {
     this.clearSearch();
-    cy.get(`input[id="${elements['Search input']}"]`).type(query);
-    cy.get(`button[id="${elements['Search run']}"]`).click();
+    cy.get(`input[id="${this.elements['Search input']}"]`).type(query);
+    cy.get(`button[id="${this.elements['Search run']}"]`).click();
     cy.wait(wait.mediumWait);
-    this.isHistoryContainsQuery(1, query);
+  };
+
+  isSearchElementExists = (index, searchItem) => {
+    cy.get(`select[id="id_of_select"]>option:eq(${Number(index) - 1})`).should('have.text', searchItem);
+  };
+
+  isHistoryExists = (table) => {
+    let { length } = table.hashes();
+    length = Number(length);
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < length; i++) {
+      cy.get(`select[id="${this.elements.History}"]>option:eq(${i})`).should('have.text', table.hashes()[i].Search);
+    }
   };
 
   addAll = () => {
@@ -59,10 +71,6 @@ class SearchProductWidget extends AbstractWidget {
     this.search(query);
     this.addAll();
     this.close();
-  };
-
-  openHelp = () => {
-    cy.get(`button#${elements.Help}`).click();
   };
 
   isHistoryContainsQuery = (index, query) => {

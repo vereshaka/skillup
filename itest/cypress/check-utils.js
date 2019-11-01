@@ -18,7 +18,3 @@ export const elements = {
 export const checkButtonExistence = (buttonName) => {
   cy.get(`button[id=${elements[buttonName]}]`);
 };
-
-export const checkInputExistence = (id) => {
-  cy.get(`input[id=${id}]`);
-};

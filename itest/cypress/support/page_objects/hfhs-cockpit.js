@@ -3,13 +3,18 @@
 import AbstractCockpit from './common/abstract-cockpit';
 import HfhsToolbarWidget from './hfhs-toolbar-widget';
 import ProductMoveWidget from './product-move-widget';
+import BusinessTransactionWidget from './business-transaction-widget';
 
 class HfhsCockpit extends AbstractCockpit {
   toolbar: HfhsToolbarWidget = new HfhsToolbarWidget();
 
+  businessTransaction: BusinessTransactionWidget = new BusinessTransactionWidget();
+
   getName = (): string => 'HFHS Cockpit';
 
   getTitle = (): string => 'HFHS Cockpit';
+
+  getBusinessTransactionWidget = () => this.businessTransaction;
 
   openWidget = (name: string) => {
     switch (name) {

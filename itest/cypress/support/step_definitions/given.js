@@ -2,9 +2,9 @@
 import {
   Given,
 } from 'cypress-cucumber-preprocessor/steps';
-import { search } from '../page_objects/search-product';
 import gucciWorld from './hooks';
 import ProductMoveWidget from '../page_objects/product-move-widget';
+import SearchProductWidget from '../page_objects/search-product-widget';
 
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
   gucciWorld.openLoginForm();
@@ -29,7 +29,8 @@ Given(/^open '([a-zA-Z ]*)' widget$/, (widgetName) => {
   gucciWorld.getCurrentCockpit().openWidget(widgetName);
 });
 Given(/^search '(.*)'/, (searchItem) => {
-  search(searchItem);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .search(searchItem);
 });
 Given(/add all products founded by '(.*)'/, (query: string) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).addProducts(query);
@@ -39,5 +40,5 @@ Given(/specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, 
     .specifyAccount(account, query, group);
 });
 Given(/^open '(.*)' dialog$/, (dialogName) => {
-  gucciWorld.getCurrentCockpit().openDialog(dialogName);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).openDialog(dialogName);
 });

@@ -1,6 +1,6 @@
 [ignore]
 .*/node_modules/electron-packager/test/fixtures/infer-malformed-json/package.json
-
+.*/node_modules/module-deps/test/invalid_pkg/package.json
 [include]
 
 [libs]

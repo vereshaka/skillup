@@ -1,8 +1,7 @@
 // @flow
 import AbstractWidget from './common/abstract-widget';
-import {
-  wait,
-} from './search-product';
+import { wait } from '../../check-utils';
+
 
 class HfhsToolbarWidget extends AbstractWidget {
   initElements() {

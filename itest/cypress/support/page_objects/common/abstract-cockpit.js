@@ -1,6 +1,6 @@
 // @flow
-import { wait } from '../search-product';
 import AbstractWidget from './abstract-widget';
+import { wait } from '../../../check-utils';
 
 class AbstractCockpit {
   currentWidget: AbstractWidget;

@@ -1,5 +1,7 @@
 // @flow
 class AbstractWidget {
+  currentDialog: AbstractWidget;
+
   elements: Map<string, string>;
 
   constructor() {
@@ -7,7 +9,7 @@ class AbstractWidget {
   }
 
   getName = (): string => {
-    throw new Error('Implement me: getName');
+    throw new Error('Implement me: getName(Widget)');
   };
 
   initElements() {
@@ -37,6 +39,8 @@ class AbstractWidget {
   openDialog = (name: string) => {
     throw new Error(`Implement me: openDialog(${name}`);
   };
+
+  getCurrentDialog = () => this.currentDialog;
 }
 
 export default AbstractWidget;

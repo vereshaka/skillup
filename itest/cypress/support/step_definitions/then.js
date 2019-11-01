@@ -1,19 +1,9 @@
 import { Then } from 'cypress-cucumber-preprocessor/steps';
-import * as BusinessTransactionHistory from '../page_objects/business_transaction_history';
-import {
-  checkField,
-  isErrorExists,
-  isHelpOpened,
-  isHistoryExists,
-  isSearchElementExists,
-} from '../page_objects/search-product';
-import { checkButtonExistence } from '../../check-utils';
-import {
-  isDateCorrect,
-  isTargetAccountCorrect,
-  isSelectedAccountsCorrect,
-} from '../page_objects/product-move';
 import gucciWorld from './hooks';
+import SearchProductWidget from '../page_objects/search-product-widget';
+import ProductMoveWidget from '../page_objects/product-move-widget';
+import BusinessTransactionWidget from '../page_objects/business-transaction-widget';
+import { checkButtonExistence } from '../../check-utils';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => {
@@ -39,40 +29,51 @@ Then(/^I should see active '(.*)' button$/,
 
 Then(/^business transaction widget is displayed$/,
   () => {
-    BusinessTransactionHistory.isWidgetExists();
+    (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+      .isWidgetExists();
   });
 
 Then(/transaction list mode group is (not |)presented/,
   (existence) => {
     if (existence === 'not ') {
-      BusinessTransactionHistory.isAdminGroupNotExist();
+      (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+        .isAdminGroupNotExist();
     }
     if (existence === '') {
-      BusinessTransactionHistory.isAdminGroupExist();
+      (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+        .isAdminGroupExist();
     }
   });
 
 Then(/^'(.*)' should be displayed$/, (error) => {
-  isErrorExists(error);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .isErrorExists(error);
 });
 Then(/(^\d+) element should be '(.*)'/, (index, searchItem) => {
-  isSearchElementExists(index, searchItem);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .isSearchElementExists(index, searchItem);
 });
 Then(/History should be/, (table) => {
-  isHistoryExists(table);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .isHistoryExists(table);
 });
 Then(/'(.*)' should be (active|disabled)( and (checked|unchecked)|)/, (field, status, state) => {
-  checkField(field, status, state);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkField(field, status, state);
 });
 Then(/Help Page and Close Button should be exist/, (wrapperName, buttonName) => {
-  isHelpOpened(wrapperName, buttonName);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .isHelpOpened(wrapperName, buttonName);
 });
 Then(/The following source account should be selected/, (table) => {
-  isSelectedAccountsCorrect(table);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isSelectedAccountsCorrect(table);
 });
 Then(/Effective date is '(.*)'$/, (date) => {
-  isDateCorrect(date);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isDateCorrect(date);
 });
 Then(/Target account should be/, (table) => {
-  isTargetAccountCorrect(table);
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isTargetAccountCorrect(table);
 });

@@ -4,10 +4,10 @@ import {
   getPassword,
   getPortalURL,
 } from '../utils/config';
-import { wait } from '../search-product';
 import AbstractCockpit from './abstract-cockpit';
 import HfhsCockpit from '../hfhs-cockpit';
 import GucciWelcomeCockpit from '../gucci-welcome-cockpit';
+import { wait } from '../../../check-utils';
 
 class GucciWorld {
   user: user;
