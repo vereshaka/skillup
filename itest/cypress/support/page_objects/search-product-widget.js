@@ -27,7 +27,7 @@ class SearchProductWidget extends AbstractWidget {
     cy.get(`button.${this.elements.Close}`).should('exist');
   };
 
-  isErrorExists = (error) => {
+  isErrorExists = (error:string) => {
     if (error === '') {
       cy.get('div[class="StatusMessage Error ProductItem"]>h3:contains(You have incorrect)').should('not.exist');
     } else {
