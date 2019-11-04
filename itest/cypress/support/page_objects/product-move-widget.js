@@ -34,7 +34,7 @@ class ProductMoveWidget extends AbstractWidget {
     new SearchProductWidget().searchAndAddAll(query);
   };
 
-  specifyAccount = (account, query, group) => {
+  specifyAccount = (account, query:string, group) => {
     new AddAccountWidget().addAccount(account, query, group);
   };
 
