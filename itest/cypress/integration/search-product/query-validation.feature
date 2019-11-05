@@ -4,7 +4,7 @@ Feature: Search Product Widget: Query Validation
   Scenario Outline: Query Errors check
     Given As user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
-    And open 'Search Product' widget
+    And open 'Add Product' dialog
     When I try to search by '<query>' query
     Then '<msg>' should be displayed
 
