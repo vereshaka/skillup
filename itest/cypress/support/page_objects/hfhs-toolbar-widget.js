@@ -1,6 +1,5 @@
 // @flow
 import AbstractWidget from './common/abstract-widget';
-import { wait } from '../../check-utils';
 
 
 class HfhsToolbarWidget extends AbstractWidget {
@@ -14,7 +13,7 @@ class HfhsToolbarWidget extends AbstractWidget {
   getName = () => 'HFHS Toolbar';
 
   clickToolbarButton = (buttonCaption: string) => {
-    cy.wait(wait.shortWait);
+    cy.shortWait();
     cy.get('body').then(($body) => {
       if ($body.find(`span:contains(${buttonCaption})`).length) {
         cy.get(`button[id=${this.elements[buttonCaption]}]`)

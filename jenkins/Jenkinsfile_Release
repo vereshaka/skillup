@@ -4,6 +4,19 @@ Jenkinsfile for building of HFHS widgets release versions.
 Build starts manually.
 */
 
+def projects = [
+    "microfrontend-hfhs-changeownership" : "",
+    "microfrontend-product-details" : "",
+    "microfrontend-hfhs-base" : "",
+    "microfrontend-hfhs-common-ui" : "",
+    "microfrontend-hfhs-connector" : "",
+    "microfrontend-hfhs-business-transaction-detail" : "",
+    "microfrontend-hfhs-business-transaction-history" : "",
+    "microfrontend-hfhs-toolbar" : "",
+    "product-move" : "",
+    "search-product" : "",
+];
+
 Boolean isReleaseNeeded(String packageVersion){
     String prerelease_regex = /\d+\.{1}\d+\.{1}\d+\-.*/
     if ((packageVersion ==~ prerelease_regex) || (packageVersion == "" )) return true
@@ -50,20 +63,42 @@ String getComponentVersion(String component_name){
     return ver
 }
 
+String getPackageVersion(){
+    return "" + sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | tr -d ',\"[:space:]' | cut -d: -f2").trim()
+}
+
+void checkPackageProperties(Boolean isRelease, String packageName, String packageVersion, Map projects){
+    overview = packageName + "versions in package.json\n    "
+    if (isRelease == false){
+        projects.each{ k,v ->
+            if (k == packageName) return
+                dir(k + "/") {
+                    def full_name = "@a1/" + packageName
+                    def component_version = getComponentVersion(full_name)
+                    isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
+                    overview = overview + k + ": " + component_version + "\n    "
+                }
+            }
+        echo "${overview}"
+        if (isBaseVerValid == false) {
+            error("Some widgets has wrong version. Release build will be interrupted.")
+        }
+    }
+    else{
+        echo "Now will be set actual version of ${packageName} in 'package.json' of widgets"
+        projects.each{ k,v ->
+            dir(k + "/"){
+                def set_version = ComponentVersion(packageName, packageVersion)
+                sh "${set_version}"
+                sh "git add package.json || true"
+            }
+        }
+    }
+}
+
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
-def projects = [
-    "microfrontend-hfhs-changeownership" : "",
-    "microfrontend-product-details" : "",
-    "microfrontend-hfhs-base" : "",
-    "microfrontend-hfhs-common-ui" : "",
-    "microfrontend-hfhs-business-transaction-detail" : "",
-    "microfrontend-hfhs-business-transaction-history" : "",
-    "microfrontend-hfhs-toolbar" : "",
-    "product-move" : "",
-    "search-product" : "",
-];
 
 def JENKIN_GIT_CREDENTIALS_ID = "8c90ce01-4736-4b5a-8661-ab6299330151"
 def JENKIN_K8S_CREDENTIALS_ID = 'kubernetes-gucci-dev'
@@ -135,6 +170,9 @@ pipeline{
                                         booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-common-ui" }?.value),
                                                     description: "Make release of Common UI",
                                                     name: 'isCUIRelease'),
+                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
+                                                    description: "Make release of Common UI",
+                                                    name: 'isConnectorRelease'),
                                         string(defaultValue: "$base_ver",
                                             description: 'with version',
                                             name: 'baseVersion'),
@@ -155,33 +193,6 @@ pipeline{
                             if (notValidTag > 0 ){
                                 error("Some projects already have tag ${base_build['baseVersion']}. Release build will be interrupted.")
                             }
-                            overview = "Base versions in package.json\n    "
-
-                            if (base_build['isBaseRelease'] == false){
-                                projects.each{ k,v ->
-                                    if (k == 'microfrontend-hfhs-base') return
-                                    dir(k + "/") {
-                                        def component_version = getComponentVersion('@a1/microfrontend-hfhs-base')
-                                        isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
-                                        overview = overview + k + ": " + component_version + "\n    "
-                                    }
-                                }
-                                echo "${overview}"
-                                if (isBaseVerValid == false) {
-                                    error("Some widgets has wrong version of base. Release build will be interrupted.")
-                                }
-                            }
-                            else{
-                                echo "Now will be set actual version of base in 'package.json' of widgets"
-                                projects.each{ k,v ->
-                                    dir(k + "/"){
-                                        def set_version = ComponentVersion('microfrontend-hfhs-base', base_build['baseVersion'])
-                                        sh "${set_version}"
-                                        //sh "git add package.json && git commit -m 'Update base version' || true"
-                                        sh "git add package.json || true"
-                                    }
-                                }
-                            }
                         }
                     }
                 }
@@ -192,13 +203,22 @@ pipeline{
                 stage('Build components'){
                     stages{
                         stage('Component: Base'){
-                            when{
-                                expression{
-                                    base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
                             stages{
+                                stage('Check widgets'){
+                                    steps{
+                                        script{
+                                            //
+                                            checkPackageProperties(base_build['isBaseRelease'], "microfrontend-hfhs-base", base_build['baseVersion'], projects)
+                                            //
+                                        }
+                                    }
+                                }
                                 stage('Prepare'){
+                                    when{
+                                        expression{
+                                            base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
                                     steps{
                                         dir("microfrontend-hfhs-base/"){
                                             sh 'git status'
@@ -209,22 +229,28 @@ pipeline{
                                     }
                                 }
                                 stage('Build'){
+                                    when{
+                                        expression{
+                                            base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
                                     steps{
                                         dir("microfrontend-hfhs-base/"){
                                             sh 'git status' //TODO remove debug info
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
                                 }
                                 stage('Push tags'){
+                                    when{
+                                        expression{
+                                            base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
                                     steps{
                                         dir("microfrontend-hfhs-base/"){
                                             sh 'git status' //TODO Remove debug info
@@ -242,13 +268,22 @@ pipeline{
                             }
                         }
                         stage('Component: Common UI'){
-                            when{
-                                expression{
-                                    base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
                             stages{
+                                stage('Check widgets'){
+                                    steps{
+                                        script{
+                                            //
+                                            checkPackageProperties(base_build['isCUIRelease'], "microfrontend-hfhs-common-ui", base_build['baseVersion'], projects)
+                                            //
+                                        }
+                                    }
+                                }
                                 stage('Prepare'){
+                                    when{
+                                        expression{
+                                            base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
                                     steps{
                                         dir("microfrontend-hfhs-common-ui/"){
                                             sh 'git status'
@@ -259,28 +294,99 @@ pipeline{
                                     }
                                 }
                                 stage('Build'){
+                                    when{
+                                        expression{
+                                            base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
                                     steps{
                                         dir("microfrontend-hfhs-common-ui/"){
                                             sh 'git status' //TODO remove debug info
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
                                 }
                                 stage('Push tags'){
+                                    when{
+                                        expression{
+                                            base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
                                     steps{
                                         dir("microfrontend-hfhs-common-ui/"){
                                             sh 'git status' //TODO Remove debug info
                                             withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common-ui.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common-ui.git --tags"
+                                                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                    sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                                    sh "npm publish"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Component: Connector'){
+                            stages{
+                                stage('Check widgets'){
+                                    steps{
+                                        script{
+                                            //
+                                            checkPackageProperties(base_build['isConnectorRelease'], "microfrontend-hfhs-connector", base_build['baseVersion'], projects)
+                                            //
+                                        }
+                                    }
+                                }
+                                stage('Prepare'){
+                                    when{
+                                        expression{
+                                            base_build['isConnectorRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
+                                    steps{
+                                        dir("microfrontend-hfhs-connector/"){
+                                            sh 'git status'
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm i'
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Build'){
+                                    when{
+                                        expression{
+                                            base_build['isConnectorRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
+                                    steps{
+                                        dir("microfrontend-hfhs-connector/"){
+                                            sh 'git status' //TODO remove debug info
+                                            nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                                sh 'npm run build'
+                                                sh 'git checkout package-lock.json'
+                                                sh "npm version ${base_build['baseVersion']} --force"
+                                            }
+                                        }
+                                    }
+                                }
+                                stage('Push tags'){
+                                    when{
+                                        expression{
+                                            base_build['isConnectorRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
+                                        }
+                                    }
+                                    steps{
+                                        dir("microfrontend-hfhs-connector/"){
+                                            sh 'git status' //TODO Remove debug info
+                                            withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-connector.git"
+                                                sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-connector.git --tags"
                                                 nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                     sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
                                                     sh "npm publish"
@@ -319,11 +425,7 @@ pipeline{
                                             sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -353,7 +455,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-changeownership/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -388,11 +490,7 @@ pipeline{
                                             sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -422,7 +520,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-detail/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -457,11 +555,7 @@ pipeline{
                                             sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -491,7 +585,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-product-details/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -526,11 +620,7 @@ pipeline{
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -559,7 +649,7 @@ pipeline{
                                     steps{
                                         dir("search-product/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -594,11 +684,7 @@ pipeline{
                                             sh 'git status' //TODO Remove debug info
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -628,7 +714,7 @@ pipeline{
                                     steps{
                                         dir("product-move/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -663,11 +749,7 @@ pipeline{
                                             sh 'git status' //TODO Remove debug info   
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {         
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -697,7 +779,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -732,11 +814,7 @@ pipeline{
                                             sh 'git status' //TODO Remove debug info
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
-                                                script{
-                                                    def set_version = "npm version " + base_build['baseVersion'] + " --force"
-                                                    echo "${set_version}"
-                                                    sh "${set_version}"
-                                                }
+                                                sh "npm version ${base_build['baseVersion']} --force"
                                             }
                                         }
                                     }
@@ -766,7 +844,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             script {
-                                                env.IMAGE_VERSION  = sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | cut -d: -f2 | cut -d, -f1 | cut -c 3- | rev | cut -c 2- | rev").trim()
+                                                env.IMAGE_VERSION = getPackageVersion()
                                             }
                                             echo "Deploying version: ${IMAGE_VERSION} to INT"
                                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
@@ -795,7 +873,7 @@ pipeline{
         }
         failure {
             emailext to: INFORM_ABOUT_FAILURE,
-                    subject: "Jenkins Pipeline '${JOB_NAME}' (${BUILD_NUMBER}) failed",
+                    subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been failed",
                     body: "Please go to ${BUILD_URL} and verify the build",
                     attachLog: true
         }

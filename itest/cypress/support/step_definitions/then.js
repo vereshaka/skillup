@@ -1,9 +1,10 @@
+// @flow
 import { Then } from 'cypress-cucumber-preprocessor/steps';
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import ProductMoveWidget from '../page_objects/product-move-widget';
 import BusinessTransactionWidget from '../page_objects/business-transaction-widget';
-import { checkButtonExistence } from '../../check-utils';
+import HfhsCockpit from '../page_objects/hfhs-cockpit';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => {
@@ -24,7 +25,8 @@ Then(/'(.*)' is (not |)available/,
   });
 Then(/^I should see active '(.*)' button$/,
   (buttonName) => {
-    checkButtonExistence(buttonName);
+    (gucciWorld.getCurrentCockpit(): HfhsCockpit)
+      .checkProductMoveButtonExistence(buttonName);
   });
 
 Then(/^business transaction widget is displayed$/,

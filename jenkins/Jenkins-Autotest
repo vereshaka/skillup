@@ -46,7 +46,13 @@ pipeline{
     }
     post{
         always{
-            publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, escapeUnderscores: false, includes: '**/*.html,**/*.json', keepAll: true, reportDir: 'itest/cypress/reports', reportFiles: 'hfhs.cucumber.html', reportName: 'Cypress Test Result', reportTitles: ''])
+            dir('itest/'){
+                sh 'npm run cucumber:reporter'
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: false
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/*.png', onlyIfSuccessful: false
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/**/*.png', onlyIfSuccessful: false
+            }
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, escapeUnderscores: false, includes: '**/*.html,**/*.json', keepAll: true, reportDir: 'itest/cypress/reports', reportFiles: 'hfhs.cucumber.html', reportName: 'Cypress Test Result', reportTitles: ''])
         }
         failure {
             emailext to: 'grp.hfhs@sytoss.com',
