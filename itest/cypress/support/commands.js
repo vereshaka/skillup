@@ -23,3 +23,7 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.add('shortWait', () => { cy.wait(200); });
+Cypress.Commands.add('normalWait', () => { cy.wait(500); });
+Cypress.Commands.add('mediumWait', () => { cy.wait(1000); });
+Cypress.Commands.add('longWait', () => { cy.wait(3000); });

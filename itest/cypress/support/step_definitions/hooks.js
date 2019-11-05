@@ -1,3 +1,4 @@
+// @flow
 import {
   Before,
   After,

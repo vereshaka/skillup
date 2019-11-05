@@ -2,7 +2,7 @@
 class AbstractWidget {
   currentDialog: AbstractWidget;
 
-  elements: Map<string, string>;
+  elements: Object;
 
   constructor() {
     this.initElements();
@@ -16,7 +16,7 @@ class AbstractWidget {
     throw new Error(`Implement me: ${this.getName()}.initElements`);
   }
 
-  checkField = (field, status, state) => {
+  checkField = (field: string, status: string, state: string) => {
     const idElement = this.elements[field];
     switch (status) {
       case 'active':
@@ -36,8 +36,12 @@ class AbstractWidget {
     }
   };
 
-  openDialog = (name: string) => {
-    throw new Error(`Implement me: openDialog(${name}`);
+  openDialog = (name: string, group?:string) => {
+    if (group) {
+      throw new Error(`Implement me: openDialog(${name},${group})`);
+    } else {
+      throw new Error(`Implement me: openDialog(${name})`);
+    }
   };
 
   getCurrentDialog = () => this.currentDialog;

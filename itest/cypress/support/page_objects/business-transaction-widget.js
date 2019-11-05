@@ -1,3 +1,4 @@
+// @flow
 import AbstractWidget from './common/abstract-widget';
 
 class BusinessTransactionWidget extends AbstractWidget {
