@@ -77,3 +77,7 @@ Then(/Target account should be/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isTargetAccountCorrect(table);
 });
+Then(/I should see item and product lists/, () => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkItemAndProductListsExistence();
+});

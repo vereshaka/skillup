@@ -17,10 +17,6 @@ Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
   () => { // username, keycloakName, table
     // TODO: implement me
   });
-Given(/^switch to (.*)$/,
-  (cockpitName) => {
-    gucciWorld.openCockpit(cockpitName);
-  });
 Given(/open '([a-zA-Z ]*)' widget from '([a-zA-Z ]*)'/, (widgetName, cockpitName) => {
   gucciWorld.openCockpit(cockpitName);
   gucciWorld.getCurrentCockpit().openWidget(widgetName);
