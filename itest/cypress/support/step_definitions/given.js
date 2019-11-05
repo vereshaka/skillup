@@ -38,3 +38,7 @@ Given(/specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, 
 Given(/^open '(.*)' dialog$/, (dialogName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).openDialog(dialogName);
 });
+Given(/try to login as (.*)/,
+  (username) => {
+    gucciWorld.login(username, true);
+  });
