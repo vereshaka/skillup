@@ -1,4 +1,8 @@
 {
+    "parser": "babel-eslint",
+    "plugins": [
+        "flowtype"
+    ],
     "env": {
         "browser": true,
         "es6": true
@@ -9,7 +13,8 @@
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly",
-        "cy": true
+        "cy": true,
+        "Cypress": true
     },
     "parserOptions": {
         "ecmaVersion": 2018,
