@@ -32,3 +32,7 @@ When(/Order validation step is open/, () => {
 When(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
   gucciWorld.getCurrentCockpit().openWidget(widgetName);
 });
+When(/Click on Confirm Button/, () => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .openConfirm();
+});

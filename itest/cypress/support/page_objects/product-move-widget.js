@@ -7,8 +7,7 @@ import AddAccountWidget from './add-account-widget';
 class ProductMoveWidget extends AbstractWidget {
   initElements() {
     this.elements = {
-      'Add Product': 'Icon faPlusSquare fa2x AddProduct ',
-      'Add Product2': 'addProduct',
+      'Add Product': 'addProduct',
       'Add Account': 'selectAccount_searchButton',
     };
   }
@@ -18,7 +17,7 @@ class ProductMoveWidget extends AbstractWidget {
   openDialog = (name: string) => {
     switch (name) {
       case 'Add Product':
-        cy.get(`span[class="${this.elements[name]}"]`).click();
+        cy.get(`span[id="${this.elements[name]}"]`).click();
         this.currentDialog = new SearchProductWidget();
         break;
       case 'Add Account':
@@ -79,6 +78,10 @@ class ProductMoveWidget extends AbstractWidget {
         // Do nothing
       }
     });
+  };
+
+  openConfirm = () => {
+    cy.get('button#wizardConfirm').click();
   };
 }
 
