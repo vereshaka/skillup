@@ -5,6 +5,7 @@ import {
 import gucciWorld from './hooks';
 import ProductMoveWidget from '../page_objects/product-move-widget';
 import SearchProductWidget from '../page_objects/search-product-widget';
+import SearchAccountWidget from '../page_objects/search-account-widget';
 
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
   gucciWorld.openLoginForm();
@@ -41,4 +42,21 @@ Given(/specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, 
 });
 Given(/^open '(.*)' dialog$/, (dialogName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).openDialog(dialogName);
+});
+Given(/^try to login as (.*)$/,
+  (username) => {
+    gucciWorld.login(username, true);
+  });
+Given(/open '(.*)' dialog with '(.*)' group/, (dialogName, group) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .openDialog(dialogName, group);
+});
+Given(/accounts founded by '(.*)' are displayed/, (query) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
+    .searchAndCheck(query);
+});
+
+Given(/I select '(.*)' account/, (account) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
+    .selectAccount(account);
 });
