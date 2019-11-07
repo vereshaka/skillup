@@ -40,14 +40,16 @@ class ProductMoveWidget extends AbstractWidget {
 
   isAlreadyAdded = () => {
     cy.get('body').then(($body) => {
-      if ($body.find('div.AccountInfoTest').length || $body.find('div[class="ProductSection Info"]').length) {
+      if ($body.find('div.AccountInfoTest').length || $body.find('div.ProductItemMove').length) {
         cy.get('button#wizardCancel').click();
       }
     });
   };
 
   addProducts = (query: string, products?: Array<string>) => {
+    cy.normalWait();
     this.isAlreadyAdded();
+    cy.normalWait();
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, products);
   };
