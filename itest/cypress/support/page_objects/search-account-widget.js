@@ -24,7 +24,7 @@ class SearchAccountWidget extends AbstractWidget {
     cy.mediumWait();
   };
 
-  selectAccount =(account) => {
+  selectAccount =(account: string) => {
     cy.get(`div:contains(${account})>input[type="radio"]`).click();
     cy.get('button[id="process-button"]').click();
   };
@@ -43,7 +43,7 @@ class SearchAccountWidget extends AbstractWidget {
     cy.get(`select#${this.elements.History}`).should('exist');
   };
 
-  isCustomerDisplayed = (id) => {
+  isCustomerDisplayed = (id: string) => {
     cy
       .get('div#searchResult')
       .should('exist')
