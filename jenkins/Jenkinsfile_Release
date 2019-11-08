@@ -15,7 +15,6 @@ def overview = "Version proposal"
 def ver_list = ""
 def base_ver = ""
 def base_build = null
-def isBaseVerValid = true
 
 /* 
 Variable 'projects' contains list of widgets that can be released.
@@ -86,7 +85,7 @@ String getPackageVersion(){
 
 void checkPackageProperties(Boolean isRelease, String packageName, String packageVersion, Map projects){
     overview = packageName + "versions in package.json\n    "
-
+    def isBaseVerValid = true
     if (isRelease == false){
         projects.each{ k,v ->
             if (k == packageName) return
