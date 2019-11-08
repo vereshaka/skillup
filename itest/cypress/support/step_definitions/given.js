@@ -43,10 +43,6 @@ Given(/specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, 
 Given(/^open '(.*)' dialog$/, (dialogName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).openDialog(dialogName);
 });
-Given(/^try to login as (.*)$/,
-  (username) => {
-    gucciWorld.login(username, true);
-  });
 Given(/open '(.*)' dialog with '(.*)' group/, (dialogName, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .openDialog(dialogName, group);
@@ -55,8 +51,11 @@ Given(/accounts founded by '(.*)' are displayed/, (query) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
     .searchAndCheck(query);
 });
-
 Given(/I select '(.*)' account/, (account) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
     .selectAccount(account);
 });
+Given(/^I open GUCCI Portal as (.*)$/,
+  (username) => {
+    gucciWorld.login(username);
+  });

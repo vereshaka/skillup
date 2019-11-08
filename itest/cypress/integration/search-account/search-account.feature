@@ -1,8 +1,7 @@
 Feature: Search Account
   @focus
   Scenario: Account Search
-    Given As anonymous user I open GUCCI Portal
-    And try to login as user2
+    Given
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:100883236'
     And open 'Add Account' dialog with 'PRI' group
