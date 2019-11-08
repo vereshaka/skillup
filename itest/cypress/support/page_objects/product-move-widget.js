@@ -38,10 +38,14 @@ class ProductMoveWidget extends AbstractWidget {
     }
   };
 
+  cancelProductMoveProcess = () => {
+    cy.get('button#wizardCancel').click();
+  };
+
   isAlreadyAdded = () => {
     cy.get('body').then(($body) => {
       if ($body.find('div.AccountInfoTest').length || $body.find('div.ProductItemMove').length) {
-        cy.get('button#wizardCancel').click();
+        this.cancelProductMoveProcess();
       }
     });
   };

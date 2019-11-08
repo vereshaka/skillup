@@ -63,12 +63,11 @@ class SearchAccountWidget extends AbstractWidget {
       .should('have.length', 2);
   };
 
-  getCustomerId = (query: string) => query.replace(/^\D+/g, '');
-
   searchAndCheck = (query: string) => {
+    const customerId = query.replace(/^\D+/g, '');
     this.isSearchDialogCorrectlyDisplayed();
     this.search(query);
-    this.isCustomerDisplayed(this.getCustomerId(query));
+    this.isCustomerDisplayed(customerId);
     this.areAccountsFound();
   }
 }
