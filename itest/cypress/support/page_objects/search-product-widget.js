@@ -100,9 +100,9 @@ class SearchProductWidget extends AbstractWidget {
       .contains('...');
     cy
       .get('div#searchResult')
-      .should('have.length', '1')
+      .should('exist')
       .find('div.ScrollableListWrapper')
-      .should('have.length', '1')
+      .should('exist')
       .find('div[class="ResultItem CustomerItem"]')
       .find('div[class="ResultItem CustomerItem"]')
       .find('div[class="CustomerItemSelection"]');

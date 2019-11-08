@@ -4,7 +4,7 @@ Feature: HFHS Cockpit check
     Given user3 exists in GUCCI keycloak with the following groups:
       | Group |
       | hfhs-superuser|
-    And I open GUCCI Portal as user2
+    And I open GUCCI Portal as user3
     When switch to HFHS Cockpit
     Then I should see active 'Product Move' button
     And business transaction widget is displayed
