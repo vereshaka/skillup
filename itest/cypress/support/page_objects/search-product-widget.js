@@ -12,6 +12,7 @@ class SearchProductWidget extends AbstractWidget {
       Close: 'HelperPageClose',
       'Help Dialog': 'HelperPageWrapper',
       'Product Move': 'openPM',
+      'Process Button': 'process-button',
     };
   }
 
@@ -125,7 +126,7 @@ class SearchProductWidget extends AbstractWidget {
       .get('a[name="productCountButton"]')
       .click();
     cy
-      .get('button[name="process-button"]')
+      .get(`button[id="${this.elements['Process Button']}"]`)
       .click();
   };
 
