@@ -83,3 +83,7 @@ Then(/I should see item and product lists/, () => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
     .checkItemAndProductListsExistence();
 });
+Then(/The following products should be selected/, (table) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isSelectedAccountsCorrect(table);
+});
