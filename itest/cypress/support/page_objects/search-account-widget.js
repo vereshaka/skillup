@@ -43,32 +43,30 @@ class SearchAccountWidget extends AbstractWidget {
     cy.get(`select#${this.elements.History}`).should('exist');
   };
 
-  isCustomerDisplayed = (id: string) => {
-    cy
-      .get('div#searchResult')
-      .should('exist')
-      .find(`div#customerItem${id}`)
-      .should('exist')
-      .find('div>div.CustomerPanelWrapper')
-      .should('exist')
-      .find('div>div>span')
-      .contains(id);
-  };
-
-  areAccountsFound = () => {
+  areAccountsFounded = (table) => {
     cy
       .get('div#searchResult')
       .should('exist')
       .find('div>div[class="ResultItem AccountItem"]')
       .should('have.length', 2);
+    let { length } = table.hashes();
+    length = Number(length);
+    for (let i = 0; i < length; i += 1) {
+      cy
+        .get(`div[class="ResultItem AccountItem"]:eq(${i})`)
+        .find('div[class="ResultItemGroup"]>div>span:eq(0)')
+        .should('have.text', table.hashes()[i].AccountNumber);
+      cy
+        .get(`div[class="ResultItem AccountItem"]:eq(${i})`)
+        .find('div[class="ResultItemGroup"]>div>div>span:eq(0)')
+        .should('have.text', `IBAN:${table.hashes()[i].IBAN}`);
+    }
   };
 
-  searchAndCheck = (query: string) => {
-    const customerId = query.replace(/^\D+/g, '');
+  searchAndCheck = (query: string, table: Object) => {
     this.isSearchDialogCorrectlyDisplayed();
     this.search(query);
-    this.isCustomerDisplayed(customerId);
-    this.areAccountsFound();
+    this.areAccountsFounded(table);
   }
 }
 

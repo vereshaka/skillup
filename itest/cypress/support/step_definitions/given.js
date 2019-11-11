@@ -47,9 +47,9 @@ Given(/open '(.*)' dialog with '(.*)' group/, (dialogName, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .openDialog(dialogName, group);
 });
-Given(/accounts founded by '(.*)' are displayed/, (query) => {
+Given(/accounts founded by '(.*)' are displayed/, (query, table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
-    .searchAndCheck(query);
+    .searchAndCheck(query, table);
 });
 Given(/I select '(.*)' account/, (account) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
