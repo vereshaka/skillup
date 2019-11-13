@@ -33,3 +33,7 @@ When(/Order validation step is open/, () => {
 When(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
   gucciWorld.getCurrentCockpit().openWidget(widgetName);
 });
+When(/^switch to (.*)$/,
+  (cockpitName) => {
+    gucciWorld.openCockpit(cockpitName);
+  });

@@ -12,6 +12,7 @@ class SearchProductWidget extends AbstractWidget {
       Close: 'HelperPageClose',
       'Help Dialog': 'HelperPageWrapper',
       'Product Move': 'openPM',
+      'Process Button': 'process-button',
     };
   }
 
@@ -92,6 +93,48 @@ class SearchProductWidget extends AbstractWidget {
     cy.get(`select[id="id_of_select"]>option:eq(${Number(index) - 1})`)
       .should('have.text', query);
   };
+
+  checkItemListExistence = () => {
+    cy
+      .get('a[name="productCountButton"]')
+      .contains('...');
+    cy
+      .get('div#searchResult')
+      .should('exist')
+      .find('div.ScrollableListWrapper')
+      .should('exist')
+      .find('div[class="ResultItem CustomerItem"]')
+      .find('div[class="ResultItem CustomerItem"]')
+      .find('div[class="CustomerItemSelection"]');
+  };
+
+  selectCustomerItem = () => {
+    cy
+      .get('a[name="productCountButton"]')
+      .contains('9')
+      .click();
+    // TODO: mikhailb: Should be removed when CCF-851 will be done
+    cy.wait(30000);
+  };
+
+  checkProductListExistence = () => {
+    cy
+      .get('select#id_of_select')
+      .find('option[value="0"]')
+      .contains('billa && KDNR:103777118');
+    cy
+      .get('a[name="productCountButton"]')
+      .click();
+    cy
+      .get(`button[id="${this.elements['Process Button']}"]`)
+      .click();
+  };
+
+  checkItemAndProductListsExistence = () => {
+    this.checkItemListExistence();
+    this.selectCustomerItem();
+    this.checkProductListExistence();
+  }
 }
 
 export default SearchProductWidget;
