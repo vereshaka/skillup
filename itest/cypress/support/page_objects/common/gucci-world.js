@@ -59,7 +59,7 @@ class GucciWorld {
     switch (name) {
       case 'HFHS Cockpit':
         return new HfhsCockpit();
-      case 'GUCCI Welcome':
+      case 'Welcome':
         return new GucciWelcomeCockpit();
       default:
         throw new Error(`Unsupported cockpit. Name: ${name}`);
