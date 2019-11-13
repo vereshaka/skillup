@@ -7,8 +7,7 @@ import SearchAccountWidget from './search-account-widget';
 class ProductMoveWidget extends AbstractWidget {
   initElements() {
     this.elements = {
-      'Add Product': 'Icon faPlusSquare fa2x AddProduct ',
-      'Add Product2': 'addProduct',
+      'Add Product': 'addProduct',
       'Add Account': 'selectAccount_searchButton',
     };
   }
@@ -23,7 +22,7 @@ class ProductMoveWidget extends AbstractWidget {
   openDialog = (name: string, group?:string) => {
     switch (name) {
       case 'Add Product':
-        cy.get(`span[class="${this.elements[name]}"]`).click();
+        cy.get(`span[id="${this.elements[name]}"]`).click();
         this.currentDialog = new SearchProductWidget();
         break;
       case 'Add Account':
@@ -39,7 +38,22 @@ class ProductMoveWidget extends AbstractWidget {
     }
   };
 
+  cancelProductMoveProcess = () => {
+    cy.get('button#wizardCancel').click();
+  };
+
+  isAlreadyAdded = () => {
+    cy.get('body').then(($body) => {
+      if ($body.find('div.AccountInfoTest').length || $body.find('div.ProductItemMove').length) {
+        this.cancelProductMoveProcess();
+      }
+    });
+  };
+
   addProducts = (query: string, products?: Array<string>) => {
+    cy.normalWait();
+    this.isAlreadyAdded();
+    cy.normalWait();
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, products);
   };

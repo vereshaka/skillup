@@ -1,7 +1,6 @@
 // @flow
 import AbstractWidget from './common/abstract-widget';
 
-
 class HfhsToolbarWidget extends AbstractWidget {
   initElements() {
     this.elements = {
