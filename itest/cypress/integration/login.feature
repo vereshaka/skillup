@@ -9,10 +9,10 @@ Feature: Login Form
 
   Scenario: Correct user credential without HFHS rights
     When I have try to login as user1 with correct credential
-    Then I should see 'GUCCI Welcome' Cockpit
+    Then I should see 'Welcome' Cockpit
     And 'HFHS Cockpit' is not available
 
   Scenario: Correct user credential with HFHS rights
     When I have try to login as user2 with correct credential
-    Then I should see 'GUCCI Welcome' Cockpit
+    Then I should see 'Welcome' Cockpit
     And 'HFHS Cockpit' is available
