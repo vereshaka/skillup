@@ -30,6 +30,10 @@ class HfhsCockpit extends AbstractCockpit {
         throw new Error(`Unsupported widget. Name: ${name}`);
     }
   };
+
+  checkProductMoveButtonExistence = () => {
+    cy.get('button#openPM');
+  };
 }
 
 export default HfhsCockpit;

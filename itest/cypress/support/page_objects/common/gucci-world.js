@@ -7,7 +7,6 @@ import {
 import AbstractCockpit from './abstract-cockpit';
 import HfhsCockpit from '../hfhs-cockpit';
 import GucciWelcomeCockpit from '../gucci-welcome-cockpit';
-import { wait } from '../../../check-utils';
 
 class GucciWorld {
   user: user;
@@ -22,7 +21,7 @@ class GucciWorld {
 
   openLoginForm() {
     this.visitPortal();
-    cy.wait(wait.shortWait);
+    cy.shortWait();
     this.logout();
   }
 
@@ -79,11 +78,11 @@ class GucciWorld {
     this.getCockpitByName(name).isOpen();
   }
 
-  isCockpitExist = (cockpitName) => {
+  isCockpitExist = (cockpitName: string) => {
     cy.get('ul>li').find(`a:contains(${cockpitName})`).should('have.text', cockpitName);
   };
 
-  isCockpitNotExist = (cockpitName) => {
+  isCockpitNotExist = (cockpitName: string) => {
     cy.get('ul>li>a').each(($el) => {
       cy.get($el).should('not.have.text', cockpitName);
     });

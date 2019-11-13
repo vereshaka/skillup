@@ -1,6 +1,5 @@
 // @flow
 import AbstractWidget from './abstract-widget';
-import { wait } from '../../../check-utils';
 
 class AbstractCockpit {
   currentWidget: AbstractWidget;
@@ -17,7 +16,7 @@ class AbstractCockpit {
     cy.get('div.menu-drawer').click();
     cy.get(`a:contains(${this.getName()})`).click();
     // TODO: yevgenyv: please check is it possible replace wait on isOpen
-    cy.wait(wait.shortWait);
+    cy.shortWait();
   }
 
   isOpen() {

@@ -1,3 +1,4 @@
+// @flow
 import AbstractWidget from './common/abstract-widget';
 
 class BusinessTransactionWidget extends AbstractWidget {
@@ -17,17 +18,17 @@ class BusinessTransactionWidget extends AbstractWidget {
     cy
       .get('div.NavigationPanel')
       .find('form')
-      .should('have.length', '0');
+      .should('not.exist');
   };
 
   isAdminGroupExist = () => {
     cy
       .get('div.NavigationPanel')
       .find('form')
-      .should('have.length', '1')
+      .should('exist')
       .find('div.RadioButtonsPanel')
       .as('RadioButtonsPanel')
-      .should('have.length', '1');
+      .should('exist');
     cy
       .get('@RadioButtonsPanel')
       .find('span')

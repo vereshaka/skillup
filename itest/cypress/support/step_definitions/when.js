@@ -1,3 +1,4 @@
+// @flow
 import {
   When,
 } from 'cypress-cucumber-preprocessor/steps';
@@ -32,6 +33,10 @@ When(/Order validation step is open/, () => {
 When(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
   gucciWorld.getCurrentCockpit().openWidget(widgetName);
 });
+When(/^switch to (.*)$/,
+  (cockpitName) => {
+    gucciWorld.openCockpit(cockpitName);
+  });
 When(/Click on Confirm Button/, () => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .openConfirm();

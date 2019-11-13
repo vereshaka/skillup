@@ -2,7 +2,7 @@
 import moment from 'moment';
 import AbstractWidget from './common/abstract-widget';
 import SearchProductWidget from './search-product-widget';
-import AddAccountWidget from './add-account-widget';
+import SearchAccountWidget from './search-account-widget';
 
 class ProductMoveWidget extends AbstractWidget {
   initElements() {
@@ -14,27 +14,53 @@ class ProductMoveWidget extends AbstractWidget {
 
   getName = () => 'Product Move';
 
-  openDialog = (name: string) => {
+  specifyGroup = (name: string, group: string) => {
+    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup').click();
+    cy.get('@searchableGroup').find(`button[id="${this.elements[name]}"]`).click();
+  };
+
+  openDialog = (name: string, group?:string) => {
     switch (name) {
       case 'Add Product':
         cy.get(`span[id="${this.elements[name]}"]`).click();
         this.currentDialog = new SearchProductWidget();
         break;
       case 'Add Account':
-        cy.get(`button[id="${this.elements[name]}"]`).click();
-        this.currentDialog = new AddAccountWidget();
+        if (group) {
+          this.specifyGroup(name, group);
+          this.currentDialog = new SearchAccountWidget();
+        } else {
+          throw new Error('No group was defined');
+        }
         break;
       default:
         throw new Error(`Unsupported dialog. Name: ${name}`);
     }
   };
 
-  addProducts = (query: string) => {
-    new SearchProductWidget().searchAndAddAll(query);
+  cancelProductMoveProcess = () => {
+    cy.get('button#wizardCancel').click();
+  };
+
+  isAlreadyAdded = () => {
+    cy.get('body').then(($body) => {
+      if ($body.find('div.AccountInfoTest').length || $body.find('div.ProductItemMove').length) {
+        this.cancelProductMoveProcess();
+      }
+    });
+  };
+
+  addProducts = (query: string, products?: Array<string>) => {
+    cy.normalWait();
+    this.isAlreadyAdded();
+    cy.normalWait();
+    this.openDialog('Add Product');
+    new SearchProductWidget().searchAndAdd(query, products);
   };
 
   specifyAccount = (account:string, query:string, group:string) => {
-    new AddAccountWidget().addAccount(account, query, group);
+    this.openDialog('Add Account', group);
+    new SearchAccountWidget().addAccount(account, query);
   };
 
   isPageOpened = () => {
@@ -42,7 +68,7 @@ class ProductMoveWidget extends AbstractWidget {
     cy.get('ol.progtrckr>li:eq(2)').should('have.class', 'progtrckr-doing no-hl');
   };
 
-  isSelectedAccountsCorrect = (table) => {
+  isSelectedAccountsCorrect = (table:Object) => {
     let { length } = table.hashes();
     length = Number(length);
     // eslint-disable-next-line no-plusplus
@@ -68,7 +94,7 @@ class ProductMoveWidget extends AbstractWidget {
     }
   };
 
-  isTargetAccountCorrect = (table) => {
+  isTargetAccountCorrect = (table: Object) => {
     table.hashes().forEach((row) => {
       cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(0)').should('have.text', row.AccountNumber);
       cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(5)').should('have.text', `IBAN:${row.IBAN}`);
