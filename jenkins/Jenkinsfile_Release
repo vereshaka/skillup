@@ -4,6 +4,22 @@ Jenkinsfile for building of HFHS widgets release versions.
 Build starts manually.
 */
 
+
+def JENKIN_GIT_CREDENTIALS_ID = "8c90ce01-4736-4b5a-8661-ab6299330151"
+def JENKIN_K8S_CREDENTIALS_ID = 'kubernetes-gucci-dev'
+def INFORM_ABOUT_FAILURE = 'grp.hfhs@sytoss.com'
+def JENKINS_NODE_JS_INSTALLATION_LABEL = 'node10.16.3'
+
+def proposal_version = ""
+def overview = "Version proposal"
+def ver_list = ""
+def base_ver = ""
+def base_build = null
+
+/* 
+Variable 'projects' contains list of widgets that can be released.
+*/
+
 def projects = [
     "microfrontend-hfhs-changeownership" : "",
     "microfrontend-product-details" : "",
@@ -69,6 +85,7 @@ String getPackageVersion(){
 
 void checkPackageProperties(Boolean isRelease, String packageName, String packageVersion, Map projects){
     overview = packageName + "versions in package.json\n    "
+    def isBaseVerValid = true
     if (isRelease == false){
         projects.each{ k,v ->
             if (k == packageName) return
@@ -95,22 +112,6 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
         }
     }
 }
-
-/* 
-Variable 'projects' contains list of widgets that can be released.
-*/
-
-def JENKIN_GIT_CREDENTIALS_ID = "8c90ce01-4736-4b5a-8661-ab6299330151"
-def JENKIN_K8S_CREDENTIALS_ID = 'kubernetes-gucci-dev'
-def INFORM_ABOUT_FAILURE = 'grp.hfhs@sytoss.com'
-def JENKINS_NODE_JS_INSTALLATION_LABEL = 'node10.16.3'
-
-def proposal_version = ""
-def overview = "Version proposal"
-def ver_list = ""
-def base_ver = ""
-def base_build = null
-def isBaseVerValid = true
 
 pipeline{
     agent{
