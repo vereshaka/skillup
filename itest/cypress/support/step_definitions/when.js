@@ -6,6 +6,7 @@ import {
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import ProductMoveWidget from '../page_objects/product-move-widget';
+import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 
 When(/I have try to login as (.*) with (.*) credential/,
   (username, type) => {
@@ -37,3 +38,9 @@ When(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
   });
+When(/I select latest business transaction/, () => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .selectLatestTransaction();
+});

@@ -3,7 +3,7 @@ import { Then } from 'cypress-cucumber-preprocessor/steps';
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import ProductMoveWidget from '../page_objects/product-move-widget';
-import BusinessTransactionWidget from '../page_objects/business-transaction-widget';
+import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 import HfhsCockpit from '../page_objects/hfhs-cockpit';
 
 Then('I should receive {string} message on login form',
@@ -29,20 +29,26 @@ Then(/^I should see active '(.*)' button$/,
       .checkProductMoveButtonExistence(buttonName);
   });
 
-Then(/^business transaction widget is displayed$/,
+Then(/^business transaction history widget is displayed$/,
   () => {
-    (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+    (gucciWorld
+      .getCurrentCockpit()
+      .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
       .isWidgetExists();
   });
 
 Then(/transaction list mode group is (not |)presented/,
   (existence) => {
     if (existence === 'not ') {
-      (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+      (gucciWorld
+        .getCurrentCockpit()
+        .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
         .isAdminGroupNotExist();
     }
     if (existence === '') {
-      (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+      (gucciWorld
+        .getCurrentCockpit()
+        .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
         .isAdminGroupExist();
     }
   });
@@ -86,4 +92,10 @@ Then(/I should see item and product lists/, () => {
 Then(/The following products should be selected/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isSelectedAccountsCorrect(table);
+});
+Then(/latest business transaction's info is displayed in new tab/, () => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .isInfoDisplayed();
 });

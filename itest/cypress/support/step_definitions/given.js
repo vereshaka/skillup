@@ -6,6 +6,7 @@ import gucciWorld from './hooks';
 import ProductMoveWidget from '../page_objects/product-move-widget';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import SearchAccountWidget from '../page_objects/search-account-widget';
+import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
   gucciWorld.openLoginForm();
@@ -59,3 +60,9 @@ Given(/^I open GUCCI Portal as (.*)$/,
   (username) => {
     gucciWorld.login(username);
   });
+Given(/I select '(.*)' that were '(.*)' in the last month/, (affiliation, currentStatus) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .filterTransactionList(affiliation, currentStatus);
+});

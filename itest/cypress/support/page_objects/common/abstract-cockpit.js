@@ -15,7 +15,7 @@ class AbstractCockpit {
   open() {
     cy.get('div.menu-drawer').click();
     cy.get(`a:contains(${this.getName()})`).click();
-    // TODO: yevgenyv: please check is it possible replace wait on isOpen
+    // TODO: yevgenyv: please checkTransactionListLength is it possible replace wait on isOpen
     cy.shortWait();
   }
 

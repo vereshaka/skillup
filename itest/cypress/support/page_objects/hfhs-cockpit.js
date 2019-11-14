@@ -3,12 +3,12 @@
 import AbstractCockpit from './common/abstract-cockpit';
 import HfhsToolbarWidget from './hfhs-toolbar-widget';
 import ProductMoveWidget from './product-move-widget';
-import BusinessTransactionWidget from './business-transaction-widget';
+import BusinessTransactionHistoryWidget from './business-transaction-history-widget';
 
 class HfhsCockpit extends AbstractCockpit {
   toolbar: HfhsToolbarWidget = new HfhsToolbarWidget();
 
-  businessTransaction: BusinessTransactionWidget = new BusinessTransactionWidget();
+  businessTransaction: BusinessTransactionHistoryWidget = new BusinessTransactionHistoryWidget();
 
   getName = (): string => 'HFHS Cockpit';
 
