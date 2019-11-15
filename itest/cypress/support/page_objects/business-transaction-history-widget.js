@@ -39,7 +39,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
       });
   };
 
-  selectAffiliationValue = (affiliation) => {
+  selectAffiliationValue = (affiliation: string) => {
     let index;
     if (affiliation === 'all transactions') {
       index = 1;
@@ -50,7 +50,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
       .click();
   };
 
-  selectStatusValue = (currentStatus) => {
+  selectStatusValue = (currentStatus: string) => {
     let value;
     switch (currentStatus) {
       case 'done':
@@ -70,16 +70,29 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
 
   checkTransactionListLength = () => {
     cy.shortWait();
-    cy.get('body').then(($body) => {
-      if ($body.find('div.LoadMoreWrapper').find('div.gucci-common-button').length) {
-        cy.get('a[href="#selectBusinessTransactionItem"]').should('have.length', '10');
-      } else {
-        // Do nothing
-      }
-    });
+    cy
+      .get('body')
+      .as('bodyTag')
+      .then(($body) => {
+        if ($body.find('div.LoadMoreWrapper').find('div.gucci-common-button').length) {
+          cy
+            .get('a[href="#selectBusinessTransactionItem"]')
+            .should('have.length', '10');
+          cy
+            .get('div.gucci-common-button')
+            .click();
+          cy.get('@bodyTag').then(($bodyTag) => {
+            if ($bodyTag.find('div.LoadMoreWrapper').find('div.gucci-common-button').length) {
+              cy
+                .get('a[href="#selectBusinessTransactionItem"]')
+                .should('have.length', '20');
+            }
+          });
+        }
+      });
   };
 
-  filterTransactionList = (affiliation, currentStatus) => {
+  filterTransactionList = (affiliation: string, currentStatus: string) => {
     this.selectAffiliationValue(affiliation);
     this.selectStatusValue(currentStatus);
     cy

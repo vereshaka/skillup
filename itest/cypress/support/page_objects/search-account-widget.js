@@ -43,7 +43,7 @@ class SearchAccountWidget extends AbstractWidget {
     cy.get(`select#${this.elements.History}`).should('exist');
   };
 
-  areAccountsFounded = (table) => {
+  areAccountsFounded = (table: Object) => {
     cy
       .get('div#searchResult')
       .should('exist')
