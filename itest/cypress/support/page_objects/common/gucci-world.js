@@ -40,7 +40,7 @@ class GucciWorld {
   }
 
   hasLoginError = (errorMessage: string) => {
-    // TODO: yevgenyv: checkTransactionListLength that login form exists
+    // TODO: yevgenyv: check that login form exists
     cy.get('span').should('have.text', errorMessage);
   };
 

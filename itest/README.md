@@ -23,7 +23,7 @@
 <td>
 <b>Dummy implementation yet. Should be used in scenario</b>
 <hr/>
-Create or checkTransactionListLength that user with [username] exists in base and it has corresponding [permissions]</td>
+Create or check that user with [username] exists in base and it has corresponding [permissions]</td>
 </tr>
 
 </table>
