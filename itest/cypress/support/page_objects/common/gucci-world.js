@@ -23,6 +23,7 @@ class GucciWorld {
     this.visitPortal();
     cy.shortWait();
     this.logout();
+    cy.shortWait();
   }
 
   login(username: string, withCorrectPassword: boolean = true) {
@@ -45,6 +46,7 @@ class GucciWorld {
   };
 
   logout() {
+    cy.shortWait();
     cy.get('body').then(($body) => {
       if ($body.find('div.logout').length) {
         cy.get('a[href="/portal/_/api/logout"]').click();
