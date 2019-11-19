@@ -1,4 +1,4 @@
-FROM node:10.16.3-slim
+FROM node:10.17.0-slim
 
 LABEL "maintainer"="viacheslav.nezamai@sytoss.com"
 
