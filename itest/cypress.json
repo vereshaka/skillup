@@ -1,4 +1,5 @@
 {
   "testFiles": "**/*.{feature,features}",
-  "watchForFileChanges": false
+  "watchForFileChanges": false,
+  "chromeWebSecurity": false
 }

@@ -37,3 +37,7 @@ When(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
   });
+When(/I click on '(.*)' product/, (productName) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .openProductInfo(productName);
+});

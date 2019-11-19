@@ -105,6 +105,16 @@ class ProductMoveWidget extends AbstractWidget {
       }
     });
   };
+
+  openProductInfo = (productName) => {
+    cy.get('span[class="Icon faMinusSquare fa2x ExcludeAllProducts"]').click();
+    cy.get('div[class="accordion__item"]:contains("NORM Products")').click();
+    cy.get(`a:contains(${productName})`).click();
+  };
+
+  isInfoCorrect = (productName) => {
+    cy.get(`div[class="tab-dialog-button active"]>div:contains(${productName})`).should('exist');
+  };
 }
 
 export default ProductMoveWidget;
