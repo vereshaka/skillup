@@ -36,7 +36,7 @@ pipeline{
                 nodejs('node10.16.3-aqa'){
                     dir('itest/'){
                         sh 'npm run clean'
-                        sh 'npm run test:run -- --browser chromium'
+                        sh 'npm run test:run -- --browser chrome'
                         sh 'npm run cucumber:reporter'
                         archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: true
                     }
