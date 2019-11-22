@@ -15,3 +15,13 @@ Feature: Product Move
     And Target account should be
       | AccountNumber    | IBAN              | LockedOrders |
       | A604916027,00002 | AT165345465467458 |              |
+
+  @focus
+  Scenario: Adding products into filled group
+    Given I open GUCCI Portal as user3
+    And open 'Product Move' widget from 'HFHS Cockpit'
+    And add all products founded by 'KDNR:100668958'
+    And specify '' account founded by 'KDNR:100100100' for NORM group
+    Then NORM product group should have 2 accounts
+    And no target account selected
+    And selected account button will be available
