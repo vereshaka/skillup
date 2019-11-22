@@ -6,8 +6,8 @@
   "scripts": {
     "clean": "node clean.js",
     "cucumber:reporter": "node cucumber-reporter.js",
-    "test:open": "./node_modules/.bin/cypress open",
-    "test:run": "./node_modules/.bin/cypress run",
+    "test:open": "./node_modules/.bin/cypress open --env environment=local",
+    "test:run": "./node_modules/.bin/cypress run --env environment=local",
     "lint": "eslint --ext .js --fix ./cypress",
     "build": "npm run clean && npm run test:run & npm run cucumber:reporter",
     "flow": "flow check"
