@@ -71,5 +71,5 @@ Given(/'(.*)' has no business transactions/, (username: string) => {
   (gucciWorld
     .getCurrentCockpit()
     .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
-    .selectAllForUser(username);
+    .selectAllForUser(username).then((r) => console.log(r));
 });

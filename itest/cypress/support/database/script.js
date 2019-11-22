@@ -1,3 +1,3 @@
 const Dao = require('./dao');
 
-Dao.selectAllForUser('user3');
+Dao.selectAllForUser('admin');
