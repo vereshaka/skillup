@@ -6,8 +6,8 @@
   "scripts": {
     "clean": "node clean.js",
     "cucumber:reporter": "node cucumber-reporter.js",
-    "test:open": "./node_modules/.bin/cypress open",
-    "test:run": "./node_modules/.bin/cypress run",
+    "test:open": "./node_modules/.bin/cypress open ",
+    "test:run": "./node_modules/.bin/cypress run --browser chrome",
     "lint": "eslint --ext .js --fix ./cypress",
     "build": "npm run clean && npm run test:run & npm run cucumber:reporter",
     "flow": "flow check"
@@ -33,6 +33,7 @@
     "cypress-cucumber-preprocessor": "^1.16.2",
     "cypress-xpath": "^1.4.0",
     "moment": "^2.24.0",
+    "oracledb": "^4.0.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },

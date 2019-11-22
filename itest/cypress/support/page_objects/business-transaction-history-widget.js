@@ -1,5 +1,6 @@
 // @flow
 import AbstractWidget from './common/abstract-widget';
+import Dao from '../database/dao';
 
 class BusinessTransactionHistoryWidget extends AbstractWidget {
   initElements() {
@@ -78,16 +79,6 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
           cy
             .get('a[href="#selectBusinessTransactionItem"]')
             .should('have.length', '10');
-          cy
-            .get('div.gucci-common-button')
-            .click();
-          cy.get('@bodyTag').then(($bodyTag) => {
-            if ($bodyTag.find('div.LoadMoreWrapper').find('div.gucci-common-button').length) {
-              cy
-                .get('a[href="#selectBusinessTransactionItem"]')
-                .should('have.length', '20');
-            }
-          });
         }
       });
   };
@@ -102,6 +93,24 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
     this.checkTransactionListLength();
   };
 
+  checkTransactionList = (table: Object) => {
+    let { length } = table.hashes();
+    length = Number(length);
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < length; i++) {
+      cy.get(`a[href="#selectBusinessTransactionItem"]:eq(${i})`).contains(table.hashes()[i].TransactionId).should('exist');
+      cy.get(`a[href="#selectBusinessTransactionItem"]:eq(${i})`).contains(table.hashes()[i].TransactionType).should('exist');
+      cy.get(`tr:eq(${i + 1})>td:eq(1)`).contains(table.hashes()[i].User).should('exist');
+      cy.get(`tr:eq(${i + 1})>td:eq(1)`).contains(table.hashes()[i].CreationDate).should('exist');
+      cy.get(`tr:eq(${i + 1})>td:eq(2)`).contains(table.hashes()[i].Count).should('exist');
+    }
+  };
+
+  showTransactionList = (affiliation: string, currentStatus: string, table: Object) => {
+    this.filterTransactionList(affiliation, currentStatus);
+    this.checkTransactionList(table);
+  };
+
   selectLatestTransaction = () => {
     cy
       .get('a[href="#selectBusinessTransactionItem"]')
@@ -109,7 +118,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
       .click();
   };
 
-  isInfoDisplayed = () => {
+  isInfoDisplayed = (table: Object) => {
     cy
       .get('a[href="#selectBusinessTransactionItem"]')
       .eq(0)
@@ -120,7 +129,27 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
           .find('div.title')
           .should('have.text', $text);
       });
-  }
+
+    let { length } = table.hashes();
+    length = Number(length);
+    for (let i = 0; i < length; i += 1) {
+      cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>span>strong:eq(0)').contains(table.hashes()[i].TransactionId).should('exist');
+      cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>strong>span:eq(0)').contains(table.hashes()[i].TransactionType).should('exist');
+      cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>span>strong:eq(1)').contains(table.hashes()[i].User).should('exist');
+      cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>span>strong:eq(2)').contains(table.hashes()[i].CreationDate).should('exist');
+      cy.get('div[class="HeadingItemsPosition"]>div>span').contains(table.hashes()[i].Count).should('exist');
+      cy.get('div[class="EffectiveDate"]>strong>span').contains(table.hashes()[i].EffectiveDate).should('exist');
+      cy.get('div[class="HeadingItemsPosition"]>div').contains(table.hashes()[i].TargetAccount).should('exist');
+    }
+  };
+
+  deleteAllForUser = async (user: string) => {
+    await Dao.deleteAllForUser(user);
+  };
+
+  selectAllForUser= async (user: string) => {
+    await Dao.selectAllForUser(user);
+  };
 }
 
 export default BusinessTransactionHistoryWidget;

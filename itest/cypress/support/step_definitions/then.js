@@ -93,9 +93,9 @@ Then(/The following products should be selected/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isSelectedAccountsCorrect(table);
 });
-Then(/latest business transaction's info is displayed in new tab/, () => {
+Then(/latest business transaction's info is displayed in new tab/, (table: Object) => {
   (gucciWorld
     .getCurrentCockpit()
     .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
-    .isInfoDisplayed();
+    .isInfoDisplayed(table);
 });

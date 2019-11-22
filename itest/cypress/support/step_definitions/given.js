@@ -60,9 +60,16 @@ Given(/^I open GUCCI Portal as (.*)$/,
   (username) => {
     gucciWorld.login(username);
   });
-Given(/I select '(.*)' that were '(.*)' in the last month/, (affiliation, currentStatus) => {
+Given(/I see '(.*)' that were '(.*)' in the last month/, (affiliation, currentStatus, table) => {
   (gucciWorld
     .getCurrentCockpit()
     .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
-    .filterTransactionList(affiliation, currentStatus);
+    .showTransactionList(affiliation, currentStatus, table);
+});
+
+Given(/'(.*)' has no business transactions/, (username: string) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .selectAllForUser(username);
 });
