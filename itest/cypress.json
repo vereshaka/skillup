@@ -1,5 +1,6 @@
 {
   "testFiles": "**/*.{feature,features}",
   "watchForFileChanges": false,
-  "chromeWebSecurity": false
+  "chromeWebSecurity": false,
+  "baseUrl": "https://gucci-portal.k8s.sytoss.intra"
 }
