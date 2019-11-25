@@ -36,7 +36,7 @@ pipeline{
                 nodejs('node10.16.3-aqa'){
                     dir('itest/'){
                         sh 'npm run clean'
-                        sh 'npm run test:run'
+                        sh 'npm run test:run -- --browser chrome'
                         sh 'npm run cucumber:reporter'
                         archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: true
                     }
@@ -49,6 +49,7 @@ pipeline{
             dir('itest/'){
                 sh 'npm run cucumber:reporter'
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: false
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/**/*.mp4', onlyIfSuccessful: false
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/*.png', onlyIfSuccessful: false
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/**/*.png', onlyIfSuccessful: false
             }
