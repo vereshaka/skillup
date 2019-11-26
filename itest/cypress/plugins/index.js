@@ -1,5 +1,6 @@
 const webpack = require('@cypress/webpack-preprocessor');
 const webpackOptions = require('../../webpack.config.js');
+const db = require('../../cypress/support/database/dao');
 
 module.exports = (on) => {
   const options = {
@@ -12,5 +13,9 @@ module.exports = (on) => {
       args.push('--incognito');
       return args;
     }
+  });
+
+  on('task', {
+    'defaults:db': () => db.selectAllForUser('admin'),
   });
 };

@@ -38,13 +38,13 @@ Feature: Business Transaction History
 
   @focus
   Scenario: Check latest successfully finished transaction
-#    Given user3 has no business transactions
-    Given user3 has business transaction
-      | business_transaction_id | created_by | effective_date |
-      | business_transaction_id | created_by | effective_date |
-    And business transactions has items
-      | business_transaction_id | source_party_id | source_acc_id | source_phone_cc | source_phone_ndc | source_phone_sn | source_product_sidid | target_party_id | target_acc_id | source_product_id | source_acc_type | source_billable_user |
-      | business_transaction_id | source_party_id | source_acc_id | source_phone_cc | source_phone_ndc | source_phone_sn | source_product_sidid | target_party_id | target_acc_id | source_product_id | source_acc_type | source_billable_user |
+   Given user3 has no business transactions
+#    Given user3 has business transaction
+#      | business_transaction_id | created_by | effective_date |
+#      | business_transaction_id | created_by | effective_date |
+#    And business transactions has items
+#      | business_transaction_id | source_party_id | source_acc_id | source_phone_cc | source_phone_ndc | source_phone_sn | source_product_sidid | target_party_id | target_acc_id | source_product_id | source_acc_type | source_billable_user |
+#      | business_transaction_id | source_party_id | source_acc_id | source_phone_cc | source_phone_ndc | source_phone_sn | source_product_sidid | target_party_id | target_acc_id | source_product_id | source_acc_type | source_billable_user |
     Given I open GUCCI Portal as user3
     And switch to HFHS Cockpit
     And business transaction history widget is displayed

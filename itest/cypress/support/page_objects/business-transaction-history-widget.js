@@ -147,8 +147,8 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
     await Dao.deleteAllForUser(user);
   };
 
-  selectAllForUser= async (user: string) => {
-    await Dao.selectAllForUser(user);
+  selectAllForUser = () => {
+    cy.task('defaults:db');
   };
 }
 
