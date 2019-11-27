@@ -8,7 +8,7 @@ const cypressConfigResolverByFile = (filename) => {
 };
 const cypressConfigResolver = () => {
   const env = process.env.AQA_ENV || 'cypress';
-  console.log('gavno', process.env.AQA_ENV)
+  console.log('gg', process.env.AQA_ENV)
   console.log(`Started with ${env} configuration`);
   return cypressConfigResolverByFile(env);
 };
