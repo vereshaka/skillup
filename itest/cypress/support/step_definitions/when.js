@@ -37,7 +37,7 @@ When(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
   });
-When(/I click on '(.*)' product/, (productName) => {
+When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .openProductInfo(productName);
+    .openProductInfo(productName, group);
 });
