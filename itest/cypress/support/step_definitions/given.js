@@ -67,9 +67,20 @@ Given(/I see '(.*)' that were '(.*)' in the last month/, (affiliation, currentSt
     .showTransactionList(affiliation, currentStatus, table);
 });
 
-Given(/'(.*)' has no business transactions/, (username: string) => {
-  (gucciWorld
-    .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
-    .selectAllForUser(username);
+Given(/(.*) has no business transactions/, (username: string) => {
+  gucciWorld.deleteAllForUser(username);
+});
+
+Given(/^(.*) has business transaction$/, (username, table) => {
+  gucciWorld.deleteAllForUser(username);
+  gucciWorld.insertTransactionForUser(username, table);
+});
+
+Given(/business transaction has items/, (table) => {
+  gucciWorld.insertTransactionItemsForTransaction(table);
+});
+
+Given(/(.*) has business transaction on (.*) with items/, (username, date, table) => {
+  gucciWorld.deleteAllForUser(username);
+  gucciWorld.insertTransactionWithItems(username, date, table);
 });

@@ -1,6 +1,6 @@
 // @flow
 import AbstractWidget from './common/abstract-widget';
-import Dao from '../database/dao';
+// import Dao from '../database/dao';
 
 class BusinessTransactionHistoryWidget extends AbstractWidget {
   initElements() {
@@ -108,7 +108,13 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
 
   showTransactionList = (affiliation: string, currentStatus: string, table: Object) => {
     this.filterTransactionList(affiliation, currentStatus);
-    this.checkTransactionList(table);
+    if (table) {
+      this.checkTransactionList(table);
+    } else {
+      cy
+        .get('div.BusinessTransactionsWrapper')
+        .contains('No record found!');
+    }
   };
 
   selectLatestTransaction = () => {
@@ -141,14 +147,6 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
       cy.get('div[class="EffectiveDate"]>strong>span').contains(table.hashes()[i].EffectiveDate).should('exist');
       cy.get('div[class="HeadingItemsPosition"]>div').contains(table.hashes()[i].TargetAccount).should('exist');
     }
-  };
-
-  deleteAllForUser = async (user: string) => {
-    await Dao.deleteAllForUser(user);
-  };
-
-  selectAllForUser = () => {
-    cy.task('defaults:db');
   };
 }
 

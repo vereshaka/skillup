@@ -62,7 +62,17 @@ async function execute(query, params) {
   }
 }
 
-const createBtExecute = async (username, businessTransaction, businessTransactionItems) => {
+const deleteAllForUser = async (username) => {
+  await execute(commands.businessTransactionItems.DELETE_ALL_FOR_USER, { created_by: username });
+  await execute(commands.businessTransactions.DELETE_ALL_FOR_USER, { created_by: username });
+};
+
+const selectAllForUser = async (username) => {
+  await execute(commands.businessTransactionItems.SELECT_ALL_FOR_USER, { created_by: username });
+  await execute(commands.businessTransactions.SELECT_ALL_FOR_USER, { created_by: username });
+};
+
+const insertTransactionForUser = async (username, businessTransactionDate) => {
   const res = await execute(commands.businessTransactions.NEW_ID, [], { outFormat: oracleDb.OBJECT });
   const { rows } = res;
   const [nextValObj] = rows;
@@ -71,15 +81,18 @@ const createBtExecute = async (username, businessTransaction, businessTransactio
   console.log(`New ID for business transaction is ${businessTransactionNumber}`);
   const btBinds = {
     business_transaction_id: businessTransactionNumber,
-    created_by: businessTransaction.created_by,
-    effective_date: businessTransaction.effective_date,
+    created_by: username,
+    effective_date: businessTransactionDate,
   };
   console.log(`Start Business Transaction persistence. Value: ${JSON.stringify(btBinds)}`);
   await execute(commands.businessTransactions.INSERT, btBinds);
+  return businessTransactionNumber;
+};
 
+const insertTransactionItemsForTransaction = async (businessTransactionItems, businessTransactionNumber) => {
   const arrayOfPromises = businessTransactionItems.forEach((async (record) => {
     const itemBinds = {
-      business_transaction_id: record.business_transaction_id,
+      business_transaction_id: businessTransactionNumber,
       source_party_id: record.source_party_id,
       source_acc_id: record.source_acc_id,
       source_phone_cc: record.source_phone_cc,
@@ -96,23 +109,15 @@ const createBtExecute = async (username, businessTransaction, businessTransactio
     return execute(commands.businessTransactionItems.INSERT, itemBinds);
   }));
   await Promise.all(arrayOfPromises);
-  return businessTransactionNumber;
 };
 
-const deleteAllForUser = async (username) => {
-  await execute(commands.businessTransactionItems.DELETE_ALL_FOR_USER, { created_by: username });
-  await execute(commands.businessTransactions.DELETE_ALL_FOR_USER, { created_by: username });
-};
-
-const selectAllForUser = async (username) => {
-  await execute(commands.businessTransactionItems.SELECT_ALL_FOR_USER, { created_by: username });
-  await execute(commands.businessTransactions.SELECT_ALL_FOR_USER, { created_by: username });
-};
-
-const insertTransactionForUser = (username, businessTransaction, businessTransactionItems) => {
-  createBtExecute(username, businessTransaction, businessTransactionItems).then((r) => console.log('inserted record ', r));
+const insertTransactionWithItems = async (username, businessTransactionDate, businessTransactionItems) => {
+  const businessTransactionNumber = await insertTransactionForUser(username, businessTransactionDate);
+  await insertTransactionItemsForTransaction(businessTransactionItems, businessTransactionNumber);
 };
 
 module.exports.deleteAllForUser = deleteAllForUser;
 module.exports.selectAllForUser = selectAllForUser;
 module.exports.insertTransactionForUser = insertTransactionForUser;
+module.exports.insertTransactionItemsForTransaction = insertTransactionItemsForTransaction;
+module.exports.insertTransactionWithItems = insertTransactionWithItems;

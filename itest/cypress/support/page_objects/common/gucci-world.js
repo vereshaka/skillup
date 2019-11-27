@@ -27,13 +27,17 @@ class GucciWorld {
 
   login(username: string, withCorrectPassword: boolean = true) {
     this.openLoginForm();
-    cy.get('input[id=\'username\']').type(username);
+    cy.get('input[id=\'username\']')
+      .type(username);
     if (withCorrectPassword) {
-      cy.get('input[id=\'password\']').type(getPassword(username));
+      cy.get('input[id=\'password\']')
+        .type(getPassword(username));
     } else {
-      cy.get('input[id=\'password\']').type(`${username}123`);
+      cy.get('input[id=\'password\']')
+        .type(`${username}123`);
     }
-    cy.get('input[value="Log In"]').click();
+    cy.get('input[value="Log In"]')
+      .click();
     this.user = {
       username,
     };
@@ -41,17 +45,20 @@ class GucciWorld {
 
   hasLoginError = (errorMessage: string) => {
     // TODO: yevgenyv: check that login form exists
-    cy.get('span').should('have.text', errorMessage);
+    cy.get('span')
+      .should('have.text', errorMessage);
   };
 
   logout() {
-    cy.get('body').then(($body) => {
-      if ($body.find('div.logout').length) {
-        cy.get('a[href="/portal/_/api/logout"]').click();
-      } else {
-        // TODO: yevgenyv: raise an error if user not logged in
-      }
-    });
+    cy.get('body')
+      .then(($body) => {
+        if ($body.find('div.logout').length) {
+          cy.get('a[href="/portal/_/api/logout"]')
+            .click();
+        } else {
+          // TODO: yevgenyv: raise an error if user not logged in
+        }
+      });
     this.user = undefined;
   }
 
@@ -75,17 +82,22 @@ class GucciWorld {
   }
 
   isCurrentCockpit(name: string) {
-    this.getCockpitByName(name).isOpen();
+    this.getCockpitByName(name)
+      .isOpen();
   }
 
   isCockpitExist = (cockpitName: string) => {
-    cy.get('ul>li').find(`a:contains(${cockpitName})`).should('have.text', cockpitName);
+    cy.get('ul>li')
+      .find(`a:contains(${cockpitName})`)
+      .should('have.text', cockpitName);
   };
 
   isCockpitNotExist = (cockpitName: string) => {
-    cy.get('ul>li>a').each(($el) => {
-      cy.get($el).should('not.have.text', cockpitName);
-    });
+    cy.get('ul>li>a')
+      .each(($el) => {
+        cy.get($el)
+          .should('not.have.text', cockpitName);
+      });
   };
 
   getCurrentCockpit() {
@@ -99,6 +111,41 @@ class GucciWorld {
     this.user = undefined;
     this.cockpit = undefined;
   }
+
+  selectAllForUser = (username: string) => {
+    cy.task('selectAllForUser:db', { username });
+    cy.log(`selected all records for ${username}`);
+  };
+
+  deleteAllForUser = (username: string) => {
+    cy.task('deleteAllForUser:db', { username });
+    cy.log(`deleted all records for ${username}`);
+  };
+
+  insertTransactionForUser = (username, businessTransactionDate) => {
+    cy.task('insertTransactionForUser:db', {
+      username,
+      businessTransactionDate,
+    });
+    cy.log(`inserted transaction for ${username}`);
+  };
+
+  insertTransactionItemsForTransaction = (businessTransactionItems, businessTransactionNumber) => {
+    cy.task('insertTransactionItemsForTransaction:db', {
+      businessTransactionItems,
+      businessTransactionNumber,
+    });
+    cy.log(`inserted transaction items for transaction ${businessTransactionNumber}`);
+  };
+
+  insertTransactionWithItems = (username, businessTransactionDate, businessTransactionItems) => {
+    cy.task('insertTransactionWithItems:db', {
+      username,
+      businessTransactionDate,
+      businessTransactionItems,
+    });
+    cy.log(`inserted transaction with items for ${username}`);
+  };
 }
 
 export default GucciWorld;
