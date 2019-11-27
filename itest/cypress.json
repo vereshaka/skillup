@@ -1,5 +1,8 @@
 {
   "testFiles": "**/*.{feature,features}",
   "watchForFileChanges": false,
-  "chromeWebSecurity": false
+  "chromeWebSecurity": false,
+  "env": {
+    "configFile": "local"
+  }
 }

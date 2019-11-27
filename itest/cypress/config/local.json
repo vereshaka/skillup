@@ -2,5 +2,7 @@
   "testFiles": "**/*.{feature,features}",
   "watchForFileChanges": false,
   "chromeWebSecurity": false,
-  "portalUrl": "https://gucci-portal.k8s.sytoss.intra/"
+  "env": {
+    "portalUrl": "https://gucci-portal.k8s.sytoss.intra/"
+  }
 }

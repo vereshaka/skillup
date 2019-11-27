@@ -1,8 +1,16 @@
 const webpack = require('@cypress/webpack-preprocessor');
-const webpackOptions = require('../../webpack.config.js');
-const { cypressConfigResolver } = require('../config/config-resolver');
 
-module.exports = (on) => {
+const fs = require('fs-extra');
+const path = require('path');
+
+const webpackOptions = require('../../webpack.config.js');
+
+function getConfigurationByFile(file) {
+  const pathToConfigFile = path.resolve(__dirname, '../config', `${file}.json`);
+  return fs.readJson(pathToConfigFile);
+}
+
+module.exports = (on, config) => {
   const options = {
     webpackOptions,
   };
@@ -14,5 +22,6 @@ module.exports = (on) => {
     }
     return args;
   });
-  return cypressConfigResolver();
+  const file = config.env.configFile || 'local';
+  return getConfigurationByFile(file);
 };

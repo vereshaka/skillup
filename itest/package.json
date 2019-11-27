@@ -8,7 +8,7 @@
     "cucumber:reporter": "node cucumber-reporter.js",
     "test:open": "./node_modules/.bin/cypress open",
     "test:run": "./node_modules/.bin/cypress run",
-    "test": " set AQA_ENV=development&& npm run test:open",
+    "test": "./node_modules/.bin/cypress open --env configFile=integration",
     "lint": "eslint --ext .js --fix ./cypress",
     "build": "npm run clean && npm run test:run & npm run cucumber:reporter",
     "flow": "flow check"
@@ -37,7 +37,7 @@
     "moment": "^2.24.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
-    "fs-extra": "latest"
+    "fs-extra": "^8.1.0"
   },
   "cypress-cucumber-preprocessor": {
     "step_definitions": "cypress/support/step_definitions/",
