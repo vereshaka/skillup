@@ -3,6 +3,6 @@
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
     "env": {
-        "portalUrl": "http://google.com"
+        "portalUrl": "https://int.gucci-qa.at.inside/"
     }
 }
