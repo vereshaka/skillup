@@ -1,15 +1,8 @@
 const webpack = require('@cypress/webpack-preprocessor');
-const fs = require('fs-extra');
-const path = require('path');
 const webpackOptions = require('../../webpack.config.js');
+const { cypressConfigResolver } = require('../config/config-resolver');
 
-function getConfigurationByFile(file) {
-  const pathToConfigFile = path.resolve('../cypress', 'config', `${file}.json`);
-
-  return fs.readJson(pathToConfigFile);
-}
-
-module.exports = (on, config) => {
+module.exports = (on) => {
   const options = {
     webpackOptions,
   };
@@ -18,11 +11,8 @@ module.exports = (on, config) => {
   on('before:browser:launch', (browser = {}, args) => {
     if (browser.name === 'chrome') {
       args.push('--incognito');
-      return args;
     }
+    return args;
   });
-
-  const file = config.env.configFile;
-
-  return getConfigurationByFile(file);
+  return cypressConfigResolver();
 };

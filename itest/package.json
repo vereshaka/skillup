@@ -6,8 +6,9 @@
   "scripts": {
     "clean": "node clean.js",
     "cucumber:reporter": "node cucumber-reporter.js",
-    "test:open": "./node_modules/.bin/cypress open --env environment=local",
-    "test:run": "./node_modules/.bin/cypress run --env environment=local",
+    "test:open": "./node_modules/.bin/cypress open",
+    "test:run": "./node_modules/.bin/cypress run",
+    "test": " set AQA_ENV=development&& npm run test:open",
     "lint": "eslint --ext .js --fix ./cypress",
     "build": "npm run clean && npm run test:run & npm run cucumber:reporter",
     "flow": "flow check"
@@ -19,7 +20,8 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-flowtype": "^3.11.1",
     "eslint-plugin-import": "^2.18.2",
-    "flow-bin": "^0.102.0"
+    "flow-bin": "^0.102.0",
+    "cross-env": "^5.2.0"
   },
   "dependencies": {
     "@babel/core": "^7.6.4",

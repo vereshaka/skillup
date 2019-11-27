@@ -2,11 +2,12 @@
 import type { user } from './types/user';
 import {
   getPassword,
-  getPortalURL,
 } from '../utils/config';
 import AbstractCockpit from './abstract-cockpit';
 import HfhsCockpit from '../hfhs-cockpit';
 import GucciWelcomeCockpit from '../gucci-welcome-cockpit';
+import { logggg } from '../../../config/config-resolver';
+
 
 class GucciWorld {
   user: user;
@@ -14,7 +15,8 @@ class GucciWorld {
   cockpit: AbstractCockpit;
 
   visitPortal = () => {
-    cy.visit(getPortalURL());
+    cy.visit('http://google.com');
+    console.log(logggg());
   };
 
   getPasswordFor = (username: string): string => username;

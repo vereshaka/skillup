@@ -1,0 +1,6 @@
+{
+    "testFiles": "**/*.{feature,features}",
+    "watchForFileChanges": false,
+    "chromeWebSecurity": false,
+    "portalUrl": "http://google.com"
+}

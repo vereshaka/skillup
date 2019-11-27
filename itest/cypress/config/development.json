@@ -2,8 +2,5 @@
   "testFiles": "**/*.{feature,features}",
   "watchForFileChanges": false,
   "chromeWebSecurity": false,
-  "baseUrl": "http://google.com",
-  "env": {
-    "something": "dev"
-  }
+  "portalUrl": "https://www.youtube.com"
 }
