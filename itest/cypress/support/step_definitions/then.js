@@ -99,3 +99,7 @@ Then(/latest business transaction's info is displayed in new tab/, (table: Objec
     .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
     .isInfoDisplayed(table);
 });
+Then(/I should see '(.*)' product details/, (productName) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isInfoCorrect(productName);
+});

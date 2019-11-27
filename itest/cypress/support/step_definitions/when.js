@@ -38,6 +38,10 @@ When(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
   });
+When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .openProductInfo(productName, group);
+});
 When(/I select latest business transaction/, () => {
   (gucciWorld
     .getCurrentCockpit()

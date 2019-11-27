@@ -3,6 +3,6 @@
   "watchForFileChanges": false,
   "chromeWebSecurity": false,
   "env": {
-    "configFile": "local"
+    "portalUrl": "https://gucci-portal.k8s.sytoss.intra/"
   }
 }

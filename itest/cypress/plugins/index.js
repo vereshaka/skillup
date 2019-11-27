@@ -1,8 +1,17 @@
 const webpack = require('@cypress/webpack-preprocessor');
+
+const fs = require('fs-extra');
+const path = require('path');
+
 const webpackOptions = require('../../webpack.config.js');
 const db = require('../../cypress/support/database/dao');
 
-module.exports = (on) => {
+function getConfigurationByFile(file) {
+  const pathToConfigFile = path.resolve(__dirname, '../config', `${file}.json`);
+  return fs.readJson(pathToConfigFile);
+}
+
+module.exports = (on, config) => {
   const options = {
     webpackOptions,
   };
@@ -11,10 +20,11 @@ module.exports = (on) => {
   on('before:browser:launch', (browser = {}, args) => {
     if (browser.name === 'chrome') {
       args.push('--incognito');
-      return args;
     }
-    return 0;
+    return args
   });
+  const file = config.env.configFile || 'local';
+  return getConfigurationByFile(file);
 
   on('task', {
     'selectAllForUser:db': async ({ username }) => {

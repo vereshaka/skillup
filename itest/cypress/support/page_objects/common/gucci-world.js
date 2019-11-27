@@ -2,7 +2,6 @@
 import type { user } from './types/user';
 import {
   getPassword,
-  getPortalURL,
 } from '../utils/config';
 import AbstractCockpit from './abstract-cockpit';
 import HfhsCockpit from '../hfhs-cockpit';
@@ -14,7 +13,7 @@ class GucciWorld {
   cockpit: AbstractCockpit;
 
   visitPortal = () => {
-    cy.visit(getPortalURL());
+    cy.visit(Cypress.env('portalUrl'));
   };
 
   getPasswordFor = (username: string): string => username;
@@ -23,6 +22,7 @@ class GucciWorld {
     this.visitPortal();
     cy.shortWait();
     this.logout();
+    cy.shortWait();
   }
 
   login(username: string, withCorrectPassword: boolean = true) {
@@ -50,6 +50,7 @@ class GucciWorld {
   };
 
   logout() {
+    cy.shortWait();
     cy.get('body')
       .then(($body) => {
         if ($body.find('div.logout').length) {
