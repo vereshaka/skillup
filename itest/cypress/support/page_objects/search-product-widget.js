@@ -76,15 +76,21 @@ class SearchProductWidget extends AbstractWidget {
       .click();
   };
 
+  addFollowingProducts = (table) => {
+    table.hashes().forEach((row) => {
+      cy.get(`div.ResultItemGroup:contains(${row.Product})>input.ProductItemCheckbox`).click();
+    });
+  };
+
   close = () => {
     cy.get('button[id="process-button"]')
       .click();
   };
 
-  searchAndAdd = (query: string, products?: Array<string>) => {
+  searchAndAdd = (query: string, table?: Object) => {
     this.search(query);
-    if (products) {
-      throw new Error('Implement me');
+    if (table) {
+      this.addFollowingProducts(table);
     } else {
       this.addAll();
     }

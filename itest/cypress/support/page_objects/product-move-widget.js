@@ -50,12 +50,12 @@ class ProductMoveWidget extends AbstractWidget {
     });
   };
 
-  addProducts = (query: string, products?: Array<string>) => {
+  addProducts = (query: string, table?: Object) => {
     cy.normalWait();
     this.isAlreadyAdded();
     cy.normalWait();
     this.openDialog('Add Product');
-    new SearchProductWidget().searchAndAdd(query, products);
+    new SearchProductWidget().searchAndAdd(query, table);
   };
 
   specifyAccount = (account:string, query:string, group:string) => {
