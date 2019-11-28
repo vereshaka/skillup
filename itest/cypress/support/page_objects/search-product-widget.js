@@ -78,7 +78,7 @@ class SearchProductWidget extends AbstractWidget {
 
   addFollowingProducts = (table) => {
     table.hashes().forEach((row) => {
-      cy.get(`div.ResultItemGroup:contains(${row.Product})>input.ProductItemCheckbox`).click();
+      cy.get(`div.ResultItemGroup:contains(${row.Product} ${row.Subscription})>input.ProductItemCheckbox`).click();
     });
   };
 

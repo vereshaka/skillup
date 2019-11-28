@@ -5,9 +5,9 @@ Feature: Product Move
     Given As user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:100883236'
-      | Product       |
-      | Mombi_Desiree |
-      | Bombi_Desiree |
+      | Product       | Subscription      |
+      | Mombi_Desiree | 43/9740/201554877 |
+      | Bombi_Desiree | 43/9740/201554878 |
     And specify 'A604916027,00002' account founded by 'KDNR:103777119' for PRI group
     When Order validation step is open
     Then The following source account should be selected
