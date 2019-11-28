@@ -21,11 +21,8 @@ module.exports = (on, config) => {
     if (browser.name === 'chrome') {
       args.push('--incognito');
     }
-    return args
+    return args;
   });
-  const file = config.env.configFile || 'local';
-  return getConfigurationByFile(file);
-
   on('task', {
     'selectAllForUser:db': async ({ username }) => {
       await db.selectAllForUser(username);
@@ -35,17 +32,13 @@ module.exports = (on, config) => {
       await db.deleteAllForUser(username);
       return 0;
     },
-    'insertTransactionForUser:db': async ({ username, businessTransactionDate }) => {
-      await db.insertTransactionForUser(username, businessTransactionDate);
-      return 0;
-    },
-    'insertTransactionItemsForTransaction:db': async ({ businessTransactionItems, businessTransactionNumber }) => {
-      await db.insertTransactionItemsForTransaction(businessTransactionItems, businessTransactionNumber);
-      return 0;
-    },
-    'insertTransactionWithItems:db': async ({ username, businessTransactionDate, businessTransactionItems }) => {
-      await db.insertTransactionWithItems(username, businessTransactionDate, businessTransactionItems);
+    'insertTransactionWithItems:db': async ({
+      username, status, businessTransactionDate, businessTransactionItems,
+    }) => {
+      await db.insertTransactionWithItems(username, status, businessTransactionDate, businessTransactionItems);
       return 0;
     },
   });
+  const file = config.env.configFile || 'local';
+  return getConfigurationByFile(file);
 };

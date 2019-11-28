@@ -20,7 +20,7 @@ Feature: Business Transaction History
     And business transaction history widget is displayed
     And transaction list mode group is not presented
 
-  @focus
+
   Scenario: Check lack of transactions
     Given user3 has no business transactions
     And I open GUCCI Portal as user3
@@ -29,17 +29,11 @@ Feature: Business Transaction History
     And transaction list mode group is presented
     Then I see 'no transactions' that were 'taken place' in the last month
 
+  @focus
   Scenario: Check latest transaction
-#    Given user3 has business transaction
-#      | effective_date |
-#      | effective_date |
-#    And business transaction has items
-#      | source_party_id | source_acc_id | source_phone_cc | source_phone_ndc | source_phone_sn | source_product_sidid | target_party_id | target_acc_id | source_product_id | source_acc_type | source_billable_user |
-#      | source_party_id | source_acc_id | source_phone_cc | source_phone_ndc | source_phone_sn | source_product_sidid | target_party_id | target_acc_id | source_product_id | source_acc_type | source_billable_user |
-    Given user3 has business transaction on '' with items
-      | source_party_id | source_acc_id | source_phone_cc | source_phone_ndc | source_phone_sn | source_product_sidid | target_party_id | target_acc_id | source_product_id | source_acc_type | source_billable_user |
-      | source_party_id | source_acc_id | source_phone_cc | source_phone_ndc | source_phone_sn | source_product_sidid | target_party_id | target_acc_id | source_product_id | source_acc_type | source_billable_user |
-
+    Given user3 has business transaction that were done on 22-JAN-2019 with items
+      | status | source_party_id | source_acc_id | source_product_sidid              | target_party_id | target_acc_id | order_id  | error | source_product_id | source_acc_type |source_phone_cc | source_phone_ndc | source_phone_sn | source_billable_user |
+      | done   | 103777118       | 'A548334910'  | 'BPO_A1_HYBRID_POWER_150_40_2016' | 103777119       | 'A604916029'  | 'CO99571' | 'OK'  | 21603159          | 'NORM'          |   43            | '9740           | 201554877       | null                 |
     And I open GUCCI Portal as user3
     And switch to HFHS Cockpit
     And business transaction history widget is displayed

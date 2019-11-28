@@ -123,25 +123,10 @@ class GucciWorld {
     cy.log(`deleted all records for ${username}`);
   };
 
-  insertTransactionForUser = (username, businessTransactionDate) => {
-    cy.task('insertTransactionForUser:db', {
-      username,
-      businessTransactionDate,
-    });
-    cy.log(`inserted transaction for ${username}`);
-  };
-
-  insertTransactionItemsForTransaction = (businessTransactionItems, businessTransactionNumber) => {
-    cy.task('insertTransactionItemsForTransaction:db', {
-      businessTransactionItems,
-      businessTransactionNumber,
-    });
-    cy.log(`inserted transaction items for transaction ${businessTransactionNumber}`);
-  };
-
-  insertTransactionWithItems = (username, businessTransactionDate, businessTransactionItems) => {
+  insertTransactionWithItems = (username, status, businessTransactionDate, businessTransactionItems) => {
     cy.task('insertTransactionWithItems:db', {
       username,
+      status,
       businessTransactionDate,
       businessTransactionItems,
     });
