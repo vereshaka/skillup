@@ -1,0 +1,64 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: jenkins-runner-script
+data:
+  startup: |
+    #!/usr/bin/env sh
+    
+    mkdir /root/.cache
+    chmod -R 777 /root/.cache
+    apt-get update
+    apt-get install -y libgconf-2-4 libgtk-3-0 xvfb chromium git --no-install-recommends
+    jenkins-slave -url $JENKINS_ADDR $RUNNER_TOKEN $RUNNER_NAME
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jenkins-runner-token
+data:
+  RUNNER_TOKEN: "base64token"
+  RUNNER_NAME: "base64name"
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: jenkins-runner
+  namespace: devops
+  labels:
+    app: jenkins-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-runner
+  template:
+    metadata:
+      labels:
+        app: jenkins-runner
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: runner
+          image: jenkins/jnlp-slave:latest-jdk11
+          command: ["/opt/startup.sh"]
+          env:
+          - name: RUNNER_ADDR
+            value: "http://jenkins.service:8080"
+          envFrom:
+          - secretRef:
+              name: 
+          volumeMounts:
+          - mountPath: "/opt"
+            name: script
+      volumes:
+      - name: script
+        configMap:
+          name: jenkins-runner-script
+          defaultMode: 493
+          items:
+          - key: startup
+            path: startup.sh
