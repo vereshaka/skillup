@@ -40,9 +40,6 @@ Feature: Search Product Widget: Elements Check
 
   Scenario Outline: Query Errors check
     Given open 'Add Product' dialog
-    And As user2 with permission 'hfhs-user'
-    And open 'Product Move' widget from 'HFHS Cockpit'
-    And open 'Add Product' dialog
     When I try to search by '<query>' query
     Then '<msg>' should be displayed
 
