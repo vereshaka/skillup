@@ -15,7 +15,8 @@ class ProductMoveWidget extends AbstractWidget {
   getName = () => 'Product Move';
 
   specifyGroup = (name: string, group: string) => {
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup').click();
+    cy.get(`div[class="accordion__item"]:contains("${group} Products")>div[class="AccordionItemHeading AccordionItemHeadingColor"]`).click();
+    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup');
     cy.get('@searchableGroup').find(`button[id="${this.elements[name]}"]`).click();
   };
 
