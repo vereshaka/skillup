@@ -11,10 +11,6 @@ import BusinessTransactionHistoryWidget from '../page_objects/business-transacti
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
   gucciWorld.openLoginForm();
 });
-// eslint-disable-next-line no-unused-vars
-Given(/As (.*) with permission '(.*)'/, (username, permission) => {
-  gucciWorld.login(username);
-});
 Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
   () => { // username, keycloakName, table
     // TODO: implement me
