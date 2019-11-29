@@ -71,7 +71,7 @@ Given(/(.*) has no business transactions/, (username: string) => {
   gucciWorld.deleteAllForUser(username);
 });
 
-Given(/(.*) has business transaction that were (.*) on (.*) with items/, (username, status, date, table) => {
+Given(/(.*) has business transaction that was '(.*)' today with items/, (username, status, table) => {
   gucciWorld.deleteAllForUser(username);
-  gucciWorld.insertTransactionWithItems(username, status, date, table.hashes());
+  gucciWorld.insertTransactionWithItems(username, status, table.hashes());
 });

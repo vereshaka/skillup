@@ -2,11 +2,14 @@
 const oracleDb = require('oracledb');
 const config = require('../page_objects/utils/config');
 
+oracleDb.autoCommit = true;
+
 const commands = {
   businessTransactions: {
-    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transactions WHERE created_by = :created_by',
+    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transactions',
     DELETE_ALL_FOR_USER: 'DELETE FROM business_transactions WHERE created_by = :created_by',
     NEW_ID: 'select business_transaction_seq.nextval from dual',
+    CURRENT_ID: 'select business_transaction_seq.currval from dual',
     INSERT: `INSERT
              INTO BUSINESS_TRANSACTIONS
              (id,
@@ -14,15 +17,15 @@ const commands = {
               created_by,
               status,
               effective_date)
-             VALUES (business_transaction_seq.nextval,
+             VALUES (:business_transaction_id,
                      :create_date,
                      :created_by,
                      :status,
                      :effective_date)`,
   },
   businessTransactionItems: {
-    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transaction_items WHERE business_transaction_id = (SELECT id FROM business_transactions WHERE created_by = :created_by)',
-    DELETE_ALL_FOR_USER: 'DELETE FROM business_transaction_items WHERE business_transaction_id = (SELECT id FROM business_transactions WHERE created_by = :created_by)',
+    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transaction_items',
+    DELETE_ALL_FOR_USER: 'DELETE FROM business_transaction_items WHERE business_transaction_id IN (SELECT id FROM business_transactions WHERE created_by = :created_by)',
     INSERT: `INSERT INTO business_transaction_items (id, business_transaction_id, status, source_party_id, source_acc_id,
                                                      source_product_sidid, target_party_id, target_acc_id,
                                                      order_id, error, source_product_id, source_acc_type,
@@ -55,8 +58,6 @@ const execute = async (query, params) => {
       connectString: config.getDbConnectionString(),
     });
     return await connection.execute(query, params);
-  } catch (err) {
-    console.log(err);
   } finally {
     if (connection) {
       try {
@@ -73,26 +74,29 @@ const deleteAllForUser = async (username) => {
   await execute(commands.businessTransactions.DELETE_ALL_FOR_USER, { created_by: username });
 };
 
-const selectAllForUser = async () => {
-  await execute(commands.businessTransactionItems.SELECT_ALL_FOR_USER, {});
-  await execute(commands.businessTransactions.SELECT_ALL_FOR_USER, {});
+const selectAllForUser = async (username) => {
+  await execute(commands.businessTransactionItems.SELECT_ALL_FOR_USER, { created_by: username });
+  await execute(commands.businessTransactions.SELECT_ALL_FOR_USER, { created_by: username });
 };
 
-const insertTransactionForUser = async (createDate, username, status, effectiveDate) => {
+const insertTransactionForUser = async (username, status) => {
   const res = await execute(commands.businessTransactions.NEW_ID, []);
   const { rows } = res;
   const [nextValObj] = rows;
   const [NEXTVAL] = nextValObj;
   const businessTransactionNumber = NEXTVAL;
+
   const btBinds = {
-    create_date: createDate,
+    business_transaction_id: businessTransactionNumber,
+    create_date: new Date(),
     created_by: username,
     status,
-    effective_date: effectiveDate,
+    effective_date: new Date(),
   };
   console.log(`Start Business Transaction persistence. Value: ${JSON.stringify(btBinds)}`);
   await execute(commands.businessTransactions.INSERT, btBinds);
   return businessTransactionNumber;
+
 };
 
 const insertTransactionItemsForTransaction = async (businessTransactionItems, businessTransactionNumber) => {
@@ -120,12 +124,11 @@ const insertTransactionItemsForTransaction = async (businessTransactionItems, bu
   await Promise.all(arrayOfPromises);
 };
 
-const insertTransactionWithItems = async (username, status, businessTransactionDate, businessTransactionItems) => {
-  const businessTransactionNumber = await insertTransactionForUser(businessTransactionDate, username, status, businessTransactionDate);
-  console.log('businessTransactionNumber', businessTransactionNumber);
+const insertTransactionWithItems = async (username, status, businessTransactionItems) => {
+  const businessTransactionNumber = await insertTransactionForUser(username, status);
   const bT = await execute(commands.businessTransactions.SELECT_ALL_FOR_USER, { created_by: username });
-  console.log('bT', bT);
-  // await insertTransactionItemsForTransaction(businessTransactionItems, businessTransactionNumber);
+  console.log(bT);
+  await insertTransactionItemsForTransaction(businessTransactionItems, businessTransactionNumber);
 };
 
 module.exports.deleteAllForUser = deleteAllForUser;

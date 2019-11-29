@@ -1,11 +1,12 @@
 // @flow
+import moment from 'moment';
 import AbstractWidget from './common/abstract-widget';
 // import Dao from '../database/dao';
 
 class BusinessTransactionHistoryWidget extends AbstractWidget {
   initElements() {
     this.elements = {
-      '': '',
+      'Product Move item': 'productItem_-',
     };
   }
 
@@ -96,12 +97,13 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
   checkTransactionList = (table: Object) => {
     let { length } = table.hashes();
     length = Number(length);
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < length; i++) {
-      cy.get(`a[href="#selectBusinessTransactionItem"]:eq(${i})`).contains(table.hashes()[i].TransactionId).should('exist');
+    for (let i = 0; i < length; i += 1) {
       cy.get(`a[href="#selectBusinessTransactionItem"]:eq(${i})`).contains(table.hashes()[i].TransactionType).should('exist');
       cy.get(`tr:eq(${i + 1})>td:eq(1)`).contains(table.hashes()[i].User).should('exist');
-      cy.get(`tr:eq(${i + 1})>td:eq(1)`).contains(table.hashes()[i].CreationDate).should('exist');
+      if (table.hashes()[i].CreationDate === 'today') {
+        const localDate = new Date();
+        cy.get(`tr:eq(${i + 1})>td:eq(1)`).contains(moment(localDate).format('D/MM/YYYY')).should('exist');
+      }
       cy.get(`tr:eq(${i + 1})>td:eq(2)`).contains(table.hashes()[i].Count).should('exist');
     }
   };
@@ -139,13 +141,19 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
     let { length } = table.hashes();
     length = Number(length);
     for (let i = 0; i < length; i += 1) {
-      cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>span>strong:eq(0)').contains(table.hashes()[i].TransactionId).should('exist');
       cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>strong>span:eq(0)').contains(table.hashes()[i].TransactionType).should('exist');
       cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>span>strong:eq(1)').contains(table.hashes()[i].User).should('exist');
-      cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>span>strong:eq(2)').contains(table.hashes()[i].CreationDate).should('exist');
+      if (table.hashes()[i].CreationDate === 'today' && table.hashes()[i].EffectiveDate === 'today') {
+        const localDate = new Date();
+        cy.get('div[class="EffectiveDate"]>strong>span').contains(moment(localDate).format('D/MM/YYYY')).should('exist');
+        cy.get('div[class="ProductItemMove BusinessTransactionInfoTitle"]>div>span>strong:eq(2)').contains(moment(localDate).format('D/MM/YYYY')).should('exist');
+      }
       cy.get('div[class="HeadingItemsPosition"]>div>span').contains(table.hashes()[i].Count).should('exist');
-      cy.get('div[class="EffectiveDate"]>strong>span').contains(table.hashes()[i].EffectiveDate).should('exist');
       cy.get('div[class="HeadingItemsPosition"]>div').contains(table.hashes()[i].TargetAccount).should('exist');
+      cy.get(`div#${this.elements['Product Move item']}>div>span:eq(0)`).contains(table.hashes()[i].SourceProductSid).should('exist');
+      cy.get(`div#${this.elements['Product Move item']}>div>span:eq(1)`).contains(table.hashes()[i].SourceBillableUser).should('exist');
+      cy.get(`div#${this.elements['Product Move item']}>div>span:eq(3)`).contains(table.hashes()[i].SourceAccount).should('exist');
+      cy.get(`div#${this.elements['Product Move item']}>div>span:eq(4)`).contains(table.hashes()[i].Order).should('exist');
     }
   };
 }

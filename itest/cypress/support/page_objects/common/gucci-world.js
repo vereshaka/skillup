@@ -123,11 +123,22 @@ class GucciWorld {
     cy.log(`deleted all records for ${username}`);
   };
 
-  insertTransactionWithItems = (username, status, businessTransactionDate, businessTransactionItems) => {
+  insertTransactionWithItems = (username, completionStatus, businessTransactionItems) => {
+    let status;
+    switch (completionStatus) {
+      case 'done with error':
+        status = 'with_error';
+        break;
+      case 'taken place':
+        status = 'done';
+        break;
+      default:
+        status = completionStatus;
+    }
+
     cy.task('insertTransactionWithItems:db', {
       username,
       status,
-      businessTransactionDate,
       businessTransactionItems,
     });
     cy.log(`inserted transaction with items for ${username}`);
