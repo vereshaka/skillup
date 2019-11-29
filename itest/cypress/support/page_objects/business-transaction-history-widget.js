@@ -153,7 +153,6 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
       cy.get(`div#${this.elements['Product Move item']}>div>span:eq(0)`).contains(table.hashes()[i].SourceProductSid).should('exist');
       cy.get(`div#${this.elements['Product Move item']}>div>span:eq(1)`).contains(table.hashes()[i].SourceBillableUser).should('exist');
       cy.get(`div#${this.elements['Product Move item']}>div>span:eq(3)`).contains(table.hashes()[i].SourceAccount).should('exist');
-      cy.get(`div#${this.elements['Product Move item']}>div>span:eq(4)`).contains(table.hashes()[i].Order).should('exist');
     }
   };
 }

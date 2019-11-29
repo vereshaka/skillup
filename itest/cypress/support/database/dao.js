@@ -6,7 +6,7 @@ oracleDb.autoCommit = true;
 
 const commands = {
   businessTransactions: {
-    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transactions',
+    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transactions WHERE created_by = :created_by',
     DELETE_ALL_FOR_USER: 'DELETE FROM business_transactions WHERE created_by = :created_by',
     NEW_ID: 'select business_transaction_seq.nextval from dual',
     CURRENT_ID: 'select business_transaction_seq.currval from dual',
@@ -93,10 +93,8 @@ const insertTransactionForUser = async (username, status) => {
     status,
     effective_date: new Date(),
   };
-  console.log(`Start Business Transaction persistence. Value: ${JSON.stringify(btBinds)}`);
   await execute(commands.businessTransactions.INSERT, btBinds);
   return businessTransactionNumber;
-
 };
 
 const insertTransactionItemsForTransaction = async (businessTransactionItems, businessTransactionNumber) => {
@@ -118,7 +116,6 @@ const insertTransactionItemsForTransaction = async (businessTransactionItems, bu
       source_phone_sn: record.source_phone_sn,
       source_billable_user: record.source_billable_user,
     };
-    console.log(`Start Business Transaction Item persistence. Binds: ${JSON.stringify(itemBinds)}`);
     return execute(commands.businessTransactionItems.INSERT, itemBinds);
   }));
   await Promise.all(arrayOfPromises);
@@ -126,8 +123,6 @@ const insertTransactionItemsForTransaction = async (businessTransactionItems, bu
 
 const insertTransactionWithItems = async (username, status, businessTransactionItems) => {
   const businessTransactionNumber = await insertTransactionForUser(username, status);
-  const bT = await execute(commands.businessTransactions.SELECT_ALL_FOR_USER, { created_by: username });
-  console.log(bT);
   await insertTransactionItemsForTransaction(businessTransactionItems, businessTransactionNumber);
 };
 

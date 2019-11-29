@@ -1,5 +1,6 @@
 Feature: Business Transaction History
 
+  @focus
   Scenario: Login with admin rights
     Given user3 exists in GUCCI keycloak with the following groups:
       | Group          |
@@ -10,6 +11,7 @@ Feature: Business Transaction History
     And business transaction history widget is displayed
     And transaction list mode group is presented
 
+  @focus
   Scenario: Login with user rights
     Given user2 exists in GUCCI keycloak with the following groups:
       | Group     |
@@ -20,7 +22,7 @@ Feature: Business Transaction History
     And business transaction history widget is displayed
     And transaction list mode group is not presented
 
-
+  @focus
   Scenario: Check lack of transactions
     Given user3 has no business transactions
     And I open GUCCI Portal as user3
@@ -29,7 +31,7 @@ Feature: Business Transaction History
     And transaction list mode group is presented
     Then I see 'no transactions' that were 'taken place' in the last month
 
-
+  @focus
   Scenario: Check latest transaction
     Given user3 has business transaction that was 'taken place' today with items
       | status | source_party_id | source_acc_id | source_product_sidid              | target_party_id | target_acc_id | order_id  | error | source_product_id | source_acc_type | source_phone_cc | source_phone_ndc | source_phone_sn | source_billable_user |
@@ -63,7 +65,7 @@ Feature: Business Transaction History
       | TransactionType | User  | CreationDate | Count | EffectiveDate | TargetAccount | SourceProductSid                | SourceBillableUser | SourceAccount | Order   |
       | Product Move    | user3 | today        | 1     | today         | A604916029    | BPO_A1_HYBRID_POWER_150_40_2016 | null               | A548334910    | CO99571 |
 
-
+  @focus
   Scenario: Check latest transaction finished with error
     Given user3 has business transaction that was 'done with error' today with items
       | status       | source_party_id | source_acc_id | source_product_sidid              | target_party_id | target_acc_id | order_id  | error | source_product_id | source_acc_type | source_phone_cc | source_phone_ndc | source_phone_sn | source_billable_user |
@@ -77,6 +79,6 @@ Feature: Business Transaction History
       | Product Move    | user3 | today        | 1     |
     When I select latest business transaction
     Then latest business transaction's info is displayed in new tab
-      | TransactionType | User  | CreationDate | Count | EffectiveDate | TargetAccount | SourceProductSid                | SourceBillableUser | SourceAccount | Order   |
-      | Product Move    | user3 | today        | 1     | today         | A604916029    | BPO_A1_HYBRID_POWER_150_40_2016 | null               | A548334910    | CO99571 |
+      | TransactionType | User  | CreationDate | Count | EffectiveDate | TargetAccount | SourceProductSid                | SourceBillableUser | SourceAccount |
+      | Product Move    | user3 | today        | 1     | today         | A604916029    | BPO_A1_HYBRID_POWER_150_40_2016 | null               | A548334910    |
 
