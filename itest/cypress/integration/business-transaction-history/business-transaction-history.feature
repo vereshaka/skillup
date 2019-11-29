@@ -1,28 +1,6 @@
 Feature: Business Transaction History
 
   @focus
-  Scenario: Login with admin rights
-    Given user3 exists in GUCCI keycloak with the following groups:
-      | Group          |
-      | hfhs-superuser |
-    And I open GUCCI Portal as user3
-    When switch to HFHS Cockpit
-    Then I should see active 'Product Move' button
-    And business transaction history widget is displayed
-    And transaction list mode group is presented
-
-  @focus
-  Scenario: Login with user rights
-    Given user2 exists in GUCCI keycloak with the following groups:
-      | Group     |
-      | hfhs-user |
-    And I open GUCCI Portal as user2
-    When switch to HFHS Cockpit
-    Then I should see active 'Product Move' button
-    And business transaction history widget is displayed
-    And transaction list mode group is not presented
-
-  @focus
   Scenario: Check lack of transactions
     Given user3 has no business transactions
     And I open GUCCI Portal as user3
