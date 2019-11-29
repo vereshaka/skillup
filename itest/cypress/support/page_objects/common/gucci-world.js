@@ -2,7 +2,6 @@
 import type { user } from './types/user';
 import {
   getPassword,
-  getPortalURL,
 } from '../utils/config';
 import AbstractCockpit from './abstract-cockpit';
 import HfhsCockpit from '../hfhs-cockpit';
@@ -14,7 +13,7 @@ class GucciWorld {
   cockpit: AbstractCockpit;
 
   visitPortal = () => {
-    cy.visit(getPortalURL());
+    cy.visit(Cypress.env('portalUrl'));
   };
 
   getPasswordFor = (username: string): string => username;
@@ -23,17 +22,22 @@ class GucciWorld {
     this.visitPortal();
     cy.shortWait();
     this.logout();
+    cy.shortWait();
   }
 
   login(username: string, withCorrectPassword: boolean = true) {
     this.openLoginForm();
-    cy.get('input[id=\'username\']').type(username);
+    cy.get('input[id=\'username\']')
+      .type(username);
     if (withCorrectPassword) {
-      cy.get('input[id=\'password\']').type(getPassword(username));
+      cy.get('input[id=\'password\']')
+        .type(getPassword(username));
     } else {
-      cy.get('input[id=\'password\']').type(`${username}123`);
+      cy.get('input[id=\'password\']')
+        .type(`${username}123`);
     }
-    cy.get('input[value="Log In"]').click();
+    cy.get('input[value="Log In"]')
+      .click();
     this.user = {
       username,
     };
@@ -41,17 +45,21 @@ class GucciWorld {
 
   hasLoginError = (errorMessage: string) => {
     // TODO: yevgenyv: check that login form exists
-    cy.get('span').should('have.text', errorMessage);
+    cy.get('span')
+      .should('have.text', errorMessage);
   };
 
   logout() {
-    cy.get('body').then(($body) => {
-      if ($body.find('div.logout').length) {
-        cy.get('a[href="/portal/_/api/logout"]').click();
-      } else {
-        // TODO: yevgenyv: raise an error if user not logged in
-      }
-    });
+    cy.shortWait();
+    cy.get('body')
+      .then(($body) => {
+        if ($body.find('div.logout').length) {
+          cy.get('a[href="/portal/_/api/logout"]')
+            .click();
+        } else {
+          // TODO: yevgenyv: raise an error if user not logged in
+        }
+      });
     this.user = undefined;
   }
 
@@ -59,7 +67,7 @@ class GucciWorld {
     switch (name) {
       case 'HFHS Cockpit':
         return new HfhsCockpit();
-      case 'GUCCI Welcome':
+      case 'Welcome':
         return new GucciWelcomeCockpit();
       default:
         throw new Error(`Unsupported cockpit. Name: ${name}`);
@@ -75,17 +83,22 @@ class GucciWorld {
   }
 
   isCurrentCockpit(name: string) {
-    this.getCockpitByName(name).isOpen();
+    this.getCockpitByName(name)
+      .isOpen();
   }
 
   isCockpitExist = (cockpitName: string) => {
-    cy.get('ul>li').find(`a:contains(${cockpitName})`).should('have.text', cockpitName);
+    cy.get('ul>li')
+      .find(`a:contains(${cockpitName})`)
+      .should('have.text', cockpitName);
   };
 
   isCockpitNotExist = (cockpitName: string) => {
-    cy.get('ul>li>a').each(($el) => {
-      cy.get($el).should('not.have.text', cockpitName);
-    });
+    cy.get('ul>li>a')
+      .each(($el) => {
+        cy.get($el)
+          .should('not.have.text', cockpitName);
+      });
   };
 
   getCurrentCockpit() {

@@ -87,3 +87,7 @@ Then(/The following products should be selected/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isSelectedAccountsCorrect(table);
 });
+Then(/I should see '(.*)' product details/, (productName) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isInfoCorrect(productName);
+});

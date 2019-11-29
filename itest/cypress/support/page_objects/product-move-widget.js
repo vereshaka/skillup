@@ -15,7 +15,8 @@ class ProductMoveWidget extends AbstractWidget {
   getName = () => 'Product Move';
 
   specifyGroup = (name: string, group: string) => {
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup').click();
+    cy.get(`div[class="accordion__item"]:contains("${group} Products")>div[class="AccordionItemHeading AccordionItemHeadingColor"]`).click();
+    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup');
     cy.get('@searchableGroup').find(`button[id="${this.elements[name]}"]`).click();
   };
 
@@ -50,12 +51,12 @@ class ProductMoveWidget extends AbstractWidget {
     });
   };
 
-  addProducts = (query: string, products?: Array<string>) => {
+  addProducts = (query: string, table?: Object) => {
     cy.normalWait();
     this.isAlreadyAdded();
     cy.normalWait();
     this.openDialog('Add Product');
-    new SearchProductWidget().searchAndAdd(query, products);
+    new SearchProductWidget().searchAndAdd(query, table);
   };
 
   specifyAccount = (account:string, query:string, group:string) => {
@@ -106,8 +107,15 @@ class ProductMoveWidget extends AbstractWidget {
     });
   };
 
-  openConfirm = () => {
-    cy.get('button#wizardConfirm').click();
+  openProductInfo = (productName, group) => {
+    cy.get('span[class="Icon faMinusSquare fa2x ExcludeAllProducts"]').click();
+    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).click();
+    cy.get(`a:contains(${productName})`).click();
+  };
+
+  isInfoCorrect = (productName) => {
+    cy.longWait();
+    cy.get(`div[class="tab-dialog-button active"]>div:contains(${productName})`).should('exist');
   };
 }
 

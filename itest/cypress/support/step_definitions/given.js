@@ -33,8 +33,14 @@ Given(/^search '(.*)'/, (searchItem) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
     .search(searchItem);
 });
-Given(/add all products founded by '(.*)'/, (query: string) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).addProducts(query);
+Given(/add (|all )products founded by '(.*)'/, (isAll: string, query: string, table?) => {
+  if (isAll === 'all ') {
+    (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget(): ProductMoveWidget).addProducts(query);
+  } if (isAll === '') {
+    (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget(): ProductMoveWidget).addProducts(query, table);
+  }
 });
 Given(/specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, query, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
