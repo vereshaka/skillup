@@ -54,6 +54,13 @@ spec:
           volumeMounts:
           - mountPath: "/opt"
             name: script
+          resources:
+            limits:
+              memory: "4Gi"
+              cpu: "1000m"
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
       volumes:
       - name: script
         configMap:
