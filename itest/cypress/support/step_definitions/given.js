@@ -1,6 +1,6 @@
 // @flow
 import {
-  Given,
+  Given, When,
 } from 'cypress-cucumber-preprocessor/steps';
 import gucciWorld from './hooks';
 import ProductMoveWidget from '../page_objects/product-move-widget';
@@ -69,7 +69,7 @@ Given(/^I open GUCCI Portal as (.*)$/,
 Given(/I see '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date, table) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .showTransactionList(affiliation, currentStatus, date, table);
 });
 
@@ -81,4 +81,10 @@ Given(/(.*) has business transaction #(.*) that was '(.*)' today with items/, (u
   gucciWorld.deleteAllForUser(username);
   gucciWorld.deleteById(id);
   gucciWorld.insertTransactionWithItems(username, id, status, table.hashes());
+});
+When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .filterTransactionList(affiliation, currentStatus, date);
 });

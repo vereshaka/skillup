@@ -5,6 +5,7 @@ import SearchProductWidget from '../page_objects/search-product-widget';
 import ProductMoveWidget from '../page_objects/product-move-widget';
 import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 import HfhsCockpit from '../page_objects/hfhs-cockpit';
+import BusinessTransactionDetailsWidget from '../page_objects/business-transaction-details-widget';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => {
@@ -33,7 +34,7 @@ Then(/^business transaction history widget is displayed$/,
   () => {
     (gucciWorld
       .getCurrentCockpit()
-      .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+      .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
       .isWidgetExists();
   });
 
@@ -42,13 +43,13 @@ Then(/transaction list mode group is (not |)presented/,
     if (existence === 'not ') {
       (gucciWorld
         .getCurrentCockpit()
-        .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+        .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
         .isAdminGroupNotExist();
     }
     if (existence === '') {
       (gucciWorld
         .getCurrentCockpit()
-        .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+        .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
         .isAdminGroupExist();
     }
   });
@@ -96,7 +97,7 @@ Then(/The following products should be selected/, (table) => {
 Then(/latest business transaction's info is displayed in new tab/, (table: Object) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .isInfoDisplayed(table);
 });
 Then(/I should see '(.*)' product details/, (productName) => {
@@ -106,24 +107,24 @@ Then(/I should see '(.*)' product details/, (productName) => {
 Then(/'(.*)' message should be displayed/, (message: string) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .isMessageDisplayed(message);
 });
 Then(/new tab should be displayed/, () => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .isTabCaptionDisplayed();
 });
-Then(/latest business transaction's info is displayed in new tab/, (table: Object) => {
+Then(/business transaction's details are displayed in new tab/, (table: Object) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionDetailsWidget(): BusinessTransactionDetailsWidget)
     .isInfoDisplayed(table);
 });
 Then(/new tab with caption '(.*)' should be displayed/, (caption: string) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .isTabCaptionDisplayed(caption);
 });

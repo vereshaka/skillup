@@ -24,9 +24,6 @@ Feature: Business Transaction History
       | Product Move    | user3 | today        | 1     |
     When I select business transaction #1
     Then new tab with caption 'Product Move #1' should be displayed
-#    Then latest business transaction's info is displayed in new tab
-#      | TransactionType | User  | CreationDate | Count | EffectiveDate | TargetAccount | SourceProductSid                | SourceBillableUser | SourceAccount | Order   |
-#      | Product Move    | user3 | today        | 1     | today         | A604916029    | BPO_A1_HYBRID_POWER_150_40_2016 | null               | A548334910    | CO99571 |
 
   @focus
   Scenario: Check latest successfully finished transaction
@@ -42,9 +39,6 @@ Feature: Business Transaction History
       | Product Move    | user3 | today        | 1     |
     When I select business transaction #2
     Then new tab with caption 'Product Move #2' should be displayed
-#    Then latest business transaction's info is displayed in new tab
-#      | TransactionType | User  | CreationDate | Count | EffectiveDate | TargetAccount | SourceProductSid                | SourceBillableUser | SourceAccount | Order   |
-#      | Product Move    | user3 | today        | 1     | today         | A604916029    | BPO_A1_HYBRID_POWER_150_40_2016 | null               | A548334910    | CO99571 |
 
   @focus
   Scenario: Check latest transaction finished with error
@@ -60,7 +54,3 @@ Feature: Business Transaction History
       | Product Move    | user3 | today        | 1     |
     When I select business transaction #3
     Then new tab with caption 'Product Move #3' should be displayed
-#    Then latest business transaction's info is displayed in new tab
-#      | TransactionType | User  | CreationDate | Count | EffectiveDate | TargetAccount | SourceProductSid                | SourceBillableUser | SourceAccount |
-#      | Product Move    | user3 | today        | 1     | today         | A604916029    | BPO_A1_HYBRID_POWER_150_40_2016 | null               | A548334910    |
-

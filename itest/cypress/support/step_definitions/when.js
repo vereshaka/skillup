@@ -43,12 +43,12 @@ When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
 When(/I select business transaction #(.*)/, (id) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .selectTransaction(id);
 });
 When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .filterTransactionList(affiliation, currentStatus, date);
 });
