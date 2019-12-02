@@ -120,10 +120,15 @@ class GucciWorld {
 
   deleteAllForUser = (username: string) => {
     cy.task('deleteAllForUser:db', { username });
-    cy.log(`deleted all records for ${username}`);
+    cy.log(`deleted records for user: ${username}`);
   };
 
-  insertTransactionWithItems = (username, completionStatus, businessTransactionItems) => {
+  deleteById = (id: number) => {
+    cy.task('deleteById:db', { id });
+    cy.log(`deleted record № ${id}`);
+  };
+
+  insertTransactionWithItems = (username, id, completionStatus, businessTransactionItems) => {
     let status;
     switch (completionStatus) {
       case 'done with error':
@@ -138,6 +143,7 @@ class GucciWorld {
 
     cy.task('insertTransactionWithItems:db', {
       username,
+      id,
       status,
       businessTransactionItems,
     });

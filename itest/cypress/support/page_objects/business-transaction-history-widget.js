@@ -84,13 +84,21 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
       });
   };
 
-  filterTransactionList = (affiliation: string, currentStatus: string) => {
+  selectDateValue = (date: string) => {
+    if (date === 'last month') {
+      cy
+        .get('select.SelectableOptions')
+        .eq(1)
+        .select('last_month');
+    } else {
+      throw new Error(`Unsupported date: ${date}`);
+    }
+  };
+
+  filterTransactionList = (affiliation: string, status: string, date: string) => {
     this.selectAffiliationValue(affiliation);
-    this.selectStatusValue(currentStatus);
-    cy
-      .get('select.SelectableOptions')
-      .eq(1)
-      .select('last_month');
+    this.selectStatusValue(status);
+    this.selectDateValue(date);
     this.checkTransactionListLength();
   };
 
@@ -108,15 +116,19 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
     }
   };
 
-  showTransactionList = (affiliation: string, currentStatus: string, table: Object) => {
-    this.filterTransactionList(affiliation, currentStatus);
-    if (table) {
-      this.checkTransactionList(table);
-    } else {
+  isMessageDisplayed = (message: string) => {
+    if (message === 'no transaction') {
       cy
         .get('div.BusinessTransactionsWrapper')
         .contains('No record found!');
+    } else {
+      throw new Error(`Unknown message: ${message}`);
     }
+  };
+
+  showTransactionList = (affiliation: string, currentStatus: string, date: string, table: Object) => {
+    this.filterTransactionList(affiliation, currentStatus, date);
+    this.checkTransactionList(table);
   };
 
   selectLatestTransaction = () => {
@@ -126,7 +138,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
       .click();
   };
 
-  isInfoDisplayed = (table: Object) => {
+  isTabCaptionDisplayed = () => {
     cy
       .get('a[href="#selectBusinessTransactionItem"]')
       .eq(0)
@@ -137,6 +149,10 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
           .find('div.title')
           .should('have.text', $text);
       });
+  };
+
+  isInfoDisplayed = (table: Object) => {
+    this.isTabCaptionDisplayed();
 
     let { length } = table.hashes();
     length = Number(length);

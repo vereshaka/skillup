@@ -1,7 +1,5 @@
 // @flow
-import {
-  When,
-} from 'cypress-cucumber-preprocessor/steps';
+import { When } from 'cypress-cucumber-preprocessor/steps';
 
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
@@ -47,4 +45,10 @@ When(/I select latest business transaction/, () => {
     .getCurrentCockpit()
     .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
     .selectLatestTransaction();
+});
+When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .filterTransactionList(affiliation, currentStatus, date);
 });

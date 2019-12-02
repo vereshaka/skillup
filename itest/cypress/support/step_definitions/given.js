@@ -15,6 +15,10 @@ Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
   () => { // username, keycloakName, table
     // TODO: implement me
   });
+// eslint-disable-next-line no-unused-vars
+Given(/As (.*) with permission '(.*)'/, (username, permission) => {
+  gucciWorld.login(username);
+});
 Given(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
@@ -62,18 +66,19 @@ Given(/^I open GUCCI Portal as (.*)$/,
   (username) => {
     gucciWorld.login(username);
   });
-Given(/I see '(.*)' that were '(.*)' in the last month/, (affiliation, currentStatus, table) => {
+Given(/I see '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date, table) => {
   (gucciWorld
     .getCurrentCockpit()
     .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
-    .showTransactionList(affiliation, currentStatus, table);
+    .showTransactionList(affiliation, currentStatus, date, table);
 });
 
 Given(/(.*) has no business transactions/, (username: string) => {
   gucciWorld.deleteAllForUser(username);
 });
 
-Given(/(.*) has business transaction that was '(.*)' today with items/, (username, status, table) => {
+Given(/(.*) has business transaction #(.*) that was '(.*)' today with items/, (username, id, status, table) => {
   gucciWorld.deleteAllForUser(username);
-  gucciWorld.insertTransactionWithItems(username, status, table.hashes());
+  gucciWorld.deleteById(id);
+  gucciWorld.insertTransactionWithItems(username, id, status, table.hashes());
 });

@@ -103,3 +103,15 @@ Then(/I should see '(.*)' product details/, (productName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isInfoCorrect(productName);
 });
+Then(/'(.*)' message should be displayed/, (message: string) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .isMessageDisplayed(message);
+});
+Then(/new tab should be displayed/, () => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .isTabCaptionDisplayed();
+});

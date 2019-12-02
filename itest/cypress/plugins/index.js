@@ -28,14 +28,18 @@ module.exports = (on, config) => {
       await db.selectAllForUser(username);
       return 0;
     },
+    'deleteById:db': async ({ id }) => {
+      await db.deleteById(id);
+      return 0;
+    },
     'deleteAllForUser:db': async ({ username }) => {
       await db.deleteAllForUser(username);
       return 0;
     },
     'insertTransactionWithItems:db': async ({
-      username, status, businessTransactionItems,
+      username, id, status, businessTransactionItems,
     }) => {
-      await db.insertTransactionWithItems(username, status, businessTransactionItems);
+      await db.insertTransactionWithItems(username, id, status, businessTransactionItems);
       return 0;
     },
   });

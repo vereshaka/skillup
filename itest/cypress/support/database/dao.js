@@ -7,9 +7,8 @@ oracleDb.autoCommit = true;
 const commands = {
   businessTransactions: {
     SELECT_ALL_FOR_USER: 'SELECT * FROM business_transactions WHERE created_by = :created_by',
+    DELETE_BY_ID: 'DELETE FROM business_transactions WHERE id = :business_transaction_id',
     DELETE_ALL_FOR_USER: 'DELETE FROM business_transactions WHERE created_by = :created_by',
-    NEW_ID: 'select business_transaction_seq.nextval from dual',
-    CURRENT_ID: 'select business_transaction_seq.currval from dual',
     INSERT: `INSERT
              INTO BUSINESS_TRANSACTIONS
              (id,
@@ -25,12 +24,13 @@ const commands = {
   },
   businessTransactionItems: {
     SELECT_ALL_FOR_USER: 'SELECT * FROM business_transaction_items',
+    DELETE_BY_BUSINESS_TRANSACTION_ID: 'DELETE FROM business_transaction_items WHERE business_transaction_id = :business_transaction_id',
     DELETE_ALL_FOR_USER: 'DELETE FROM business_transaction_items WHERE business_transaction_id IN (SELECT id FROM business_transactions WHERE created_by = :created_by)',
     INSERT: `INSERT INTO business_transaction_items (id, business_transaction_id, status, source_party_id, source_acc_id,
                                                      source_product_sidid, target_party_id, target_acc_id,
                                                      order_id, error, source_product_id, source_acc_type,
                                                      source_phone_cc, source_phone_ndc, source_phone_sn, source_billable_user)
-             VALUES (business_transaction_item_seq.nextval,
+             VALUES (:business_transaction_item_id,
                      :business_transaction_id,
                      :status,
                      :source_party_id,
@@ -74,33 +74,32 @@ const deleteAllForUser = async (username) => {
   await execute(commands.businessTransactions.DELETE_ALL_FOR_USER, { created_by: username });
 };
 
+const deleteById = async (id) => {
+  await execute(commands.businessTransactionItems.DELETE_BY_BUSINESS_TRANSACTION_ID, { business_transaction_id: id });
+  await execute(commands.businessTransactions.DELETE_BY_ID, { business_transaction_id: id });
+};
+
 const selectAllForUser = async (username) => {
   await execute(commands.businessTransactionItems.SELECT_ALL_FOR_USER, { created_by: username });
   await execute(commands.businessTransactions.SELECT_ALL_FOR_USER, { created_by: username });
 };
 
-const insertTransactionForUser = async (username, status) => {
-  const res = await execute(commands.businessTransactions.NEW_ID, []);
-  const { rows } = res;
-  const [nextValObj] = rows;
-  const [NEXTVAL] = nextValObj;
-  const businessTransactionNumber = NEXTVAL;
-
+const insertTransactionForUser = async (username, id, status) => {
   const btBinds = {
-    business_transaction_id: businessTransactionNumber,
+    business_transaction_id: id,
     create_date: new Date(),
     created_by: username,
     status,
     effective_date: new Date(),
   };
   await execute(commands.businessTransactions.INSERT, btBinds);
-  return businessTransactionNumber;
 };
 
-const insertTransactionItemsForTransaction = async (businessTransactionItems, businessTransactionNumber) => {
+const insertTransactionItemsForTransaction = async (businessTransactionItems, id) => {
   const arrayOfPromises = businessTransactionItems.map((async (record) => {
     const itemBinds = {
-      business_transaction_id: businessTransactionNumber,
+      business_transaction_item_id: record.business_transaction_item_id,
+      business_transaction_id: id,
       status: record.status,
       source_party_id: record.source_party_id,
       source_acc_id: record.source_acc_id,
@@ -121,11 +120,12 @@ const insertTransactionItemsForTransaction = async (businessTransactionItems, bu
   await Promise.all(arrayOfPromises);
 };
 
-const insertTransactionWithItems = async (username, status, businessTransactionItems) => {
-  const businessTransactionNumber = await insertTransactionForUser(username, status);
-  await insertTransactionItemsForTransaction(businessTransactionItems, businessTransactionNumber);
+const insertTransactionWithItems = async (username, id, status, businessTransactionItems) => {
+  await insertTransactionForUser(username, id, status);
+  await insertTransactionItemsForTransaction(businessTransactionItems, id);
 };
 
+module.exports.deleteById = deleteById;
 module.exports.deleteAllForUser = deleteAllForUser;
 module.exports.selectAllForUser = selectAllForUser;
 module.exports.insertTransactionForUser = insertTransactionForUser;
