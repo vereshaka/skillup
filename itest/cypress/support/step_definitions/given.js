@@ -59,3 +59,6 @@ Given(/^I open GUCCI Portal as (.*)$/,
   (username) => {
     gucciWorld.login(username);
   });
+Given(/search products by (.*)/, (query) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).searchProducts(query);
+});

@@ -58,6 +58,14 @@ class ProductMoveWidget extends AbstractWidget {
     new SearchProductWidget().searchAndAdd(query, products);
   };
 
+  searchProducts = (query: string) => {
+    cy.normalWait();
+    this.isAlreadyAdded();
+    cy.normalWait();
+    this.openDialog('Add Product');
+    new SearchProductWidget().search(query);
+  };
+
   specifyAccount = (account:string, query:string, group:string) => {
     this.openDialog('Add Account', group);
     new SearchAccountWidget().addAccount(account, query);
@@ -115,6 +123,19 @@ class ProductMoveWidget extends AbstractWidget {
   isInfoCorrect = (productName) => {
     cy.longWait();
     cy.get(`div[class="tab-dialog-button active"]>div:contains(${productName})`).should('exist');
+  };
+
+  isErrorMessageExist = (message) => {
+    if (message === '') {
+      cy.get('div.ProductItemMove>div.WarningWrapper').should('not.exist');
+    } else {
+      cy.get('div.ProductItemMove>div.WarningWrapper').should('exist');
+      cy.get('div.ProductItemMove>div.WarningWrapper>span.RestrMessage')
+        .each(($el) => {
+          cy.get($el)
+            .should('have.text', message);
+        });
+    }
   };
 }
 

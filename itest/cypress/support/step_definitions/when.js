@@ -41,3 +41,7 @@ When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .openProductInfo(productName, group);
 });
+When(/(.*) is (.*)/, (flagName, value) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkFlag(flagName, value);
+});

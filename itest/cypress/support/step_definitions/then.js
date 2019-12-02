@@ -91,3 +91,7 @@ Then(/I should see '(.*)' product details/, (productName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isInfoCorrect(productName);
 });
+Then(/error (.*) should be displayed/, (message) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isErrorMessageExist(message);
+});

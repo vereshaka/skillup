@@ -136,7 +136,26 @@ class SearchProductWidget extends AbstractWidget {
     this.checkItemListExistence();
     this.selectCustomerItem();
     this.checkProductListExistence();
-  }
+  };
+
+  checkFlag = (flagName: string, value: string) => {
+    switch (flagName) {
+      case 'Vf':
+        cy.get('div.CustomerPanelWrapper>div>div:eq(1)>span:eq(2)').should('have.text', value);
+        break;
+      case 'Pk':
+        cy.get('div.CustomerPanelWrapper>div>div:eq(1)>span:eq(4)').should('have.text', value);
+        break;
+      case 'Status':
+        break;
+      default:
+        throw new Error(`Unsupported flag name. Name: ${flagName}`);
+    }
+    cy.mediumWait();
+    this.addAll();
+    cy.mediumWait();
+    this.close();
+  };
 }
 
 export default SearchProductWidget;
