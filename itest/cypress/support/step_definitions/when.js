@@ -1,7 +1,5 @@
 // @flow
-import {
-  When,
-} from 'cypress-cucumber-preprocessor/steps';
+import { When } from 'cypress-cucumber-preprocessor/steps';
 
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
@@ -41,7 +39,8 @@ When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .openProductInfo(productName, group);
 });
-When(/(.*) is (.*)/, (flagName, value) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
-    .checkFlag(flagName, value);
-});
+When(/^add all products$/,
+  () => {
+    (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+      .addAllProducts();
+  });

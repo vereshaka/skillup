@@ -91,7 +91,13 @@ Then(/I should see '(.*)' product details/, (productName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isInfoCorrect(productName);
 });
-Then(/error (.*) should be displayed/, (message) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .isErrorMessageExist(message);
+Then(/error (|'(.*)' )should (|not )be displayed/, (message, existOrNo) => {
+  if (existOrNo === 'not ') {
+    (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+      .isErrorMessageNotExist();
+  } if (existOrNo === '') {
+    (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget(): ProductMoveWidget)
+      .isErrorMessageExist(message);
+  }
 });

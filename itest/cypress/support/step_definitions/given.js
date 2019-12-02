@@ -1,7 +1,5 @@
 // @flow
-import {
-  Given,
-} from 'cypress-cucumber-preprocessor/steps';
+import { Given } from 'cypress-cucumber-preprocessor/steps';
 import gucciWorld from './hooks';
 import ProductMoveWidget from '../page_objects/product-move-widget';
 import SearchProductWidget from '../page_objects/search-product-widget';
@@ -59,6 +57,14 @@ Given(/^I open GUCCI Portal as (.*)$/,
   (username) => {
     gucciWorld.login(username);
   });
-Given(/search products by (.*)/, (query) => {
+Given(/search products by '(.*)'/, (query) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).searchProducts(query);
+});
+Given(/found customer should have (contract capable|provisional customer|status) equals '(.*)'/, (flagName, value) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkFlag(flagName, value);
+});
+Given(/(^\d+) products are displayed/, (numberOfProducts) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .productsLength(numberOfProducts);
 });

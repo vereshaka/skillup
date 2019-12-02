@@ -125,17 +125,17 @@ class ProductMoveWidget extends AbstractWidget {
     cy.get(`div[class="tab-dialog-button active"]>div:contains(${productName})`).should('exist');
   };
 
+  isErrorMessageNotExist = () => {
+    cy.get('div.ProductItemMove>div.WarningWrapper').should('not.exist');
+  };
+
   isErrorMessageExist = (message) => {
-    if (message === '') {
-      cy.get('div.ProductItemMove>div.WarningWrapper').should('not.exist');
-    } else {
-      cy.get('div.ProductItemMove>div.WarningWrapper').should('exist');
-      cy.get('div.ProductItemMove>div.WarningWrapper>span.RestrMessage')
-        .each(($el) => {
-          cy.get($el)
-            .should('have.text', message);
-        });
-    }
+    cy.get('div.ProductItemMove>div.WarningWrapper').should('exist');
+    cy.get('div.ProductItemMove>div.WarningWrapper>span.RestrMessage')
+      .each(($el) => {
+        cy.get($el)
+          .should('have.text', message);
+      });
   };
 }
 

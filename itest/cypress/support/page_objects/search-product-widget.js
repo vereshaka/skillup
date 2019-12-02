@@ -140,17 +140,27 @@ class SearchProductWidget extends AbstractWidget {
 
   checkFlag = (flagName: string, value: string) => {
     switch (flagName) {
-      case 'Vf':
+      case 'contract capable':
         cy.get('div.CustomerPanelWrapper>div>div:eq(1)>span:eq(2)').should('have.text', value);
         break;
-      case 'Pk':
+      case 'provisional customer':
         cy.get('div.CustomerPanelWrapper>div>div:eq(1)>span:eq(4)').should('have.text', value);
         break;
-      case 'Status':
+      case 'status':
         break;
       default:
         throw new Error(`Unsupported flag name. Name: ${flagName}`);
     }
+  };
+
+  productsLength = (numberOfProducts) => {
+    cy.get('body').then(($body) => {
+      expect($body.find('div[class="ResultItem ProductItem Active"]')).to.have.length(numberOfProducts);
+      console.log($body.find('div[class="ResultItem ProductItem Active"]').length);
+    });
+  };
+
+  addAllProducts = () => {
     cy.mediumWait();
     this.addAll();
     cy.mediumWait();
