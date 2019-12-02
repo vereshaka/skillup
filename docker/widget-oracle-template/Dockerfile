@@ -1,7 +1,7 @@
-FROM alpine:latest as unpacker
-COPY ./oracle/ /tmp/oracle-files
+FROM tasktrack.telekom.at/gucci-docker-local/additional-libraries:0.1.0 as libs
 
-RUN apk add unzip && mkdir /opt/oracle && \
+RUN apk add unzip && \
+    mkdir /opt/oracle && \
     unzip '/tmp/oracle-files/instantclient-*.zip' -d /opt/oracle
 
 
@@ -17,7 +17,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get autoremove --yes && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/
     
-COPY --from=unpacker /opt/oracle/instantclient_12_2 /opt/oracle/instantclient
+COPY --from=libs /opt/oracle/instantclient_12_2 /opt/oracle/instantclient
 
 RUN ln -s /opt/oracle/instantclient/libclntsh.so.12.2 /opt/oracle/instantclient/libclntsh.so && \
     ln -s /opt/oracle/instantclient/libocci.so.12.2 /opt/oracle/instantclient/libocci.so
