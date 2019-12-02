@@ -1,2 +1,2 @@
-FROM alpine:latest as unpacker
+FROM alpine:latest
 COPY ./oracle/ /tmp/oracle-files
