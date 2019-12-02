@@ -115,3 +115,15 @@ Then(/new tab should be displayed/, () => {
     .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
     .isTabCaptionDisplayed();
 });
+Then(/latest business transaction's info is displayed in new tab/, (table: Object) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .isInfoDisplayed(table);
+});
+Then(/new tab with caption '(.*)' should be displayed/, (caption: string) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
+    .isTabCaptionDisplayed(caption);
+});

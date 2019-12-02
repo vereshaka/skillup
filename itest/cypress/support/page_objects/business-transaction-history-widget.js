@@ -131,24 +131,18 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
     this.checkTransactionList(table);
   };
 
-  selectLatestTransaction = () => {
+  selectTransaction = (id) => {
     cy
       .get('a[href="#selectBusinessTransactionItem"]')
-      .eq(0)
+      .contains(id)
       .click();
   };
 
-  isTabCaptionDisplayed = () => {
+  isTabCaptionDisplayed = (caption) => {
     cy
-      .get('a[href="#selectBusinessTransactionItem"]')
-      .eq(0)
-      .invoke('text')
-      .then(($text) => {
-        cy
-          .get('div[class="tab-dialog-button active"]')
-          .find('div.title')
-          .should('have.text', $text);
-      });
+      .get('div[class="tab-dialog-button active"]')
+      .find('div.title')
+      .should('have.text', caption);
   };
 
   isInfoDisplayed = (table: Object) => {

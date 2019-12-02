@@ -40,11 +40,11 @@ When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .openProductInfo(productName, group);
 });
-When(/I select latest business transaction/, () => {
+When(/I select business transaction #(.*)/, (id) => {
   (gucciWorld
     .getCurrentCockpit()
     .getBusinessTransactionWidget(): BusinessTransactionHistoryWidget)
-    .selectLatestTransaction();
+    .selectTransaction(id);
 });
 When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
   (gucciWorld
