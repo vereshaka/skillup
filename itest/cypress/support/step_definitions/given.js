@@ -60,9 +60,17 @@ Given(/^I open GUCCI Portal as (.*)$/,
 Given(/search products by '(.*)'/, (query) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).searchProducts(query);
 });
-Given(/found customer should have (contract capable|provisional customer|status) equals '(.*)'/, (flagName, value) => {
+Given(/found customer should have contract capable equals '(.*)'/, (value) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
-    .checkFlag(flagName, value);
+    .checkContractCapable(value);
+});
+Given(/found customer should have provisional customer equals '(.*)'/, (value) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkProvisionalCustomer(value);
+});
+Given(/found customer should have status equals '(.*)'/, (value) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkStatus(value);
 });
 Given(/(^\d+) products are displayed/, (numberOfProducts) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
