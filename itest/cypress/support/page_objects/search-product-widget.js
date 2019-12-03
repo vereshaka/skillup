@@ -35,8 +35,8 @@ class SearchProductWidget extends AbstractWidget {
       cy.get('div[class="StatusMessage Error ProductItem"]>h3:contains(You have incorrect)')
         .should('not.exist');
     } else {
-      cy.get('div[class="StatusMessage Error ProductItem"]>h3')
-        .should('have.text', error);
+      cy.get(`div[class="StatusMessage Error ProductItem"]>h3:contains(${error})`)
+        .should('exist');
     }
   };
 
