@@ -1,30 +1,17 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: jenkins-runner-script
-data:
-  startup: |
-    #!/usr/bin/env sh
-    
-    mkdir /root/.cache
-    chmod -R 777 /root/.cache
-    apt-get update
-    apt-get install -y libgconf-2-4 libgtk-3-0 xvfb chromium git --no-install-recommends
-    jenkins-slave -url $JENKINS_ADDR $RUNNER_TOKEN $RUNNER_NAME
----
-apiVersion: v1
 kind: Secret
+apiVersion: v1
 metadata:
   name: jenkins-runner-config
+  namespace: hfhs-mock
 data:
-  RUNNER_TOKEN: "base64token"
   RUNNER_NAME: "base64name"
+  RUNNER_TOKEN: "base64token"
 ---
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
   name: jenkins-runner
-  namespace: devops
+  namespace: hfhs-mock
   labels:
     app: jenkins-runner
 spec:
@@ -37,35 +24,28 @@ spec:
       labels:
         app: jenkins-runner
     spec:
-      securityContext:
-        runAsUser: 0
-        runAsGroup: 0
-        fsGroup: 0
       containers:
         - name: runner
-          image: jenkins/jnlp-slave:latest-jdk11
-          command: ["/opt/startup.sh"]
+          image: tasktrack.telekom.at/gucci-docker/jenkins-x11-runner:0.1.1
+          args:
+            - '-url'
+            - $(JENKINS_ADDR)
+            - $(RUNNER_TOKEN)
+            - $(RUNNER_NAME)
           env:
-          - name: RUNNER_ADDR
-            value: "http://jenkins.service:8080"
+            - name: JENKINS_ADDR
+              value: 'http://jenkins-service.devops:8080'
           envFrom:
-          - secretRef:
-              name: jenkins-runner-config
-          volumeMounts:
-          - mountPath: "/opt"
-            name: script
+            - secretRef:
+                name: jenkins-runner-config
           resources:
             limits:
               memory: "4Gi"
-              cpu: "1000m"
+              cpu: "2000m"
             requests:
-              memory: "2Gi"
-              cpu: "1000m"
-      volumes:
-      - name: script
-        configMap:
-          name: jenkins-runner-script
-          defaultMode: 493
-          items:
-          - key: startup
-            path: startup.sh
+              memory: "4Gi"
+              cpu: "2000m"
+              
+          imagePullPolicy: IfNotPresent
+      imagePullSecrets:
+        - name: tasktrack.telekom.at
