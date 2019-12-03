@@ -152,8 +152,7 @@ class SearchProductWidget extends AbstractWidget {
 
   productsLength = (numberOfProducts) => {
     cy.get('body').then(($body) => {
-      expect($body.find('div[class="ResultItem ProductItem Active"]')).to.have.length(numberOfProducts);
-      console.log($body.find('div[class="ResultItem ProductItem Active"]').length);
+      cy.get($body).find('div[class="ResultItem ProductItem Active"]').should('have.length', numberOfProducts);
     });
   };
 
