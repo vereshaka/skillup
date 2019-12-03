@@ -10,7 +10,7 @@ module.exports = (on) => {
   on('before:browser:launch', (browser = {}, args) => {
     if (browser.name === 'chrome') {
       args.push('--incognito');
-      return args;
     }
+    return args;
   });
 };

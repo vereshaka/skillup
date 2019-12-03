@@ -21,7 +21,6 @@ Feature: Product Move
     Given I open GUCCI Portal as user3
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:100668958'
-    And specify '' account founded by 'KDNR:100100100' for NORM group
+    When I specify '' account founded by 'KDNR:100100100' for NORM group
     Then NORM product group should have 2 accounts
-    And no target account selected
-    And selected account button will be available
+

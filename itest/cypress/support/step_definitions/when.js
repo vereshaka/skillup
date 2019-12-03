@@ -1,5 +1,6 @@
 // @flow
 import {
+  Given,
   When,
 } from 'cypress-cucumber-preprocessor/steps';
 
@@ -37,3 +38,7 @@ When(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
   });
+Given(/I specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, query, group) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .specifyAccount(account, query, group);
+});
