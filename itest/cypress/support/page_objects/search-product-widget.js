@@ -150,7 +150,7 @@ class SearchProductWidget extends AbstractWidget {
     cy.log(`Status ${value}. Not supported`);
   };
 
-  productsLength = (numberOfProducts) => {
+  productsLength = (numberOfProducts: number) => {
     cy.get('body').then(($body) => {
       cy.get($body).find('div[class="ResultItem ProductItem Active"]').should('have.length', numberOfProducts);
     });

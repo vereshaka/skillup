@@ -6,7 +6,7 @@ Feature: HFHS Cockpit check
       | hfhs-superuser|
     And I open GUCCI Portal as user3
     When switch to HFHS Cockpit
-    Then I should see active 'Product Move' button
+    Then I should see active Product Move button
     And business transaction widget is displayed
     And transaction list mode group is presented
 
@@ -16,7 +16,7 @@ Feature: HFHS Cockpit check
       | hfhs-user|
     And I open GUCCI Portal as user2
     When switch to HFHS Cockpit
-    Then I should see active 'Product Move' button
+    Then I should see active Product Move button
     And business transaction widget is displayed
     And transaction list mode group is not presented
 

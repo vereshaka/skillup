@@ -114,13 +114,13 @@ class ProductMoveWidget extends AbstractWidget {
     });
   };
 
-  openProductInfo = (productName, group) => {
+  openProductInfo = (productName: string, group: string) => {
     cy.get('span[class="Icon faMinusSquare fa2x ExcludeAllProducts"]').click();
     cy.get(`div[class="accordion__item"]:contains("${group} Products")`).click();
     cy.get(`a:contains(${productName})`).click();
   };
 
-  isInfoCorrect = (productName) => {
+  isInfoCorrect = (productName: string) => {
     cy.longWait();
     cy.get(`div[class="tab-dialog-button active"]>div:contains(${productName})`).should('exist');
   };
@@ -129,7 +129,7 @@ class ProductMoveWidget extends AbstractWidget {
     cy.get('div.ProductItemMove>div.WarningWrapper').should('not.exist');
   };
 
-  isErrorMessageExist = (message) => {
+  isErrorMessageExist = (message: string) => {
     cy.get('div.ProductItemMove>div.WarningWrapper').should('exist');
     cy.get('div.ProductItemMove>div.WarningWrapper>span.RestrMessage')
       .each(($el) => {

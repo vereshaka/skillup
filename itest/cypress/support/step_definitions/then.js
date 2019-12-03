@@ -23,10 +23,10 @@ Then(/'(.*)' is (not |)available/,
       gucciWorld.isCockpitExist(cockpitName);
     }
   });
-Then(/^I should see active '(.*)' button$/,
-  (buttonName) => {
+Then(/^I should see active Product Move button$/,
+  () => {
     (gucciWorld.getCurrentCockpit(): HfhsCockpit)
-      .checkProductMoveButtonExistence(buttonName);
+      .checkProductMoveButtonExistence();
   });
 
 Then(/^business transaction widget is displayed$/,
@@ -63,9 +63,9 @@ Then(/'(.*)' should be (active|disabled)( and (checked|unchecked)|)/, (field, st
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
     .checkField(field, status, state);
 });
-Then(/Help Page and Close Button should be exist/, (wrapperName, buttonName) => {
+Then(/Help Page and Close Button should be exist/, () => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
-    .isHelpOpened(wrapperName, buttonName);
+    .isHelpOpened();
 });
 Then(/The following source account should be selected/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
