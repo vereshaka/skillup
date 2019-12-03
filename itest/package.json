@@ -37,6 +37,7 @@
     "cypress-cucumber-preprocessor": "^1.16.2",
     "cypress-xpath": "^1.4.0",
     "moment": "^2.24.0",
+    "oracledb": "^4.0.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "fs-extra": "^8.1.0"

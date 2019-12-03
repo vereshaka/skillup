@@ -3,8 +3,9 @@ import { Then } from 'cypress-cucumber-preprocessor/steps';
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import ProductMoveWidget from '../page_objects/product-move-widget';
-import BusinessTransactionWidget from '../page_objects/business-transaction-widget';
+import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 import HfhsCockpit from '../page_objects/hfhs-cockpit';
+import BusinessTransactionDetailsWidget from '../page_objects/business-transaction-details-widget';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => {
@@ -29,20 +30,26 @@ Then(/^I should see active '(.*)' button$/,
       .checkProductMoveButtonExistence(buttonName);
   });
 
-Then(/^business transaction widget is displayed$/,
+Then(/^business transaction history widget is displayed$/,
   () => {
-    (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+    (gucciWorld
+      .getCurrentCockpit()
+      .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
       .isWidgetExists();
   });
 
 Then(/transaction list mode group is (not |)presented/,
   (existence) => {
     if (existence === 'not ') {
-      (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+      (gucciWorld
+        .getCurrentCockpit()
+        .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
         .isAdminGroupNotExist();
     }
     if (existence === '') {
-      (gucciWorld.getCurrentCockpit().getBusinessTransactionWidget(): BusinessTransactionWidget)
+      (gucciWorld
+        .getCurrentCockpit()
+        .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
         .isAdminGroupExist();
     }
   });
@@ -87,7 +94,37 @@ Then(/The following products should be selected/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isSelectedAccountsCorrect(table);
 });
+Then(/latest business transaction's info is displayed in new tab/, (table: Object) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .isInfoDisplayed(table);
+});
 Then(/I should see '(.*)' product details/, (productName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isInfoCorrect(productName);
+});
+Then(/'(.*)' message should be displayed/, (message: string) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .isMessageDisplayed(message);
+});
+Then(/new tab should be displayed/, () => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .isTabCaptionDisplayed();
+});
+Then(/business transaction's details are displayed in new tab/, (table: Object) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionDetailsWidget(): BusinessTransactionDetailsWidget)
+    .isInfoDisplayed(table);
+});
+Then(/new tab with caption '(.*)' should be displayed/, (caption: string) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .isTabCaptionDisplayed(caption);
 });

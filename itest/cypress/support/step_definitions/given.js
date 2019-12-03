@@ -1,23 +1,24 @@
 // @flow
 import {
-  Given,
+  Given, When,
 } from 'cypress-cucumber-preprocessor/steps';
 import gucciWorld from './hooks';
 import ProductMoveWidget from '../page_objects/product-move-widget';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import SearchAccountWidget from '../page_objects/search-account-widget';
+import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
   gucciWorld.openLoginForm();
-});
-// eslint-disable-next-line no-unused-vars
-Given(/As (.*) with permission '(.*)'/, (username, permission) => {
-  gucciWorld.login(username);
 });
 Given(/^(.*) exists in (.*) keycloak with the following groups:$/,
   () => { // username, keycloakName, table
     // TODO: implement me
   });
+// eslint-disable-next-line no-unused-vars
+Given(/As (.*) with permission '(.*)'/, (username, permission) => {
+  gucciWorld.login(username);
+});
 Given(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
@@ -65,3 +66,25 @@ Given(/^I open GUCCI Portal as (.*)$/,
   (username) => {
     gucciWorld.login(username);
   });
+Given(/I see '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date, table) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .showTransactionList(affiliation, currentStatus, date, table);
+});
+
+Given(/(.*) has no business transactions/, (username: string) => {
+  gucciWorld.deleteAllForUser(username);
+});
+
+Given(/(.*) has business transaction #(.*) that was '(.*)' today with items/, (username, id, status, table) => {
+  gucciWorld.deleteAllForUser(username);
+  gucciWorld.deleteById(id);
+  gucciWorld.insertTransactionWithItems(username, id, status, table.hashes());
+});
+When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .filterTransactionList(affiliation, currentStatus, date);
+});

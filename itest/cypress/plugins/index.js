@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const webpackOptions = require('../../webpack.config.js');
+const db = require('../../cypress/support/database/dao');
 
 function getConfigurationByFile(file) {
   const pathToConfigFile = path.resolve(__dirname, '../config', `${file}.json`);
@@ -21,6 +22,26 @@ module.exports = (on, config) => {
       args.push('--incognito');
     }
     return args;
+  });
+  on('task', {
+    'selectAllForUser:db': async ({ username }) => {
+      await db.selectAllForUser(username);
+      return 0;
+    },
+    'deleteById:db': async ({ id }) => {
+      await db.deleteById(id);
+      return 0;
+    },
+    'deleteAllForUser:db': async ({ username }) => {
+      await db.deleteAllForUser(username);
+      return 0;
+    },
+    'insertTransactionWithItems:db': async ({
+      username, id, status, businessTransactionItems,
+    }) => {
+      await db.insertTransactionWithItems(username, id, status, businessTransactionItems);
+      return 0;
+    },
   });
   const file = config.env.configFile || 'local';
   return getConfigurationByFile(file);
