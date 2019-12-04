@@ -112,6 +112,43 @@ class GucciWorld {
     this.user = undefined;
     this.cockpit = undefined;
   }
+
+  selectAllForUser = (username: string) => {
+    cy.task('selectAllForUser:db', { username });
+    cy.log(`selected all records for ${username}`);
+  };
+
+  deleteAllForUser = (username: string) => {
+    cy.task('deleteAllForUser:db', { username });
+    cy.log(`deleted records for user: ${username}`);
+  };
+
+  deleteById = (id: number) => {
+    cy.task('deleteById:db', { id });
+    cy.log(`deleted record № ${id}`);
+  };
+
+  insertTransactionWithItems = (username, id, completionStatus, businessTransactionItems) => {
+    let status;
+    switch (completionStatus) {
+      case 'done with error':
+        status = 'with_error';
+        break;
+      case 'taken place':
+        status = 'done';
+        break;
+      default:
+        status = completionStatus;
+    }
+
+    cy.task('insertTransactionWithItems:db', {
+      username,
+      id,
+      status,
+      businessTransactionItems,
+    });
+    cy.log(`inserted transaction with items for ${username}`);
+  };
 }
 
 export default GucciWorld;
