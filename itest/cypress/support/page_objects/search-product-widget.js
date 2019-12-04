@@ -35,8 +35,8 @@ class SearchProductWidget extends AbstractWidget {
       cy.get('div[class="StatusMessage Error ProductItem"]>h3:contains(You have incorrect)')
         .should('not.exist');
     } else {
-      cy.get('div[class="StatusMessage Error ProductItem"]>h3')
-        .should('have.text', error);
+      cy.get(`div[class="StatusMessage Error ProductItem"]>h3:contains(${error})`)
+        .should('exist');
     }
   };
 
@@ -142,7 +142,32 @@ class SearchProductWidget extends AbstractWidget {
     this.checkItemListExistence();
     this.selectCustomerItem();
     this.checkProductListExistence();
-  }
+  };
+
+  checkContractCapable = (value: string) => {
+    cy.get('div.CustomerPanelWrapper>div>div:eq(1)>span:eq(2)').should('have.text', value);
+  };
+
+  checkProvisionalCustomer = (value: string) => {
+    cy.get('div.CustomerPanelWrapper>div>div:eq(1)>span:eq(4)').should('have.text', value);
+  };
+
+  checkStatus = (value: string) => {
+    cy.log(`Status ${value}. Not supported`);
+  };
+
+  productsLength = (numberOfProducts: number) => {
+    cy.get('body').then(($body) => {
+      cy.get($body).find('div[class="ResultItem ProductItem Active"]').should('have.length', numberOfProducts);
+    });
+  };
+
+  addAllProducts = () => {
+    cy.mediumWait();
+    this.addAll();
+    cy.mediumWait();
+    this.close();
+  };
 }
 
 export default SearchProductWidget;

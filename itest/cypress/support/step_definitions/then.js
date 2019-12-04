@@ -24,10 +24,10 @@ Then(/'(.*)' is (not |)available/,
       gucciWorld.isCockpitExist(cockpitName);
     }
   });
-Then(/^I should see active '(.*)' button$/,
-  (buttonName) => {
+Then(/^I should see active Product Move button$/,
+  () => {
     (gucciWorld.getCurrentCockpit(): HfhsCockpit)
-      .checkProductMoveButtonExistence(buttonName);
+      .checkProductMoveButtonExistence();
   });
 
 Then(/^business transaction history widget is displayed$/,
@@ -70,9 +70,9 @@ Then(/'(.*)' should be (active|disabled)( and (checked|unchecked)|)/, (field, st
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
     .checkField(field, status, state);
 });
-Then(/Help Page and Close Button should be exist/, (wrapperName, buttonName) => {
+Then(/Help Page and Close Button should be exist/, () => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
-    .isHelpOpened(wrapperName, buttonName);
+    .isHelpOpened();
 });
 Then(/The following source account should be selected/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
@@ -103,6 +103,16 @@ Then(/latest business transaction's info is displayed in new tab/, (table: Objec
 Then(/I should see '(.*)' product details/, (productName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isInfoCorrect(productName);
+});
+Then(/error (|'(.*)' )should (|not )be displayed/, (message, existOrNo) => {
+  if (existOrNo === 'not ') {
+    (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+      .isErrorMessageNotExist();
+  } if (existOrNo === '') {
+    (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget(): ProductMoveWidget)
+      .isErrorMessageExist(message);
+  }
 });
 Then(/'(.*)' message should be displayed/, (message: string) => {
   (gucciWorld

@@ -40,6 +40,11 @@ When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .openProductInfo(productName, group);
 });
+When(/^add all products$/,
+  () => {
+    (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+      .addAllProducts();
+  });
 When(/I select business transaction #(.*)/, (id) => {
   (gucciWorld
     .getCurrentCockpit()

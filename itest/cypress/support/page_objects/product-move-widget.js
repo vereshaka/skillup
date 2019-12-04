@@ -59,6 +59,14 @@ class ProductMoveWidget extends AbstractWidget {
     new SearchProductWidget().searchAndAdd(query, table);
   };
 
+  searchProducts = (query: string) => {
+    cy.normalWait();
+    this.isAlreadyAdded();
+    cy.normalWait();
+    this.openDialog('Add Product');
+    new SearchProductWidget().search(query);
+  };
+
   specifyAccount = (account:string, query:string, group:string) => {
     this.openDialog('Add Account', group);
     new SearchAccountWidget().addAccount(account, query);
@@ -107,15 +115,27 @@ class ProductMoveWidget extends AbstractWidget {
     });
   };
 
-  openProductInfo = (productName, group) => {
-    cy.get('span[class="Icon faMinusSquare fa2x ExcludeAllProducts"]').click();
+  openProductInfo = (productName: string, group: string) => {
     cy.get(`div[class="accordion__item"]:contains("${group} Products")`).click();
     cy.get(`a:contains(${productName})`).click();
   };
 
-  isInfoCorrect = (productName) => {
+  isInfoCorrect = (productName: string) => {
     cy.longWait();
     cy.get(`div[class="tab-dialog-button active"]>div:contains(${productName})`).should('exist');
+  };
+
+  isErrorMessageNotExist = () => {
+    cy.get('div.ProductItemMove>div.WarningWrapper').should('not.exist');
+  };
+
+  isErrorMessageExist = (message: string) => {
+    cy.get('div.ProductItemMove>div.WarningWrapper').should('exist');
+    cy.get('div.ProductItemMove>div.WarningWrapper>span.RestrMessage')
+      .each(($el) => {
+        cy.get($el)
+          .should('have.text', message);
+      });
   };
 }
 

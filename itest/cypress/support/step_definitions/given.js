@@ -1,7 +1,5 @@
 // @flow
-import {
-  Given, When,
-} from 'cypress-cucumber-preprocessor/steps';
+import { Given } from 'cypress-cucumber-preprocessor/steps';
 import gucciWorld from './hooks';
 import ProductMoveWidget from '../page_objects/product-move-widget';
 import SearchProductWidget from '../page_objects/search-product-widget';
@@ -66,6 +64,25 @@ Given(/^I open GUCCI Portal as (.*)$/,
   (username) => {
     gucciWorld.login(username);
   });
+Given(/search products by '(.*)'/, (query) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).searchProducts(query);
+});
+Given(/found customer should have contract capable equals '(.*)'/, (value) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkContractCapable(value);
+});
+Given(/found customer should have provisional customer equals '(.*)'/, (value) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkProvisionalCustomer(value);
+});
+Given(/found customer should have status equals '(.*)'/, (value) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkStatus(value);
+});
+Given(/(^\d+) products are displayed/, (numberOfProducts) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .productsLength(numberOfProducts);
+});
 Given(/I see '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date, table) => {
   (gucciWorld
     .getCurrentCockpit()
@@ -82,7 +99,8 @@ Given(/(.*) has business transaction #(.*) that was '(.*)' today with items/, (u
   gucciWorld.deleteById(id);
   gucciWorld.insertTransactionWithItems(username, id, status, table.hashes());
 });
-When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
+
+Given(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
   (gucciWorld
     .getCurrentCockpit()
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
