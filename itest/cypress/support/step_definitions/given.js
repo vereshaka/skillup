@@ -91,13 +91,13 @@ Given(/I see '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus
 });
 
 Given(/(.*) has no business transactions/, (username: string) => {
-  gucciWorld.deleteAllForUser(username);
+  cy.deleteAllForUser(username);
 });
 
 Given(/(.*) has business transaction #(.*) that was '(.*)' today with items/, (username, id, status, table) => {
-  gucciWorld.deleteAllForUser(username);
-  gucciWorld.deleteById(id);
-  gucciWorld.insertTransactionWithItems(username, id, status, table.hashes());
+  cy.deleteAllForUser(username);
+  cy.deleteById(id);
+  cy.insertTransactionWithItems(username, id, status, table.hashes());
 });
 
 Given(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {

@@ -24,22 +24,18 @@ module.exports = (on, config) => {
     return args;
   });
   on('task', {
-    'selectAllForUser:db': async ({ username }) => {
-      await db.selectAllForUser(username);
+    'deleteById:db': async ({ id, dbParams }) => {
+      await db.deleteById(id, dbParams);
       return 0;
     },
-    'deleteById:db': async ({ id }) => {
-      await db.deleteById(id);
-      return 0;
-    },
-    'deleteAllForUser:db': async ({ username }) => {
-      await db.deleteAllForUser(username);
+    'deleteAllForUser:db': async ({ username, dbParams }) => {
+      await db.deleteAllForUser(username, dbParams);
       return 0;
     },
     'insertTransactionWithItems:db': async ({
-      username, id, status, businessTransactionItems,
+      username, id, status, businessTransactionItems, dbParams,
     }) => {
-      await db.insertTransactionWithItems(username, id, status, businessTransactionItems);
+      await db.insertTransactionWithItems(username, id, status, businessTransactionItems, dbParams);
       return 0;
     },
   });
