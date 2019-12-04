@@ -9,12 +9,12 @@ FROM jenkins/jnlp-slave:latest-jdk11
 USER root
 COPY --from=libs /opt/oracle/instantclient_12_2 /opt/oracle/instantclient
 
-RUN ln -s /opt/oracle/instantclient/libclntsh.so.12.2 /opt/oracle/instantclient/libclntsh.so && \
-    ln -s /opt/oracle/instantclient/libocci.so.12.2 /opt/oracle/instantclient/libocci.so
+RUN ln -s /opt/oracle/instantclient/libclntsh.so.12.1 /opt/oracle/instantclient/libclntsh.so && \
+    ln -s /opt/oracle/instantclient/libocci.so.12.1 /opt/oracle/instantclient/libocci.so
 RUN mkdir /root/.cache && \
     chmod -R 777 /root/.cache && \
     apt-get update && \
-    apt-get install -y libgconf-2-4 libgtk-3-0 xvfb chromium git --no-install-recommends && \
+    apt-get install -y libaio1 libgconf-2-4 libgtk-3-0 xvfb chromium git --no-install-recommends && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/
