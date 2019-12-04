@@ -1,4 +1,4 @@
-FROM tasktrack.telekom.at/gucci-docker-local/additional-libraries:0.1.0 as libs
+FROM tasktrack.telekom.at/gucci-docker-local/widget-additional-libraries:0.1.0 as libs
 
 RUN apk add unzip && \
     mkdir /opt/oracle && \
