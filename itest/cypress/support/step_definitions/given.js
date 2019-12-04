@@ -99,3 +99,10 @@ Given(/(.*) has business transaction #(.*) that was '(.*)' today with items/, (u
   gucciWorld.deleteById(id);
   gucciWorld.insertTransactionWithItems(username, id, status, table.hashes());
 });
+
+Given(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .filterTransactionList(affiliation, currentStatus, date);
+});
