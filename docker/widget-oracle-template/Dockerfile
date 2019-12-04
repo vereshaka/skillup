@@ -1,4 +1,4 @@
-FROM tasktrack.telekom.at/gucci-docker-local/additional-libraries:0.1.0 as libs
+FROM tasktrack.telekom.at/gucci-docker-local/widget-additional-libraries:0.1.0 as libs
 
 RUN apk add unzip && \
     mkdir /opt/oracle && \
@@ -19,8 +19,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     
 COPY --from=libs /opt/oracle/instantclient_12_2 /opt/oracle/instantclient
 
-RUN ln -s /opt/oracle/instantclient/libclntsh.so.12.2 /opt/oracle/instantclient/libclntsh.so && \
-    ln -s /opt/oracle/instantclient/libocci.so.12.2 /opt/oracle/instantclient/libocci.so
+RUN ln -s /opt/oracle/instantclient/libclntsh.so.12.1 /opt/oracle/instantclient/libclntsh.so && \
+    ln -s /opt/oracle/instantclient/libocci.so.12.1 /opt/oracle/instantclient/libocci.so
 
 ENV LD_LIBRARY_PATH="/opt/oracle/instantclient" \
     OCI_HOME="/opt/oracle/instantclient" \
