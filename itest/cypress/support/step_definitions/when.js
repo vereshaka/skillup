@@ -57,3 +57,9 @@ When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, curr
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .filterTransactionList(affiliation, currentStatus, date);
 });
+When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .filterTransactionList(affiliation, currentStatus, date);
+});
