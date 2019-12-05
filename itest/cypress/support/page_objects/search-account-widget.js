@@ -21,10 +21,11 @@ class SearchAccountWidget extends AbstractWidget {
   search = (query:string) => {
     cy.get(`input[id="${this.elements['Search input']}"]`).type(query);
     cy.get(`button[id="${this.elements['Search run']}"]`).click();
-    cy.mediumWait();
+    cy.longWait();
   };
 
   selectAccount =(account: string) => {
+    cy.get('div[class="StatusMessage Error ProductItem"]').should('not.exist');
     cy.get(`div:contains(${account})>input[type="radio"]`).click();
     cy.get('button[id="process-button"]').click();
   };
@@ -43,14 +44,13 @@ class SearchAccountWidget extends AbstractWidget {
     cy.get(`select#${this.elements.History}`).should('exist');
   };
 
-  areAccountsFounded = (table) => {
+  areAccountsFounded = (table: Object) => {
+    const { length } = table.hashes();
     cy
       .get('div#searchResult')
       .should('exist')
       .find('div>div[class="ResultItem AccountItem"]')
-      .should('have.length', 2);
-    let { length } = table.hashes();
-    length = Number(length);
+      .should('have.length', length);
     for (let i = 0; i < length; i += 1) {
       cy
         .get(`div[class="ResultItem AccountItem"]:eq(${i})`)

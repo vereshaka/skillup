@@ -1,12 +1,10 @@
 // @flow
-import {
-  Given,
-  When,
-} from 'cypress-cucumber-preprocessor/steps';
+import { When } from 'cypress-cucumber-preprocessor/steps';
 
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import ProductMoveWidget from '../page_objects/product-move-widget';
+import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 
 When(/I have try to login as (.*) with (.*) credential/,
   (username, type) => {
@@ -38,7 +36,28 @@ When(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
   });
-Given(/I specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, query, group) => {
+When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .specifyAccount(account, query, group);
+    .openProductInfo(productName, group);
+});
+When(/^add all products$/,
+  () => {
+    (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+      .addAllProducts();
+  });
+When(/I select business transaction #(.*)/, (id) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .selectTransaction(id);
+});
+When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .filterTransactionList(affiliation, currentStatus, date);
+});
+When(/selected (|'(.*)' customer and )all products/, (customerName?) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkCustomersAndProductListsExistence(customerName);
 });

@@ -35,8 +35,8 @@ class SearchProductWidget extends AbstractWidget {
       cy.get('div[class="StatusMessage Error ProductItem"]>h3:contains(You have incorrect)')
         .should('not.exist');
     } else {
-      cy.get('div[class="StatusMessage Error ProductItem"]>h3')
-        .should('have.text', error);
+      cy.get(`div[class="StatusMessage Error ProductItem"]>h3:contains(${error})`)
+        .should('exist');
     }
   };
 
@@ -53,7 +53,7 @@ class SearchProductWidget extends AbstractWidget {
       .type(query);
     cy.get(`button[id="${this.elements['Search run']}"]`)
       .click();
-    cy.mediumWait();
+    cy.longWait();
   };
 
   isSearchElementExists = (index: string, searchItem: string) => {
@@ -76,67 +76,80 @@ class SearchProductWidget extends AbstractWidget {
       .click();
   };
 
+  addFollowingProducts = (table) => {
+    table.hashes().forEach((row) => {
+      cy.get(`div.ResultItemGroup:contains(${row.Product} ${row.Subscription})>input.ProductItemCheckbox`).click();
+    });
+  };
+
   close = () => {
     cy.get('button[id="process-button"]')
       .click();
   };
 
-  searchAndAdd = (query: string, products?: Array<string>) => {
+  searchAndAdd = (query: string, table?: Object) => {
     this.search(query);
-    if (products) {
-      throw new Error('Implement me');
+    cy.get('div[class="StatusMessage Error ProductItem"]').should('not.exist');
+    if (table) {
+      this.addFollowingProducts(table);
     } else {
       this.addAll();
     }
     this.close();
   };
 
-  isHistoryContainsQuery = (index: string, query: string) => {
-    cy.get(`select[id="id_of_select"]>option:eq(${Number(index) - 1})`)
-      .should('have.text', query);
+  checkCustomerListExistence = () => {
+    cy.get('a[href="#select-all"]').should('not.exist');
   };
 
-  checkItemListExistence = () => {
+  selectCustomer = (customerName) => {
     cy
-      .get('a[name="productCountButton"]')
-      .contains('...');
-    cy
-      .get('div#searchResult')
-      .should('exist')
-      .find('div.ScrollableListWrapper')
-      .should('exist')
-      .find('div[class="ResultItem CustomerItem"]')
-      .find('div[class="ResultItem CustomerItem"]')
-      .find('div[class="CustomerItemSelection"]');
-  };
-
-  selectCustomerItem = () => {
-    cy
-      .get('a[name="productCountButton"]')
-      .contains('9')
+      .get(`div[class="ResultItem CustomerItem"]:contains(${customerName})`)
+      .find('a[name="productCountButton"]')
       .click();
     // TODO: mikhailb: Should be removed when CCF-851 will be done
     cy.wait(30000);
   };
 
-  checkProductListExistence = () => {
-    cy
-      .get('select#id_of_select')
-      .find('option[value="0"]')
-      .contains('billa && KDNR:103777118');
-    cy
-      .get('a[name="productCountButton"]')
-      .click();
-    cy
-      .get(`button[id="${this.elements['Process Button']}"]`)
-      .click();
+  checkProductsListExistence = () => {
+    cy.get('a[href="#select-all"]').should('exist');
   };
 
-  checkItemAndProductListsExistence = () => {
-    this.checkItemListExistence();
-    this.selectCustomerItem();
-    this.checkProductListExistence();
-  }
+  checkCustomersAndProductListsExistence = (customerName?:string) => {
+    if (customerName) {
+      this.checkCustomerListExistence();
+      this.selectCustomer(customerName);
+    }
+    this.checkProductsListExistence();
+    this.addAll();
+    cy.mediumWait();
+    this.close();
+  };
+
+  checkContractCapable = (value: string) => {
+    cy.get('div.CustomerPanelWrapper>div>div:eq(1)>span:eq(2)').should('have.text', value);
+  };
+
+  checkProvisionalCustomer = (value: string) => {
+    cy.get('div.CustomerPanelWrapper>div>div:eq(1)>span:eq(4)').should('have.text', value);
+  };
+
+  checkStatus = (value: string) => {
+    cy.log(`Status ${value}. Not supported`);
+  };
+
+  productsLength = (numberOfProducts: number) => {
+    cy.get('body').then(($body) => {
+      cy.get($body).find('div[class="ResultItem ProductItem Active"]').should('have.length', numberOfProducts);
+    });
+  };
+
+  addAllProducts = () => {
+    cy.mediumWait();
+    this.addAll();
+    cy.mediumWait();
+    this.close();
+  };
 }
 
 export default SearchProductWidget;

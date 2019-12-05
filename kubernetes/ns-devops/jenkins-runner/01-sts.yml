@@ -1,0 +1,51 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: jenkins-runner-config
+  namespace: hfhs-mock
+data:
+  RUNNER_NAME: "base64name"
+  RUNNER_TOKEN: "base64token"
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: jenkins-runner
+  namespace: hfhs-mock
+  labels:
+    app: jenkins-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-runner
+  template:
+    metadata:
+      labels:
+        app: jenkins-runner
+    spec:
+      containers:
+        - name: runner
+          image: tasktrack.telekom.at/gucci-docker/jenkins-x11-runner:0.1.1
+          args:
+            - '-url'
+            - $(JENKINS_ADDR)
+            - $(RUNNER_TOKEN)
+            - $(RUNNER_NAME)
+          env:
+            - name: JENKINS_ADDR
+              value: 'http://jenkins-service.devops:8080'
+          envFrom:
+            - secretRef:
+                name: jenkins-runner-config
+          resources:
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+            requests:
+              memory: "4Gi"
+              cpu: "2000m"
+              
+          imagePullPolicy: IfNotPresent
+      imagePullSecrets:
+        - name: tasktrack.telekom.at

@@ -23,7 +23,43 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+const dbParams = {
+  dbUsername: Cypress.env('dbUsername'),
+  dbPassword: Cypress.env('dbPassword'),
+  dbConnectionString: Cypress.env('dbConnectionString'),
+};
+
 Cypress.Commands.add('shortWait', () => { cy.wait(200); });
 Cypress.Commands.add('normalWait', () => { cy.wait(500); });
 Cypress.Commands.add('mediumWait', () => { cy.wait(1000); });
 Cypress.Commands.add('longWait', () => { cy.wait(3000); });
+Cypress.Commands.add('deleteAllForUser', (username) => {
+  cy.task('deleteAllForUser:db', { username, dbParams });
+  cy.log(`deleted records for user: ${username}`);
+});
+Cypress.Commands.add('deleteById', (id: number) => {
+  cy.task('deleteById:db', { id, dbParams });
+  cy.log(`deleted record № ${id}`);
+});
+Cypress.Commands.add('insertTransactionWithItems', (username, id, completionStatus, businessTransactionItems) => {
+  let status;
+  switch (completionStatus) {
+    case 'done with error':
+      status = 'with_error';
+      break;
+    case 'taken place':
+      status = 'done';
+      break;
+    default:
+      status = completionStatus;
+  }
+
+  cy.task('insertTransactionWithItems:db', {
+    username,
+    id,
+    status,
+    businessTransactionItems,
+    dbParams,
+  });
+  cy.log(`inserted transaction with items for ${username}`);
+});

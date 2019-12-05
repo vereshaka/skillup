@@ -24,7 +24,7 @@ pipeline{
         }
         stage('Install deps'){
             steps{
-                nodejs('node10.16.3-aqa'){
+                nodejs('node10.16.3'){
                     dir('itest/'){
                         sh 'npm i'
                     }
@@ -33,7 +33,7 @@ pipeline{
         }
         stage('Perform tests'){
             steps{
-                nodejs('node10.16.3-aqa'){
+                nodejs('node10.16.3'){
                     dir('itest/'){
                         sh 'npm run clean'
                         sh 'npm run test:run -- --browser chrome'
@@ -46,12 +46,14 @@ pipeline{
     }
     post{
         always{
-            dir('itest/'){
-                sh 'npm run cucumber:reporter'
-                archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: false
-                archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/**/*.mp4', onlyIfSuccessful: false
-                archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/*.png', onlyIfSuccessful: false
-                archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/**/*.png', onlyIfSuccessful: false
+            nodejs('node10.16.3'){
+                dir('itest/'){
+                    sh 'npm run cucumber:reporter'
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: false
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/**/*.mp4', onlyIfSuccessful: false
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/*.png', onlyIfSuccessful: false
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/**/*.png', onlyIfSuccessful: false
+                }
             }
             publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, escapeUnderscores: false, includes: '**/*.html,**/*.json', keepAll: true, reportDir: 'itest/cypress/reports', reportFiles: 'hfhs.cucumber.html', reportName: 'Cypress Test Result', reportTitles: ''])
         }

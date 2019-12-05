@@ -8,6 +8,9 @@
     "cucumber:reporter": "node cucumber-reporter.js",
     "test:open": "./node_modules/.bin/cypress open",
     "test:run": "./node_modules/.bin/cypress run",
+    "test:open:int": "./node_modules/.bin/cypress open --env configFile=integration",
+    "test:open:dev": "./node_modules/.bin/cypress open --env configFile=development",
+    "test:open:mock": "./node_modules/.bin/cypress open --env configFile=hfhsmock",
     "lint": "eslint --ext .js --fix ./cypress",
     "build": "npm run clean && npm run test:run & npm run cucumber:reporter",
     "flow": "flow check"
@@ -19,7 +22,8 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-flowtype": "^3.11.1",
     "eslint-plugin-import": "^2.18.2",
-    "flow-bin": "^0.102.0"
+    "flow-bin": "^0.102.0",
+    "cross-env": "^5.2.0"
   },
   "dependencies": {
     "@babel/core": "^7.6.4",
@@ -33,8 +37,10 @@
     "cypress-cucumber-preprocessor": "^1.16.2",
     "cypress-xpath": "^1.4.0",
     "moment": "^2.24.0",
+    "oracledb": "^4.0.1",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "fs-extra": "^8.1.0"
   },
   "cypress-cucumber-preprocessor": {
     "step_definitions": "cypress/support/step_definitions/",
