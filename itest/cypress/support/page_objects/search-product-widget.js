@@ -53,7 +53,7 @@ class SearchProductWidget extends AbstractWidget {
       .type(query);
     cy.get(`button[id="${this.elements['Search run']}"]`)
       .click();
-    cy.mediumWait();
+    cy.longWait();
   };
 
   isSearchElementExists = (index: string, searchItem: string) => {
@@ -89,6 +89,7 @@ class SearchProductWidget extends AbstractWidget {
 
   searchAndAdd = (query: string, table?: Object) => {
     this.search(query);
+    cy.get('div[class="StatusMessage Error ProductItem"]').should('not.exist');
     if (table) {
       this.addFollowingProducts(table);
     } else {
@@ -97,51 +98,32 @@ class SearchProductWidget extends AbstractWidget {
     this.close();
   };
 
-  isHistoryContainsQuery = (index: string, query: string) => {
-    cy.get(`select[id="id_of_select"]>option:eq(${Number(index) - 1})`)
-      .should('have.text', query);
+  checkCustomerListExistence = () => {
+    cy.get('a[href="#select-all"]').should('not.exist');
   };
 
-  checkItemListExistence = () => {
+  selectCustomer = (customerName) => {
     cy
-      .get('a[name="productCountButton"]')
-      .contains('...');
-    cy
-      .get('div#searchResult')
-      .should('exist')
-      .find('div.ScrollableListWrapper')
-      .should('exist')
-      .find('div[class="ResultItem CustomerItem"]')
-      .find('div[class="ResultItem CustomerItem"]')
-      .find('div[class="CustomerItemSelection"]');
-  };
-
-  selectCustomerItem = () => {
-    cy
-      .get('a[name="productCountButton"]')
-      .contains('9')
+      .get(`div[class="ResultItem CustomerItem"]:contains(${customerName})`)
+      .find('a[name="productCountButton"]')
       .click();
     // TODO: mikhailb: Should be removed when CCF-851 will be done
     cy.wait(30000);
   };
 
-  checkProductListExistence = () => {
-    cy
-      .get('select#id_of_select')
-      .find('option[value="0"]')
-      .contains('billa && KDNR:103777118');
-    cy
-      .get('a[name="productCountButton"]')
-      .click();
-    cy
-      .get(`button[id="${this.elements['Process Button']}"]`)
-      .click();
+  checkProductsListExistence = () => {
+    cy.get('a[href="#select-all"]').should('exist');
   };
 
-  checkItemAndProductListsExistence = () => {
-    this.checkItemListExistence();
-    this.selectCustomerItem();
-    this.checkProductListExistence();
+  checkCustomersAndProductListsExistence = (customerName?:string) => {
+    if (customerName) {
+      this.checkCustomerListExistence();
+      this.selectCustomer(customerName);
+    }
+    this.checkProductsListExistence();
+    this.addAll();
+    cy.mediumWait();
+    this.close();
   };
 
   checkContractCapable = (value: string) => {
