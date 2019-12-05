@@ -44,13 +44,12 @@ class SearchAccountWidget extends AbstractWidget {
   };
 
   areAccountsFounded = (table: Object) => {
+    const { length } = table.hashes();
     cy
       .get('div#searchResult')
       .should('exist')
       .find('div>div[class="ResultItem AccountItem"]')
-      .should('have.length', 2);
-    let { length } = table.hashes();
-    length = Number(length);
+      .should('have.length', length);
     for (let i = 0; i < length; i += 1) {
       cy
         .get(`div[class="ResultItem AccountItem"]:eq(${i})`)

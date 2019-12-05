@@ -1,6 +1,5 @@
 // @flow
 const oracleDb = require('oracledb');
-const config = require('../page_objects/utils/config');
 
 oracleDb.autoCommit = true;
 
@@ -49,13 +48,13 @@ const commands = {
   },
 };
 
-const execute = async (query, params) => {
+const execute = async (query, params, dbParams) => {
   let connection;
   try {
     connection = await oracleDb.getConnection({
-      user: config.getDbUsername(),
-      password: config.getDbPassword(),
-      connectString: config.getDbConnectionString(),
+      user: dbParams.dbUsername,
+      password: dbParams.dbPassword,
+      connectString: dbParams.dbConnectionString,
     });
     return await connection.execute(query, params);
   } finally {
@@ -69,22 +68,17 @@ const execute = async (query, params) => {
   }
 };
 
-const deleteAllForUser = async (username) => {
-  await execute(commands.businessTransactionItems.DELETE_ALL_FOR_USER, { created_by: username });
-  await execute(commands.businessTransactions.DELETE_ALL_FOR_USER, { created_by: username });
+const deleteAllForUser = async (username, dbParams) => {
+  await execute(commands.businessTransactionItems.DELETE_ALL_FOR_USER, { created_by: username }, dbParams);
+  await execute(commands.businessTransactions.DELETE_ALL_FOR_USER, { created_by: username }, dbParams);
 };
 
-const deleteById = async (id) => {
-  await execute(commands.businessTransactionItems.DELETE_BY_BUSINESS_TRANSACTION_ID, { business_transaction_id: id });
-  await execute(commands.businessTransactions.DELETE_BY_ID, { business_transaction_id: id });
+const deleteById = async (id, dbParams) => {
+  await execute(commands.businessTransactionItems.DELETE_BY_BUSINESS_TRANSACTION_ID, { business_transaction_id: id }, dbParams);
+  await execute(commands.businessTransactions.DELETE_BY_ID, { business_transaction_id: id }, dbParams);
 };
 
-const selectAllForUser = async (username) => {
-  await execute(commands.businessTransactionItems.SELECT_ALL_FOR_USER, { created_by: username });
-  await execute(commands.businessTransactions.SELECT_ALL_FOR_USER, { created_by: username });
-};
-
-const insertTransactionForUser = async (username, id, status) => {
+const insertTransactionForUser = async (username, id, status, dbParams) => {
   const btBinds = {
     business_transaction_id: id,
     create_date: new Date(),
@@ -92,10 +86,10 @@ const insertTransactionForUser = async (username, id, status) => {
     status,
     effective_date: new Date(),
   };
-  await execute(commands.businessTransactions.INSERT, btBinds);
+  await execute(commands.businessTransactions.INSERT, btBinds, dbParams);
 };
 
-const insertTransactionItemsForTransaction = async (businessTransactionItems, id) => {
+const insertTransactionItemsForTransaction = async (businessTransactionItems, id, dbParams) => {
   const arrayOfPromises = businessTransactionItems.map((async (record) => {
     const itemBinds = {
       business_transaction_item_id: record.business_transaction_item_id,
@@ -115,19 +109,18 @@ const insertTransactionItemsForTransaction = async (businessTransactionItems, id
       source_phone_sn: record.source_phone_sn,
       source_billable_user: record.source_billable_user,
     };
-    return execute(commands.businessTransactionItems.INSERT, itemBinds);
+    return execute(commands.businessTransactionItems.INSERT, itemBinds, dbParams);
   }));
   await Promise.all(arrayOfPromises);
 };
 
-const insertTransactionWithItems = async (username, id, status, businessTransactionItems) => {
-  await insertTransactionForUser(username, id, status);
-  await insertTransactionItemsForTransaction(businessTransactionItems, id);
+const insertTransactionWithItems = async (username, id, status, businessTransactionItems, dbParams) => {
+  await insertTransactionForUser(username, id, status, dbParams);
+  await insertTransactionItemsForTransaction(businessTransactionItems, id, dbParams);
 };
 
 module.exports.deleteById = deleteById;
 module.exports.deleteAllForUser = deleteAllForUser;
-module.exports.selectAllForUser = selectAllForUser;
 module.exports.insertTransactionForUser = insertTransactionForUser;
 module.exports.insertTransactionItemsForTransaction = insertTransactionItemsForTransaction;
 module.exports.insertTransactionWithItems = insertTransactionWithItems;
