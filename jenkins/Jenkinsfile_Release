@@ -209,9 +209,7 @@ pipeline{
                                 stage('Check widgets'){
                                     steps{
                                         script{
-                                            //
                                             checkPackageProperties(base_build['isBaseRelease'], "microfrontend-hfhs-base", base_build['baseVersion'], projects)
-                                            //
                                         }
                                     }
                                 }
@@ -238,7 +236,7 @@ pipeline{
                                     }
                                     steps{
                                         dir("microfrontend-hfhs-base/"){
-                                            sh 'git status' //TODO remove debug info
+                                            sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
@@ -255,7 +253,7 @@ pipeline{
                                     }
                                     steps{
                                         dir("microfrontend-hfhs-base/"){
-                                            sh 'git status' //TODO Remove debug info
+                                            sh 'git status'
                                             withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
@@ -274,9 +272,7 @@ pipeline{
                                 stage('Check widgets'){
                                     steps{
                                         script{
-                                            //
                                             checkPackageProperties(base_build['isCUIRelease'], "microfrontend-hfhs-common-ui", base_build['baseVersion'], projects)
-                                            //
                                         }
                                     }
                                 }
@@ -303,7 +299,7 @@ pipeline{
                                     }
                                     steps{
                                         dir("microfrontend-hfhs-common-ui/"){
-                                            sh 'git status' //TODO remove debug info
+                                            sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
@@ -320,7 +316,7 @@ pipeline{
                                     }
                                     steps{
                                         dir("microfrontend-hfhs-common-ui/"){
-                                            sh 'git status' //TODO Remove debug info
+                                            sh 'git status'
                                             withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common-ui.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common-ui.git --tags"
@@ -339,9 +335,7 @@ pipeline{
                                 stage('Check widgets'){
                                     steps{
                                         script{
-                                            //
                                             checkPackageProperties(base_build['isConnectorRelease'], "microfrontend-hfhs-connector", base_build['baseVersion'], projects)
-                                            //
                                         }
                                     }
                                 }
@@ -368,7 +362,7 @@ pipeline{
                                     }
                                     steps{
                                         dir("microfrontend-hfhs-connector/"){
-                                            sh 'git status' //TODO remove debug info
+                                            sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh 'git checkout package-lock.json'
@@ -385,7 +379,7 @@ pipeline{
                                     }
                                     steps{
                                         dir("microfrontend-hfhs-connector/"){
-                                            sh 'git status' //TODO Remove debug info
+                                            sh 'git status'
                                             withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-connector.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-connector.git --tags"
@@ -399,7 +393,6 @@ pipeline{
                                 }
                             }
                         }
-
                     }
                 }
                 stage('Build widgets'){
@@ -748,7 +741,7 @@ pipeline{
                                 stage('Build'){
                                     steps{
                                         dir("product-move/"){
-                                            sh 'git status' //TODO Remove debug info
+                                            sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh "npm version ${base_build['baseVersion']} --force"
@@ -760,7 +753,7 @@ pipeline{
                                     steps{
                                         dir("product-move/"){
                                             withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh 'git status' //TODO Remove debug info
+                                                sh 'git status'
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git --tags"
                                                 nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
@@ -813,7 +806,7 @@ pipeline{
                                 stage('Build'){
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
-                                            sh 'git status' //TODO Remove debug info   
+                                            sh 'git status' 
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {         
                                                 sh 'npm run build'
                                                 sh "npm version ${base_build['baseVersion']} --force"
@@ -825,7 +818,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-toolbar/"){
                                             withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh 'git status' //TODO Remove debug info
+                                                sh 'git status'
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-toolbar.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-toolbar.git --tags"
                                                 nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
@@ -878,7 +871,7 @@ pipeline{
                                 stage('Build'){
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
-                                            sh 'git status' //TODO Remove debug info
+                                            sh 'git status'
                                             nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                                 sh 'npm run build'
                                                 sh "npm version ${base_build['baseVersion']} --force"
@@ -890,7 +883,7 @@ pipeline{
                                     steps{
                                         dir("microfrontend-hfhs-business-transaction-history/"){
                                             withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                                sh "git status" //TODO Remove debug info
+                                                sh "git status"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-history.git"
                                                 sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-history.git --tags"
                                                 nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
