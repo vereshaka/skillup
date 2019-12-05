@@ -57,3 +57,7 @@ When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, curr
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .filterTransactionList(affiliation, currentStatus, date);
 });
+When(/selected (|'(.*)' customer and )all products/, (customerName?) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .checkCustomersAndProductListsExistence(customerName);
+});
