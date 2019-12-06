@@ -5,6 +5,7 @@ import ProductMoveWidget from '../page_objects/product-move-widget';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import SearchAccountWidget from '../page_objects/search-account-widget';
 import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
+import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
   gucciWorld.openLoginForm();
@@ -33,12 +34,30 @@ Given(/^search '(.*)'/, (searchItem) => {
     .search(searchItem);
 });
 Given(/add (|all )products founded by '(.*)'/, (isAll: string, query: string, table?) => {
-  if (isAll === 'all ') {
-    (gucciWorld.getCurrentCockpit()
-      .getCurrentWidget(): ProductMoveWidget).addProducts(query);
-  } if (isAll === '') {
-    (gucciWorld.getCurrentCockpit()
-      .getCurrentWidget(): ProductMoveWidget).addProducts(query, table);
+  const currentWidgetName = gucciWorld.getCurrentCockpit().getCurrentWidget().getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      if (isAll === 'all ') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ProductMoveWidget).addProducts(query);
+      }
+      if (isAll === '') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ProductMoveWidget).addProducts(query, table);
+      }
+      break;
+    case 'Change Ownership':
+      if (isAll === 'all ') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipWidget).addProducts(query);
+      }
+      if (isAll === '') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipWidget).addProducts(query, table);
+      }
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
 Given(/specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, query, group) => {

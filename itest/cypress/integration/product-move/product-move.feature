@@ -2,7 +2,7 @@ Feature: Product Move
 
   @focus
   Scenario: Simple success flow: Order Validation
-    Given As user2 with permission 'hfhs-user'
+    Given I open GUCCI Portal as user2
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:100883236'
       | Product       | Subscription      |

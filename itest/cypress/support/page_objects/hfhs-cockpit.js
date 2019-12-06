@@ -5,6 +5,7 @@ import HfhsToolbarWidget from './hfhs-toolbar-widget';
 import ProductMoveWidget from './product-move-widget';
 import BusinessTransactionHistoryWidget from './business-transaction-history-widget';
 import BusinessTransactionDetailsWidget from './business-transaction-details-widget';
+import ChangeOwnershipWidget from './change-ownership-widget';
 
 class HfhsCockpit extends AbstractCockpit {
   toolbar: HfhsToolbarWidget = new HfhsToolbarWidget();
@@ -29,7 +30,7 @@ class HfhsCockpit extends AbstractCockpit {
         break;
       case 'Change Ownership':
         this.toolbar.clickToolbarButton(name);
-        // TODO: yevgenyv: enable me later: this.currentWidget = new ChangeOwnershipWidget();
+        this.currentWidget = new ChangeOwnershipWidget();
         break;
       default:
         throw new Error(`Unsupported widget. Name: ${name}`);
