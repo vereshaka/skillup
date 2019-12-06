@@ -5,7 +5,6 @@ oracleDb.autoCommit = true;
 
 const commands = {
   businessTransactions: {
-    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transactions',
     DELETE_BY_ID: 'DELETE FROM business_transactions WHERE id = :business_transaction_id',
     DELETE_ALL_FOR_USER: 'DELETE FROM business_transactions WHERE created_by = :created_by',
     INSERT: `INSERT
@@ -22,7 +21,6 @@ const commands = {
                      :effective_date)`,
   },
   businessTransactionItems: {
-    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transaction_items',
     DELETE_BY_BUSINESS_TRANSACTION_ID: 'DELETE FROM business_transaction_items WHERE business_transaction_id = :business_transaction_id',
     DELETE_ALL_FOR_USER: 'DELETE FROM business_transaction_items WHERE business_transaction_id IN (SELECT id FROM business_transactions WHERE created_by = :created_by)',
     INSERT: `INSERT INTO business_transaction_items (id, business_transaction_id, status, source_party_id, source_acc_id,
@@ -47,24 +45,6 @@ const commands = {
                      :source_billable_user)`,
   },
   pscCallNumberItems: {
-    SELECT_ITEM_BY_ID: 'SELECT * FROM psc_callnumber WHERE business_transaction_item_id = :id',
-    NEW_ID: 'SELECT psc_callnumber_seq.nextval FROM dual',
-    INSERT: `INSERT
-             INTO PSC_CALLNUMBER
-             (id,
-              business_transaction_item_id,
-              product_id,
-              product_sid_id,
-              callnumber,
-              pscv_id,
-              pscv_value)
-             VALUES (psc_callnumber_seq.nextval,
-                     :business_transaction_item_id,
-                     :product_id,
-                     :product_sid_id,
-                     :callnumber,
-                     :pscv_id,
-                     :pscv_value)`,
     DELETE_BY_BUSINESS_TRANSACTION_ID: `DELETE FROM psc_callnumber 
              WHERE business_transaction_item_id IN(SELECT id FROM business_transaction_items WHERE business_transaction_id = :business_transaction_id)`,
   },
