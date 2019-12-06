@@ -5,7 +5,6 @@ oracleDb.autoCommit = true;
 
 const commands = {
   businessTransactions: {
-    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transactions WHERE created_by = :created_by',
     DELETE_BY_ID: 'DELETE FROM business_transactions WHERE id = :business_transaction_id',
     DELETE_ALL_FOR_USER: 'DELETE FROM business_transactions WHERE created_by = :created_by',
     INSERT: `INSERT
@@ -22,14 +21,13 @@ const commands = {
                      :effective_date)`,
   },
   businessTransactionItems: {
-    SELECT_ALL_FOR_USER: 'SELECT * FROM business_transaction_items',
     DELETE_BY_BUSINESS_TRANSACTION_ID: 'DELETE FROM business_transaction_items WHERE business_transaction_id = :business_transaction_id',
     DELETE_ALL_FOR_USER: 'DELETE FROM business_transaction_items WHERE business_transaction_id IN (SELECT id FROM business_transactions WHERE created_by = :created_by)',
     INSERT: `INSERT INTO business_transaction_items (id, business_transaction_id, status, source_party_id, source_acc_id,
                                                      source_product_sidid, target_party_id, target_acc_id,
                                                      order_id, error, source_product_id, source_acc_type,
                                                      source_phone_cc, source_phone_ndc, source_phone_sn, source_billable_user)
-             VALUES (:business_transaction_item_id,
+             VALUES (business_transaction_item_seq.nextval,
                      :business_transaction_id,
                      :status,
                      :source_party_id,
@@ -45,6 +43,10 @@ const commands = {
                      :source_phone_ndc, 
                      :source_phone_sn, 
                      :source_billable_user)`,
+  },
+  pscCallNumberItems: {
+    DELETE_BY_BUSINESS_TRANSACTION_ID: `DELETE FROM psc_callnumber 
+             WHERE business_transaction_item_id IN(SELECT id FROM business_transaction_items WHERE business_transaction_id = :business_transaction_id)`,
   },
 };
 
@@ -74,6 +76,7 @@ const deleteAllForUser = async (username, dbParams) => {
 };
 
 const deleteById = async (id, dbParams) => {
+  await execute(commands.pscCallNumberItems.DELETE_BY_BUSINESS_TRANSACTION_ID, { business_transaction_id: id }, dbParams);
   await execute(commands.businessTransactionItems.DELETE_BY_BUSINESS_TRANSACTION_ID, { business_transaction_id: id }, dbParams);
   await execute(commands.businessTransactions.DELETE_BY_ID, { business_transaction_id: id }, dbParams);
 };
@@ -92,7 +95,6 @@ const insertTransactionForUser = async (username, id, status, dbParams) => {
 const insertTransactionItemsForTransaction = async (businessTransactionItems, id, dbParams) => {
   const arrayOfPromises = businessTransactionItems.map((async (record) => {
     const itemBinds = {
-      business_transaction_item_id: record.business_transaction_item_id,
       business_transaction_id: id,
       status: record.status,
       source_party_id: record.source_party_id,
