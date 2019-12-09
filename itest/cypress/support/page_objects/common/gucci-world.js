@@ -14,6 +14,13 @@ class GucciWorld {
 
   visitPortal = () => {
     cy.visit(Cypress.env('portalUrl'));
+    cy.get('html')
+      .then(($html) => {
+        if ($html.find('title:contains("Kerberos Unsupported")').length) {
+          cy.get('input[name="continue"]')
+            .click();
+        }
+      });
   };
 
   getPasswordFor = (username: string): string => username;
