@@ -2,7 +2,7 @@ Feature: Restriction checking
 
   @focus
   Scenario: Restriction check: wrong contract capable
-    Given As user2 with permission 'hfhs-user'
+    Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And search products by 'KDNR:101101101'
     And found customer should have contract capable equals 'N'
@@ -14,7 +14,7 @@ Feature: Restriction checking
 
   @focus
   Scenario: Restriction check: wrong provisional customer
-    Given As user2 with permission 'hfhs-user'
+    Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And search products by 'KDNR:101101102'
     And found customer should have contract capable equals 'J'
@@ -26,7 +26,7 @@ Feature: Restriction checking
 
   @focus
   Scenario: Restriction check: correct data
-    Given As user2 with permission 'hfhs-user'
+    Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And search products by 'KDNR:100883236'
     And found customer should have contract capable equals 'J'
