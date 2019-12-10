@@ -114,6 +114,11 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
     }
 }
 
+Boolean isPluggableModule(String packageName){
+    if ((packageName == "microfrontend-hfhs-common-ui") || (packageName == "microfrontend-hfhs-base") || (packageName == "microfrontend-hfhs-connector")) return true
+    else return false
+}
+
 pipeline{
     agent{
         node{
@@ -793,9 +798,10 @@ pipeline{
             steps{
                 script{
                     projects.each{ k,v ->
-                        if (isReleaseNeeded(projects.find{it.key == k}?.value) == false) return
+                        if ((isReleaseNeeded(projects.find{it.key == k}?.value) == false) || (isPluggableModule(k) == true)) return
                         dir(k + "/") {
                             env.IMAGE_VERSION = getPackageVersion()
+                            echo "Deploying ${k} to INT"
                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
                                 sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
                                 sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
@@ -809,6 +815,7 @@ pipeline{
     }
     post{
         success{
+            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-processing:latest | tail -n +2 | awk '{print \$3}') -f || true"
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-changeownership:latest | tail -n +2 | awk '{print \$3}') -f || true"
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-detail:latest | tail -n +2 | awk '{print \$3}') -f || true"
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-details:latest | tail -n +2 | awk '{print \$3}') -f || true"
