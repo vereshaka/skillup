@@ -3,6 +3,6 @@
   "watchForFileChanges": false,
   "chromeWebSecurity": false,
   "env": {
-    "portalUrl": "https://hfhs-mock.gucci-qa.at.inside?nosso=1"
+    "portalUrl": "https://hfhs-mock.gucci-qa.at.inside/"
   }
 }

@@ -13,7 +13,13 @@ class GucciWorld {
   cockpit: AbstractCockpit;
 
   visitPortal = () => {
-    cy.visit(Cypress.env('portalUrl'));
+    cy.visit({
+      method: 'GET',
+      url: Cypress.env('portalUrl'),
+      qs: {
+        nosso: '1',
+      },
+    });
   };
 
   getPasswordFor = (username: string): string => username;
