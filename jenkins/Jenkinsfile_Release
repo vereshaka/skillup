@@ -433,8 +433,8 @@ pipeline{
                                 dir("microfrontend-hfhs-processing/"){
                                     sh 'git status'
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-changeownership.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-changeownership.git --tags"
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-processing.git"
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-processing.git --tags"
                                         nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                             sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
                                             sh "npm run docker-push-image"
