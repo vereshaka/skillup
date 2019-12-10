@@ -85,7 +85,7 @@ String getPackageVersion(){
 }
 
 void checkPackageProperties(Boolean isRelease, String packageName, String packageVersion, Map projects){
-    overview = packageName + "versions in package.json\n    "
+    overview = packageName + " versions in package.json\n    "
     def isBaseVerValid = true
     if (isRelease == false){
         projects.each{ k,v ->
