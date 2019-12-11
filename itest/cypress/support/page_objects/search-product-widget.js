@@ -107,11 +107,10 @@ class SearchProductWidget extends AbstractWidget {
       .get(`div[class="ResultItem CustomerItem"]:contains(${customerName})`)
       .find('a[name="productCountButton"]')
       .click();
-    // TODO: mikhailb: Should be removed when CCF-851 will be done
-    cy.wait(30000);
   };
 
   checkProductsListExistence = () => {
+    cy.longWait();
     cy.get('a[href="#select-all"]').should('exist');
   };
 
