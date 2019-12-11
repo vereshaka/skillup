@@ -25,7 +25,6 @@ def projects = [
     "microfrontend-hfhs-changeownership" : "",
     "microfrontend-product-details" : "",
     "microfrontend-hfhs-base" : "",
-    "microfrontend-hfhs-common-ui" : "",
     "microfrontend-hfhs-connector" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
@@ -115,7 +114,7 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
 }
 
 Boolean isPluggableModule(String packageName){
-    if ((packageName == "microfrontend-hfhs-common-ui") || (packageName == "microfrontend-hfhs-base") || (packageName == "microfrontend-hfhs-connector")) return true
+    if ((packageName == "microfrontend-hfhs-base") || (packageName == "microfrontend-hfhs-connector")) return true
     else return false
 }
 
@@ -174,9 +173,6 @@ pipeline{
                                         booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-base" }?.value),
                                                     description: "Make release of Base",
                                                     name: 'isBaseRelease'),
-                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-common-ui" }?.value),
-                                                    description: "Make release of Common UI",
-                                                    name: 'isCUIRelease'),
                                         booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
                                                     description: "Make release of Common UI",
                                                     name: 'isConnectorRelease'),
@@ -260,69 +256,6 @@ pipeline{
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Component: Common UI'){
-                    stages{
-                        stage('Check widgets'){
-                            steps{
-                                script{
-                                    checkPackageProperties(base_build['isCUIRelease'], "microfrontend-hfhs-common-ui", base_build['baseVersion'], projects)
-                                }
-                            }
-                        }
-                        stage('Prepare'){
-                            when{
-                                expression{
-                                    base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-common-ui/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            when{
-                                expression{
-                                    base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-common-ui/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh 'git checkout package-lock.json'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Push tags'){
-                            when{
-                                expression{
-                                    base_build['isCUIRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-common-ui/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common-ui.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common-ui.git --tags"
                                         nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                             sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
                                             sh "npm publish"
