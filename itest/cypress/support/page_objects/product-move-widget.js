@@ -137,6 +137,12 @@ class ProductMoveWidget extends AbstractWidget {
           .should('have.text', message);
       });
   };
+
+  addAnotherProduct = (query: string, table?: Object) => {
+    cy.normalWait();
+    this.openDialog('Add Product');
+    new SearchProductWidget().searchAndAdd(query, table);
+  };
 }
 
 export default ProductMoveWidget;
