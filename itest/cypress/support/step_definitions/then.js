@@ -134,3 +134,11 @@ Then(/new tab with caption '(.*)' should be displayed/, (caption: string) => {
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .isTabCaptionDisplayed(caption);
 });
+Then(/'(.*)' button should be active/, (buttonName) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isButtonActive(buttonName);
+});
+Then(/Target account should not be selected/, () => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isTargetAccountNotSelected();
+});

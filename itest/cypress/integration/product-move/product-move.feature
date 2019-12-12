@@ -26,11 +26,13 @@ Feature: Product Move
     And add products founded by 'KDNR:100668958'
       | Product                            | Subscription  |
       | Alte ISDN Produkte, ohne Breitband | 43/2234/78103 |
-    When I specify '200004066276' account founded by 'KDNR:100100100' for NORM group
-    And add another product founded by 'KDNR:100100100'
+    And I specify '200004066276' account founded by 'KDNR:100100100' for NORM group
+    When I add another product founded by 'KDNR:100100100'
       | Product          | Subscription  |
       | A1 Festnetz ISDN | 43/3452/71145 |
     Then The following products should be selected
       | Product                            | Subscription  | AccountNumber | AccountType | LockedOrders |
       | Alte ISDN Produkte, ohne Breitband | 43/2234/78103 | 200000232320  | NORM        |              |
       | A1 Festnetz ISDN                   | 43/3452/71145 | 200004066276  | NORM        |              |
+    And Target account should not be selected
+    And 'Add Account' button should be active

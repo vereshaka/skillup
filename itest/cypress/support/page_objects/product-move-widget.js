@@ -143,6 +143,14 @@ class ProductMoveWidget extends AbstractWidget {
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, table);
   };
+
+  isButtonActive = (buttonName) => {
+    cy.get(`button[id="${this.elements[buttonName]}"]`).should('not.be.disabled');
+  };
+
+  isTargetAccountNotSelected = () => {
+    cy.get('div.AccountInfoTest').should('not.exist');
+  }
 }
 
 export default ProductMoveWidget;
