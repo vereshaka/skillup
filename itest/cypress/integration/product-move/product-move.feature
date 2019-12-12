@@ -21,7 +21,7 @@ Feature: Product Move
 
   @focus
   Scenario: Adding products into filled group
-    Given I open GUCCI Portal as admin
+    Given I open GUCCI Portal as hfhs-user3
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:100668958'
       | Product                            | Subscription  |
