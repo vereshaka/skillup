@@ -13,12 +13,14 @@ const commands = {
               create_date,
               created_by,
               status,
-              effective_date)
+              effective_date,
+              operation)
              VALUES (:business_transaction_id,
                      :create_date,
                      :created_by,
                      :status,
-                     :effective_date)`,
+                     :effective_date,
+                     :operation)`,
   },
   businessTransactionItems: {
     DELETE_BY_BUSINESS_TRANSACTION_ID: 'DELETE FROM business_transaction_items WHERE business_transaction_id = :business_transaction_id',
@@ -81,13 +83,14 @@ const deleteById = async (id, dbParams) => {
   await execute(commands.businessTransactions.DELETE_BY_ID, { business_transaction_id: id }, dbParams);
 };
 
-const insertTransactionForUser = async (username, id, status, dbParams) => {
+const insertTransactionForUser = async (username, type, id, status, dbParams) => {
   const btBinds = {
     business_transaction_id: id,
     create_date: new Date(),
     created_by: username,
     status,
     effective_date: new Date(),
+    operation: type,
   };
   await execute(commands.businessTransactions.INSERT, btBinds, dbParams);
 };
@@ -116,8 +119,8 @@ const insertTransactionItemsForTransaction = async (businessTransactionItems, id
   await Promise.all(arrayOfPromises);
 };
 
-const insertTransactionWithItems = async (username, id, status, businessTransactionItems, dbParams) => {
-  await insertTransactionForUser(username, id, status, dbParams);
+const insertTransactionWithItems = async (username, type, id, status, businessTransactionItems, dbParams) => {
+  await insertTransactionForUser(username, type, id, status, dbParams);
   await insertTransactionItemsForTransaction(businessTransactionItems, id, dbParams);
 };
 

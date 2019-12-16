@@ -41,7 +41,7 @@ Cypress.Commands.add('deleteById', (id: number) => {
   cy.task('deleteById:db', { id, dbParams });
   cy.log(`deleted record № ${id}`);
 });
-Cypress.Commands.add('insertTransactionWithItems', (username, id, completionStatus, businessTransactionItems) => {
+Cypress.Commands.add('insertTransactionWithItems', (username, type, id, completionStatus, businessTransactionItems) => {
   let status;
   switch (completionStatus) {
     case 'done with error':
@@ -56,6 +56,7 @@ Cypress.Commands.add('insertTransactionWithItems', (username, id, completionStat
 
   cy.task('insertTransactionWithItems:db', {
     username,
+    type,
     id,
     status,
     businessTransactionItems,

@@ -33,9 +33,9 @@ module.exports = (on, config) => {
       return 0;
     },
     'insertTransactionWithItems:db': async ({
-      username, id, status, businessTransactionItems, dbParams,
+      username, type, id, status, businessTransactionItems, dbParams,
     }) => {
-      await db.insertTransactionWithItems(username, id, status, businessTransactionItems, dbParams);
+      await db.insertTransactionWithItems(username, type, id, status, businessTransactionItems, dbParams);
       return 0;
     },
   });
