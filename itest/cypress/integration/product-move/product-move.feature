@@ -8,7 +8,7 @@ Feature: Product Move
       | Product       | Subscription      |
       | Mombi_Desiree | 43/9740/201554877 |
       | Bombi_Desiree | 43/9740/201554878 |
-    And specify 'A604916027,00002' account founded by 'KDNR:103777119' for PRI group
+    And specify 'A604916027,00002' account founded by 'KDNR:103777119' for 'PRI' group
     When Order validation step is open
     Then The following source account should be selected
       | Product       | Subscription      | AccountNumber | AccountType | LockedOrders |
@@ -26,7 +26,7 @@ Feature: Product Move
     And add products founded by 'KDNR:100668958'
       | Product                            | Subscription  |
       | Alte ISDN Produkte, ohne Breitband | 43/2234/78103 |
-    And I specify '200004066276' account founded by 'KDNR:100100100' for NORM group
+    And I specify '200004066276' account founded by 'KDNR:100100100' for 'NORM' group
     When I add another product founded by 'KDNR:100100100'
       | Product          | Subscription  |
       | A1 Festnetz ISDN | 43/3452/71145 |

@@ -5,44 +5,71 @@ import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import ProductMoveWidget from '../page_objects/product-move-widget';
 import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
+import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 
 When(/I have try to login as (.*) with (.*) credential/,
   (username, type) => {
     gucciWorld.login(username, type === 'correct');
   });
 When(/I try to search by '(.*)' query/, (query) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getCurrentDialog(): SearchProductWidget)
     .search(query);
 });
 When(/I search '(.*)'/, (query) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getCurrentDialog(): SearchProductWidget)
     .search(query);
 });
 When(/Click on Help Button/, () => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getCurrentDialog(): SearchProductWidget)
     .openHelp();
 });
 When(/^I open '([a-zA-Z ]*)' widget$/, (widgetName) => {
-  gucciWorld.getCurrentCockpit().openWidget(widgetName);
+  gucciWorld.getCurrentCockpit()
+    .openWidget(widgetName);
 });
 When(/Order validation step is open/, () => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .isPageOpened();
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ProductMoveWidget)
+        .isPageOpened();
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipWidget)
+        .isPageOpened();
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 When(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
-  gucciWorld.getCurrentCockpit().openWidget(widgetName);
+  gucciWorld.getCurrentCockpit()
+    .openWidget(widgetName);
 });
 When(/^switch to (.*)$/,
   (cockpitName) => {
     gucciWorld.openCockpit(cockpitName);
   });
 When(/I click on '(.*)' product from (.*[A-Z]) Group/, (productName, group) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget(): ProductMoveWidget)
     .openProductInfo(productName, group);
 });
 When(/^add all products$/,
   () => {
-    (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget()
+      .getCurrentDialog(): SearchProductWidget)
       .addAllProducts();
   });
 When(/I select business transaction #(.*)/, (id) => {
@@ -58,7 +85,9 @@ When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, curr
     .filterTransactionList(affiliation, currentStatus, date);
 });
 When(/selected (|'(.*)' customer and )all products/, (customerName?) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getCurrentDialog(): SearchProductWidget)
     .checkCustomersAndProductListsExistence(customerName);
 });
 When(/I add another product founded by '(.*)'/, (query: string, table?) => {

@@ -60,9 +60,20 @@ Given(/add (|all )products founded by '(.*)'/, (isAll: string, query: string, ta
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
-Given(/specify '(.*)' account founded by '(.*)' for (.*[A-Z]) group/, (account, query, group) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .specifyAccount(account, query, group);
+Given(/specify '(.*)' account founded by '(.*)' for '(.*[A-Z])' group/, (account, query, group) => {
+  const currentWidgetName = gucciWorld.getCurrentCockpit().getCurrentWidget().getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+        .specifyAccount(account, query, group);
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .specifyAccount(account, query, group);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 Given(/^open '(.*)' dialog$/, (dialogName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).openDialog(dialogName);
