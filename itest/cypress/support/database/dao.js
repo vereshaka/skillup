@@ -1,4 +1,3 @@
-// @flow
 const oracleDb = require('oracledb');
 
 oracleDb.autoCommit = true;

@@ -76,7 +76,7 @@ class SearchProductWidget extends AbstractWidget {
       .click();
   };
 
-  addFollowingProducts = (table) => {
+  addFollowingProducts = (table: Object) => {
     table.hashes().forEach((row) => {
       cy.get(`div.ResultItemGroup:contains(${row.Product} ${row.Subscription})>input.ProductItemCheckbox`).click();
     });
@@ -102,7 +102,7 @@ class SearchProductWidget extends AbstractWidget {
     cy.get('a[href="#select-all"]').should('not.exist');
   };
 
-  selectCustomer = (customerName) => {
+  selectCustomer = (customerName: string) => {
     cy
       .get(`div[class="ResultItem CustomerItem"]:contains(${customerName})`)
       .find('a[name="productCountButton"]')

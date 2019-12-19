@@ -32,7 +32,7 @@ const dbParams = {
 Cypress.Commands.add('shortWait', () => { cy.wait(200); });
 Cypress.Commands.add('normalWait', () => { cy.wait(500); });
 Cypress.Commands.add('mediumWait', () => { cy.wait(1000); });
-Cypress.Commands.add('longWait', () => { cy.wait(3000); });
+Cypress.Commands.add('longWait', () => { cy.wait(4000); });
 Cypress.Commands.add('deleteAllForUser', (username) => {
   cy.task('deleteAllForUser:db', { username, dbParams });
   cy.log(`deleted records for user: ${username}`);

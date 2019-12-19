@@ -1,7 +1,6 @@
 // @flow
 import moment from 'moment';
 import AbstractWidget from './common/abstract-widget';
-// import Dao from '../database/dao';
 
 class BusinessTransactionHistoryWidget extends AbstractWidget {
   initElements() {
@@ -130,14 +129,14 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
     this.checkTransactionList(table);
   };
 
-  selectTransaction = (id) => {
+  selectTransaction = (id: string) => {
     cy
       .get('a[href="#selectBusinessTransactionItem"]')
       .contains(id)
       .click();
   };
 
-  isTabCaptionDisplayed = (caption) => {
+  isTabCaptionDisplayed = (caption: string) => {
     cy
       .get('div[class="tab-dialog-button active"]')
       .find('div.title')
