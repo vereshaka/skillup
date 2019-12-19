@@ -61,3 +61,7 @@ When(/selected (|'(.*)' customer and )all products/, (customerName?) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
     .checkCustomersAndProductListsExistence(customerName);
 });
+When(/I add another product founded by '(.*)'/, (query: string, table?) => {
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget(): ProductMoveWidget).addAnotherProduct(query, table);
+});
