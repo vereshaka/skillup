@@ -6,6 +6,7 @@ import ProductMoveWidget from '../page_objects/product-move-widget';
 import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 import HfhsCockpit from '../page_objects/hfhs-cockpit';
 import BusinessTransactionDetailsWidget from '../page_objects/business-transaction-details-widget';
+import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => {
@@ -75,16 +76,42 @@ Then(/Help Page and Close Button should be exist/, () => {
     .isHelpOpened();
 });
 Then(/The following source account should be selected/, (table) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .isSelectedAccountsCorrect(table);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+        .isSelectedAccountsCorrect(table);
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .isSelectedAccountsCorrect(table);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 Then(/Effective date is '(.*)'$/, (date) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isDateCorrect(date);
 });
 Then(/Target account should be/, (table) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .isTargetAccountCorrect(table);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+        .isTargetAccountCorrect(table);
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .isTargetAccountCorrect(table);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 Then(/The following products should be selected/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
