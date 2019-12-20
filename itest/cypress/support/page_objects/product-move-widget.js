@@ -9,6 +9,7 @@ class ProductMoveWidget extends AbstractWidget {
     this.elements = {
       'Add Product': 'addProduct',
       'Add Account': 'selectAccount_searchButton',
+      'Next Button': 'wizardNext',
     };
   }
 
@@ -73,7 +74,7 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   isPageOpened = () => {
-    cy.get('button.NavigationButton:contains(Next)').click();
+    cy.get(`button#${this.elements['Next Button']}`).click();
     cy.get('ol.progtrckr>li:eq(2)').should('have.class', 'progtrckr-doing no-hl');
   };
 
