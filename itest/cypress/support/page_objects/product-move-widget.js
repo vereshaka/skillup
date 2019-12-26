@@ -11,6 +11,7 @@ class ProductMoveWidget extends AbstractWidget {
       'Add Product': 'addProduct',
       'Add Account': 'selectAccount_searchButton',
       'Next Button': 'wizardNext',
+      'Exclude Invalid Products': 'Icon faMinusSquare fa2x ExcludeAllProducts',
     };
   }
 
@@ -118,6 +119,13 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   openProductInfo = (productName: string, callNumber:string, group: string) => {
+    cy.get('body')
+      .then(($body) => {
+        if ($body.find(`span[class="${this.elements['Exclude Invalid Products']}"]`).length) {
+          cy.get(`span[class="${this.elements['Exclude Invalid Products']}"]`)
+            .click();
+        }
+      });
     cy.get(`div[class="accordion__item"]:contains("${group} Products")>div[class="AccordionItemHeading AccordionItemHeadingColor"]`).click();
     cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup');
     cy.get('@searchableGroup').find(`div:contains(${productName}${callNumber})>a:contains(${productName})`).click();

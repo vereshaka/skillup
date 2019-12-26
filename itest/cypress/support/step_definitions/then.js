@@ -183,3 +183,7 @@ Then(/Product structure should (|not )be displayed/, (displayStatus) => {
       .isStructureNotOpened();
   }
 });
+Then(/(^\d+) products should be highlighted/, (numberOfProducts:number, table) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+    .checkFoundedProducts(numberOfProducts, table);
+});

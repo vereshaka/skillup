@@ -100,3 +100,7 @@ When(/I click on (collapse|expand) structure button/, (buttonName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .clickOnStructureButton(buttonName);
 });
+When(/type '(.*)' at search field/, (query) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+    .search(query);
+});
