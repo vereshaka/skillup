@@ -53,12 +53,57 @@ class ProductDetailsWidget extends AbstractWidget {
       for (let i = 0; i < numberOfProducts; i += 1) {
         cy.get(`span[class="${this.elements['Highlighted Product']}"]`)
           .should('have.text', table.hashes()[i].ProductName);
-        const fff = cy.get(`span[class="${this.elements['Highlighted Product']}"]`).parents('.cp_tree-table_row')
+        cy.get(`span[class="${this.elements['Highlighted Product']}"]`).parents('.cp_tree-table_row')
           .find('div.cp_tree-table_cell:eq(1)>span').should('have.text', table.hashes()[i].SidID);
-        console.log('aaaaaaaaaaaaaaaaaaaa', fff);
         cy.get(`i[class = "${this.elements['Next Search Result']}"]`).click();
       }
     }
+  };
+
+  openSubproductInfo = (subproductName) => {
+    cy.get(`span:contains(${subproductName})`).click({ force: true });
+  };
+
+  isPriceInfoExist = (tab, table) => {
+    cy.get('div.gucci-common-tab-dialog-header').find(`span:contains(${tab})`).click();
+    table.hashes().forEach((row) => {
+      cy.get('div.item>div.item-price:eq(0)')
+        .contains(row.Name)
+        .should('exist');
+      cy.get('div.item>div.item-price:eq(1)')
+        .contains(row.Value)
+        .should('exist');
+      cy.get('div.item>div.item-price:eq(2)')
+        .contains(row.Frequency)
+        .should('exist');
+      cy.get('div.item>div.item-price:eq(3)>span:eq(0)')
+        .contains(row.BasePrice)
+        .should('exist');
+      cy.get('div.item>div.item-price:eq(3)>span:eq(1)')
+        .contains(row.Price)
+        .should('exist');
+      cy.get('div.item>div.item-price:eq(3)>span:eq(2)')
+        .contains(row.TaxRate)
+        .should('exist');
+    });
+  };
+
+  isCharacteristicInfoExist = (tab, table) => {
+    cy.get('div.gucci-common-tab-dialog-header').find(`span:contains(${tab})`).click();
+    table.hashes().forEach((row) => {
+      cy.get('div.item>div.item-characteristic:eq(0)>div:eq(0)')
+        .contains(row.NamePSC)
+        .should('exist');
+      cy.get('div.item>div.item-characteristic:eq(0)>div:eq(1)')
+        .contains(row.NamePSCV)
+        .should('exist');
+      cy.get('div.item>div:eq(1)')
+        .contains(row.ValidFor)
+        .should('exist');
+      cy.get('div.item>div:eq(2)')
+        .contains(row.Value)
+        .should('exist');
+    });
   };
 }
 

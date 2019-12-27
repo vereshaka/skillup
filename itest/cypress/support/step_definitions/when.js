@@ -104,3 +104,7 @@ When(/type '(.*)' at search field/, (query) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .search(query);
 });
+When(/click on '(.*)' subproduct/, (subproductName) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+    .openSubproductInfo(subproductName);
+});

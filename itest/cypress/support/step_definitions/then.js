@@ -187,3 +187,19 @@ Then(/(^\d+) products should be highlighted/, (numberOfProducts:number, table) =
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .checkFoundedProducts(numberOfProducts, table);
 });
+Then(/(Price|Terms|Characteristic) info should be presented/, (tab, table) => {
+  switch (tab) {
+    case 'Price':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+        .isPriceInfoExist(tab, table);
+      break;
+    case 'Terms':
+      throw new Error('Implement Me. isTermsInfoExist(tab, table)');
+    case 'Characteristic':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+        .isCharacteristicInfoExist(tab, table);
+      break;
+    default:
+      throw new Error(`Unsupported tab. Name: ${tab}`);
+  }
+});
