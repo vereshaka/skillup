@@ -78,12 +78,6 @@ When(/I select business transaction #(.*)/, (id) => {
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .selectTransaction(id);
 });
-When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
-  (gucciWorld
-    .getCurrentCockpit()
-    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
-    .filterTransactionList(affiliation, currentStatus, date);
-});
 When(/selected (|'(.*)' customer and )all products/, (customerName?) => {
   (gucciWorld.getCurrentCockpit()
     .getCurrentWidget()

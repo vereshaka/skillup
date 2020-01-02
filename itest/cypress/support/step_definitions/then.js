@@ -143,22 +143,18 @@ Then(/'(.*)' message should be displayed/, (message: string) => {
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .isMessageDisplayed(message);
 });
-Then(/new tab should be displayed/, () => {
-  (gucciWorld
-    .getCurrentCockpit()
-    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
-    .isTabCaptionDisplayed();
-});
 Then(/business transaction's details are displayed in new tab/, (table: Object) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionDetailsWidget(): BusinessTransactionDetailsWidget)
+    .getBusinessTransactionHistoryWidget()
+    .getCurrentDialog(): BusinessTransactionDetailsWidget)
     .isInfoDisplayed(table);
 });
 Then(/new tab with caption '(.*)' should be displayed/, (caption: string) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget()
+    .getCurrentDialog(): BusinessTransactionDetailsWidget)
     .isTabCaptionDisplayed(caption);
 });
 Then(/'(.*)' button should be active/, (buttonName) => {

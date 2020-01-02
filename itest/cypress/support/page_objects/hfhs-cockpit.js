@@ -4,7 +4,6 @@ import AbstractCockpit from './common/abstract-cockpit';
 import HfhsToolbarWidget from './hfhs-toolbar-widget';
 import ProductMoveWidget from './product-move-widget';
 import BusinessTransactionHistoryWidget from './business-transaction-history-widget';
-import BusinessTransactionDetailsWidget from './business-transaction-details-widget';
 import ChangeOwnershipWidget from './change-ownership-widget';
 
 class HfhsCockpit extends AbstractCockpit {
@@ -12,15 +11,11 @@ class HfhsCockpit extends AbstractCockpit {
 
   businessTransactionHistory: BusinessTransactionHistoryWidget = new BusinessTransactionHistoryWidget();
 
-  businessTransactionDetails: BusinessTransactionDetailsWidget = new BusinessTransactionDetailsWidget();
-
   getName = (): string => 'HFHS Cockpit';
 
   getTitle = (): string => 'HFHS Cockpit';
 
   getBusinessTransactionHistoryWidget = () => this.businessTransactionHistory;
-
-  getBusinessTransactionDetailsWidget = () => this.businessTransactionDetails;
 
   openWidget = (name: string) => {
     switch (name) {
