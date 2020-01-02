@@ -1,4 +1,5 @@
 Feature: Search Account
+
   @focus
   Scenario: Account Search
     Given I open GUCCI Portal as hfhs-user2

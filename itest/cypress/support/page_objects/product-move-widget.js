@@ -98,7 +98,7 @@ class ProductMoveWidget extends AbstractWidget {
   isDateCorrect = (date:string) => {
     if (date === 'now') {
       const localDate = new Date();
-      cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${moment(localDate).format('D/MM/YYYY')}`);
+      cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${moment(localDate).format('D/M/YYYY')}`);
     } else {
       cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${date}`);
     }
