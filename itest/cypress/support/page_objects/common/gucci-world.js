@@ -42,7 +42,7 @@ class GucciWorld {
       cy.get('input[id=\'password\']')
         .type(`${username}123`);
     }
-    cy.get('input[value="Login"]')
+    cy.get('input[value="Log In"]')
       .click();
     this.user = {
       username,

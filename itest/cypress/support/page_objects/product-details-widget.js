@@ -89,21 +89,23 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   isCharacteristicInfoExist = (tab, table) => {
+    let { length } = table.hashes();
+    length = Number(length);
     cy.get('div.gucci-common-tab-dialog-header').find(`span:contains(${tab})`).click();
-    table.hashes().forEach((row) => {
-      cy.get('div.item>div.item-characteristic:eq(0)>div:eq(0)')
-        .contains(row.NamePSC)
+    for (let i = 0; i < length; i += 1) {
+      cy.get(`div.item:eq(${i})>div.item-characteristic:eq(0)>div:eq(0)`)
+        .contains(table.hashes()[i].Name)
         .should('exist');
-      cy.get('div.item>div.item-characteristic:eq(0)>div:eq(1)')
-        .contains(row.NamePSCV)
+      cy.get(`div.item:eq(${i})>div.item-characteristic:eq(0)>div:eq(1)`)
+        .contains(table.hashes()[i].SidId)
         .should('exist');
-      cy.get('div.item>div:eq(1)')
-        .contains(row.ValidFor)
+      cy.get(`div.item:eq(${i})>div.item-characteristic:eq(0)>div:eq(2)`)
+        .contains(table.hashes()[i].SidIdPSCV)
         .should('exist');
-      cy.get('div.item>div:eq(2)')
-        .contains(row.Value)
+      cy.get(`div.item:eq(${i})>div:eq(1)`)
+        .contains(table.hashes()[i].Value)
         .should('exist');
-    });
+    }
   };
 }
 
