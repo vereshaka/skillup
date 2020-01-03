@@ -121,6 +121,7 @@ class ProductMoveWidget extends AbstractWidget {
   openProductInfo = (productName: string, callNumber:string, group: string) => {
     cy.get('body')
       .then(($body) => {
+        // TODO: ivanp: will be fixed to id after CCF-1057 done
         if ($body.find(`span[class="${this.elements['Exclude Invalid Products']}"]`).length) {
           cy.get(`span[class="${this.elements['Exclude Invalid Products']}"]`)
             .click();

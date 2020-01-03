@@ -23,6 +23,7 @@ class ProductDetailsWidget extends AbstractWidget {
 
   clickOnStructureButton = (buttonName) => {
     cy.normalWait();
+    // TODO: ivanp: will be fixed to id after CCF-1057 done
     cy.get(`span[class="${this.elements[buttonName]}"]`).click();
   };
 
@@ -37,17 +38,21 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   search = (query:string) => {
+    // TODO: ivanp: will be fixed to id after CCF-1057 done
     cy.get(`span[class="${this.elements['Search Loupe']}"]`).click();
+    // TODO: ivanp: will be fixed to id after CCF-1057 done
     cy.get(`input[class="${this.elements['Search Field']}"]`).type(query);
   };
 
   checkFoundedProducts = (number:string, table?:Object) => {
     const numberOfProducts = Number(number);
     if (numberOfProducts === 0) {
+      // TODO: ivanp: will be fixed to id after CCF-1057 done
       cy.get(`span[class="${this.elements['Search Count']}"]`)
         .should('have.text', '0/0');
       cy.get(`span[class="${this.elements['Highlighted Product']}"]`).should('not.exist');
     } else {
+      // TODO: ivanp: will be fixed to id after CCF-1057 done
       cy.get(`span[class="${this.elements['Search Count']}"]`)
         .should('have.text', `1/${number}`);
       for (let i = 0; i < numberOfProducts; i += 1) {
@@ -55,6 +60,7 @@ class ProductDetailsWidget extends AbstractWidget {
           .should('have.text', table.hashes()[i].ProductName);
         cy.get(`span[class="${this.elements['Highlighted Product']}"]`).parents('.cp_tree-table_row')
           .find('div.cp_tree-table_cell:eq(1)>span').should('have.text', table.hashes()[i].SidID);
+        // TODO: ivanp: will be fixed to id after CCF-1057 done
         cy.get(`i[class = "${this.elements['Next Search Result']}"]`).click();
       }
     }
