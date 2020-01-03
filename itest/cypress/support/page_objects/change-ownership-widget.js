@@ -16,7 +16,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   specifyGroup = (name: string, group: string) => {
     cy.longWait();
-    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div#${this.elements[name]}`).click();
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div#${this.elements[name]}`).should('not.have.class', 'disabled').click();
   };
 
   openDialog = (name: string, group?:string) => {
