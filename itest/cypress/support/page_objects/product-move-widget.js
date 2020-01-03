@@ -3,6 +3,7 @@ import moment from 'moment';
 import AbstractWidget from './common/abstract-widget';
 import SearchProductWidget from './search-product-widget';
 import SearchAccountWidget from './search-account-widget';
+import ProductDetailsWidget from './product-details-widget';
 
 class ProductMoveWidget extends AbstractWidget {
   initElements() {
@@ -10,6 +11,7 @@ class ProductMoveWidget extends AbstractWidget {
       'Add Product': 'addProduct',
       'Add Account': 'selectAccount_searchButton',
       'Next Button': 'wizardNext',
+      'Exclude Invalid Products': 'Icon faMinusSquare fa2x ExcludeAllProducts',
     };
   }
 
@@ -98,7 +100,7 @@ class ProductMoveWidget extends AbstractWidget {
   isDateCorrect = (date:string) => {
     if (date === 'now') {
       const localDate = new Date();
-      cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${moment(localDate).format('D/MM/YYYY')}`);
+      cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${moment(localDate).format('D/M/YYYY')}`);
     } else {
       cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${date}`);
     }
@@ -116,14 +118,20 @@ class ProductMoveWidget extends AbstractWidget {
     });
   };
 
-  openProductInfo = (productName: string, group: string) => {
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).click();
-    cy.get(`a:contains(${productName})`).click();
-  };
-
-  isInfoCorrect = (productName: string) => {
-    cy.longWait();
-    cy.get(`div[class="tab-dialog-button active"]>div:contains(${productName})`).should('exist');
+  openProductInfo = (productName: string, callNumber:string, group: string) => {
+    cy.get('body')
+      .then(($body) => {
+        // TODO: ivanp: will be fixed to id after CCF-1057 done
+        if ($body.find(`span[class="${this.elements['Exclude Invalid Products']}"]`).length) {
+          cy.get(`span[class="${this.elements['Exclude Invalid Products']}"]`)
+            .click();
+        }
+      });
+    cy.get(`div[class="accordion__item"]:contains("${group} Products")>div[class="AccordionItemHeading AccordionItemHeadingColor"]`).click();
+    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup');
+    cy.get('@searchableGroup').find(`div:contains(${productName}${callNumber})>a:contains(${productName})`).click();
+    this.currentWidget = new ProductDetailsWidget();
+    cy.normalWait();
   };
 
   isErrorMessageNotExist = () => {
