@@ -7,6 +7,7 @@ import BusinessTransactionHistoryWidget from '../page_objects/business-transacti
 import HfhsCockpit from '../page_objects/hfhs-cockpit';
 import BusinessTransactionDetailsWidget from '../page_objects/business-transaction-details-widget';
 import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
+import ProductDetailsWidget from '../page_objects/product-details-widget';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => {
@@ -123,9 +124,9 @@ Then(/latest business transaction's info is displayed in new tab/, (table: Objec
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .isInfoDisplayed(table);
 });
-Then(/I should see '(.*)' product details/, (productName) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .isInfoCorrect(productName);
+Then(/I should see '(.*)' with '(.*)' call number product details/, (productName, callNumber) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+    .isInfoCorrect(productName, callNumber);
 });
 Then(/error (|'(.*)' )should (|not )be displayed/, (message, existOrNo) => {
   if (existOrNo === 'not ') {
@@ -164,4 +165,37 @@ Then(/'(.*)' button should be active/, (buttonName) => {
 Then(/Target account should not be selected/, () => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isTargetAccountNotSelected();
+});
+Then(/Product structure should (|not )be displayed/, (displayStatus) => {
+  if (!displayStatus) {
+    (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget()
+      .getCurrentWidget(): ProductDetailsWidget)
+      .isStructureOpened();
+  } else {
+    (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget()
+      .getCurrentWidget(): ProductDetailsWidget)
+      .isStructureNotOpened();
+  }
+});
+Then(/(^\d+) products should be highlighted/, (numberOfProducts:number, table) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+    .checkFoundedProducts(numberOfProducts, table);
+});
+Then(/(Price|Terms|Characteristic) info should be presented/, (tab, table) => {
+  switch (tab) {
+    case 'Price':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+        .isPriceInfoExist(tab, table);
+      break;
+    case 'Terms':
+      throw new Error('Implement Me. isTermsInfoExist(tab, table)');
+    case 'Characteristic':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
+        .isCharacteristicInfoExist(tab, table);
+      break;
+    default:
+      throw new Error(`Unsupported tab. Name: ${tab}`);
+  }
 });

@@ -2,6 +2,8 @@
 class AbstractWidget {
   currentDialog: AbstractWidget;
 
+  currentWidget: AbstractWidget;
+
   elements: Object;
 
   constructor() {
@@ -45,6 +47,8 @@ class AbstractWidget {
   };
 
   getCurrentDialog = () => this.currentDialog;
+
+  getCurrentWidget = () => this.currentWidget;
 }
 
 export default AbstractWidget;
