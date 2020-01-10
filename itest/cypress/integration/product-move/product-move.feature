@@ -19,18 +19,18 @@ Feature: Product Move
 
   @focus
   Scenario: Adding products into filled group
-    Given I open GUCCI Portal as hfhs-user3
+    Given I open GUCCI Portal as hfhs-user2
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:100668958'
       | Product                                | Subscription  |
       | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 |
-    And I specify '200004066276' account founded by 'KDNR:100100100' for 'NORM' group
-    When I add another product founded by 'KDNR:100100100'
-      | Product          | Subscription  |
-      | A1 Festnetz ISDN | 43/3452/71145 |
+    And I specify '200010665207' account founded by 'KDNR:106525742' for 'NORM' group
+    When I add another product founded by 'KDNR:106525742'
+      | Product                              | Subscription     |
+      | A1 Festnetz-Internet Business Aktion | 43/9740/11604955 |
     Then The following products should be selected
-      | Product                                | Subscription  | AccountNumber | AccountType | LockedOrders |
-      | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 | 200000532086  | NORM        |              |
-      | A1 Festnetz ISDN                       | 43/3452/71145 | 200004066276  | NORM        |              |
+      | Product                                | Subscription     | AccountNumber | AccountType | LockedOrders |
+      | A1 Breitband Pro Business asymmetrisch | 43/2234/79160    | 200000532086  | NORM        |              |
+      | A1 Festnetz-Internet Business Aktion   | 43/9740/11604955 | 200010665209  | NORM        |              |
     And Target account should not be selected
     And 'Add Account' button should be active
