@@ -30,7 +30,7 @@ Feature: Product Move
       | A1 Festnetz ISDN | 43/3452/71145 |
     Then The following products should be selected
       | Product                                | Subscription  | AccountNumber | AccountType | LockedOrders |
-      | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 | 200000232320  | NORM        |              |
-      | A1 Festnetz ISDN                       | 43/3452/71145 | 200004066276  | NORM        |              |
+      | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 | 200000532086  | NORM        |              |
+      | A1 Festnetz ISDN                       | 43/3452/71145 | 200008312627  | NORM        |              |
     And Target account should not be selected
     And 'Add Account' button should be active
