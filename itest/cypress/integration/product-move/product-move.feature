@@ -24,7 +24,7 @@ Feature: Product Move
     And add products founded by 'KDNR:100668958'
       | Product                                | Subscription  |
       | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 |
-    And I specify '200004485264' account founded by 'KDNR:100134526' for 'NORM' group
+    And I specify '200007414127' account founded by 'KDNR:100134526' for 'NORM' group
     When I add another product founded by 'KDNR:100134526'
       | Product                            | Subscription |
       | Alte ISDN Produkte, ohne Breitband | 43/463/33233 |
