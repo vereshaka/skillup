@@ -24,13 +24,13 @@ Feature: Product Move
     And add products founded by 'KDNR:100668958'
       | Product                                | Subscription  |
       | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 |
-    And I specify '200005005984' account founded by 'KDNR:104657625' for 'NORM' group
-    When I add another product founded by 'KDNR:104657625'
-      | Product     | Subscription     |
-      | A1 IP Voice | 43/9740/11665126 |
+    And I specify '200004485264' account founded by 'KDNR:100134526' for 'NORM' group
+    When I add another product founded by 'KDNR:100134526'
+      | Product                            | Subscription |
+      | Alte ISDN Produkte, ohne Breitband | 43/463/33233 |
     Then The following products should be selected
-      | Product                                | Subscription     | AccountNumber | AccountType | LockedOrders |
-      | A1 Breitband Pro Business asymmetrisch | 43/2234/79160    | 200000532086  | NORM        |              |
-      | A1 IP Voice                            | 43/9740/11665126 | 200005005984  | NORM        |              |
+      | Product                                | Subscription  | AccountNumber | AccountType | LockedOrders |
+      | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 | 200000532086  | NORM        |              |
+      | Alte ISDN Produkte, ohne Breitband     | 43/463/33233  | 200004485264  | NORM        |              |
     And Target account should not be selected
     And 'Add Account' button should be active
