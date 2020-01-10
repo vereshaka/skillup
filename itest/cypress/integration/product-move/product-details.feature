@@ -9,7 +9,7 @@ Feature: Product Details
     Then I should see 'A1 Kombi' with '43/9740/11183504' call number product details
 
   @focus
-  Scenario: Show info about product
+  Scenario: Collapse product structure
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
@@ -18,7 +18,7 @@ Feature: Product Details
     Then Product structure should not be displayed
 
   @focus
-  Scenario: Show info about product
+  Scenario: Collapse and expand product structure
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
@@ -28,7 +28,7 @@ Feature: Product Details
     Then Product structure should be displayed
 
   @focus
-  Scenario: Show info about product
+  Scenario: Search subproducts
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
@@ -42,7 +42,7 @@ Feature: Product Details
       | A1 Internet Festnetz Power | SPO_A1_FESTNETZ_INTERNET_80_2018        |
 
   @focus
-  Scenario: Show info about product
+  Scenario: Check subproduct info
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
