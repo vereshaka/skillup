@@ -11,7 +11,7 @@ class ProductMoveWidget extends AbstractWidget {
       'Add Product': 'addProduct',
       'Add Account': 'selectAccount_searchButton',
       'Next Button': 'wizardNext',
-      'Exclude Invalid Products': 'Icon faMinusSquare fa2x ExcludeAllProducts',
+      'Exclude Invalid Products': 'excludeAllProductsWithWarningButton',
     };
   }
 
@@ -121,9 +121,8 @@ class ProductMoveWidget extends AbstractWidget {
   openProductInfo = (productName: string, callNumber:string, group: string) => {
     cy.get('body')
       .then(($body) => {
-        // TODO: ivanp: will be fixed to id after CCF-1057 done
-        if ($body.find(`span[class="${this.elements['Exclude Invalid Products']}"]`).length) {
-          cy.get(`span[class="${this.elements['Exclude Invalid Products']}"]`)
+        if ($body.find(`span#${this.elements['Exclude Invalid Products']}`).length) {
+          cy.get(`span#${this.elements['Exclude Invalid Products']}`)
             .click();
         }
       });
