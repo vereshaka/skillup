@@ -3,101 +3,114 @@ import AbstractWidget from './common/abstract-widget';
 class ProductDetailsWidget extends AbstractWidget {
   initElements() {
     this.elements = {
-      collapse: 'icon faCompressArrowsAlt fas',
-      expand: 'icon faExpandArrowsAlt fas',
-      'Search Loupe': 'search-loupe icon faSearch fas',
-      'Search Field': 'search-input active',
-      'Search Count': 'search-count active',
+      collapse: 'productDetailsCollapseAllButton',
+      expand: 'productDetailsExpandAllButton',
+      'Search Loupe': 'productDetailsSearchButton',
+      'Search Field': 'productDetailsSearchField',
+      'Search Count': 'productDetailsSearchCountLabel',
       'Highlighted Product': 'filteredProduct highlightedProduct',
-      'Next Search Result': 'icon faChevronDown fax',
+      'Next Search Result': 'productDetailsNextSearchItemButton',
     };
   }
 
   getName = () => 'Product Details';
 
-  isInfoCorrect = (productName: string, callNumber:string) => {
+  isInfoCorrect = (productName: string, callNumber: string) => {
     cy.longWait();
-    cy.get(`div[class="tab-dialog-button active"]>div:contains(${callNumber} - ${productName})`).should('exist');
-    cy.get(`div.mashroom-portal-tabify-app-wrapper>div[class="mashroom-portal-app-wrapper portal-app-product-details hide-header"]:contains(${callNumber})`).should('be.visible');
+    cy.get(`div[class="tab-dialog-button active"]>div:contains(${callNumber} - ${productName})`)
+      .should('exist');
+    cy.get(`div.mashroom-portal-tabify-app-wrapper>div[class="mashroom-portal-app-wrapper portal-app-product-details hide-header"]:contains(${callNumber})`)
+      .should('be.visible');
   };
 
   clickOnStructureButton = (buttonName) => {
     cy.normalWait();
-    // TODO: ivanp: will be fixed to id after CCF-1057 done
-    cy.get(`span[class="${this.elements[buttonName]}"]`).click();
+    cy.get(`span#${this.elements[buttonName]}`)
+      .click();
   };
 
   isStructureOpened = () => {
     cy.normalWait();
-    cy.get('div.cp_tree-table_row[data-relindex="1"]').should('exist');
+    cy.get('div.cp_tree-table_row[data-relindex="1"]')
+      .should('exist');
   };
 
   isStructureNotOpened = () => {
     cy.normalWait();
-    cy.get('div.cp_tree-table_row[data-relindex="1"]').should('not.exist');
+    cy.get('div.cp_tree-table_row[data-relindex="1"]')
+      .should('not.exist');
   };
 
-  search = (query:string) => {
-    // TODO: ivanp: will be fixed to id after CCF-1057 done
-    cy.get(`span[class="${this.elements['Search Loupe']}"]`).click();
-    // TODO: ivanp: will be fixed to id after CCF-1057 done
-    cy.get(`input[class="${this.elements['Search Field']}"]`).type(query);
+  search = (query: string) => {
+    cy.get(`span#${this.elements['Search Loupe']}`)
+      .click();
+    cy.get(`input#${this.elements['Search Field']}`)
+      .type(query);
   };
 
-  checkFoundedProducts = (number:string, table?:Object) => {
+  checkFoundedProducts = (number: string, table?: Object) => {
     const numberOfProducts = Number(number);
     if (numberOfProducts === 0) {
-      // TODO: ivanp: will be fixed to id after CCF-1057 done
-      cy.get(`span[class="${this.elements['Search Count']}"]`)
+      cy.get(`span#${this.elements['Search Count']}`)
         .should('have.text', '0/0');
-      cy.get(`span[class="${this.elements['Highlighted Product']}"]`).should('not.exist');
+      cy.get(`span[class="${this.elements['Highlighted Product']}"]`)
+        .should('not.exist');
     } else {
-      // TODO: ivanp: will be fixed to id after CCF-1057 done
-      cy.get(`span[class="${this.elements['Search Count']}"]`)
+      cy.get(`span#${this.elements['Search Count']}`)
         .should('have.text', `1/${number}`);
       for (let i = 0; i < numberOfProducts; i += 1) {
         cy.get(`span[class="${this.elements['Highlighted Product']}"]`)
           .should('have.text', table.hashes()[i].ProductName);
-        cy.get(`span[class="${this.elements['Highlighted Product']}"]`).parents('.cp_tree-table_row')
-          .find('div.cp_tree-table_cell:eq(1)>span').should('have.text', table.hashes()[i].SidID);
-        // TODO: ivanp: will be fixed to id after CCF-1057 done
-        cy.get(`i[class = "${this.elements['Next Search Result']}"]`).click();
+        cy.get(`span[class="${this.elements['Highlighted Product']}"]`)
+          .parents('.cp_tree-table_row')
+          .find('div.cp_tree-table_cell:eq(1)>span')
+          .should('have.text', table.hashes()[i].SidID);
+        if (i !== numberOfProducts - 1) {
+          cy.get(`button#${this.elements['Next Search Result']}`)
+            .click();
+        }
       }
     }
   };
 
   openSubproductInfo = (subproductName) => {
-    cy.get(`span:contains(${subproductName})`).click({ force: true });
+    cy.get(`span:contains(${subproductName})`)
+      .click({ force: true });
   };
 
   isPriceInfoExist = (tab, table) => {
-    cy.get('div.gucci-common-tab-dialog-header').find(`span:contains(${tab})`).click();
-    table.hashes().forEach((row) => {
-      cy.get('div.item>div.item-price:eq(0)')
-        .contains(row.Name)
-        .should('exist');
-      cy.get('div.item>div.item-price:eq(1)')
-        .contains(row.Value)
-        .should('exist');
-      cy.get('div.item>div.item-price:eq(2)')
-        .contains(row.Frequency)
-        .should('exist');
-      cy.get('div.item>div.item-price:eq(3)>span:eq(0)')
-        .contains(row.BasePrice)
-        .should('exist');
-      cy.get('div.item>div.item-price:eq(3)>span:eq(1)')
-        .contains(row.Price)
-        .should('exist');
-      cy.get('div.item>div.item-price:eq(3)>span:eq(2)')
-        .contains(row.TaxRate)
-        .should('exist');
-    });
+    cy.get('div.gucci-common-tab-dialog-header')
+      .find(`span:contains(${tab})`)
+      .click();
+    table.hashes()
+      .forEach((row) => {
+        cy.get('div.item>div.item-price:eq(0)')
+          .contains(row.Name)
+          .should('exist');
+        cy.get('div.item>div.item-price:eq(1)')
+          .contains(row.Value)
+          .should('exist');
+        cy.get('div.item>div.item-price:eq(2)')
+          .contains(row.Frequency)
+          .should('exist');
+        cy.get('div.item>div.item-price:eq(3)>span:eq(0)')
+          .contains(row.BasePrice)
+          .should('exist');
+        cy.get('div.item>div.item-price:eq(3)>span:eq(1)')
+          .contains(row.Price)
+          .should('exist');
+        cy.get('div.item>div.item-price:eq(3)>span:eq(2)')
+          .contains(row.TaxRate)
+          .should('exist');
+      });
   };
 
   isCharacteristicInfoExist = (tab, table) => {
     let { length } = table.hashes();
     length = Number(length);
-    cy.get('div.gucci-common-tab-dialog-header').find(`span:contains(${tab})`).click();
+    cy.get('div.gucci-common-tab-dialog-header')
+      .find(`span:contains(${tab})`)
+      .click();
     for (let i = 0; i < length; i += 1) {
       cy.get(`div.item:eq(${i})>div.item-characteristic:eq(0)>div:eq(0)`)
         .contains(table.hashes()[i].Name)
