@@ -203,3 +203,7 @@ Then(/(Price|Terms|Characteristic) info should be presented/, (tab, table) => {
       throw new Error(`Unsupported tab. Name: ${tab}`);
   }
 });
+Then(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
+  gucciWorld.getCurrentCockpit()
+    .openWidget(widgetName);
+});

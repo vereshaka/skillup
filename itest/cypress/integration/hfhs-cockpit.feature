@@ -29,4 +29,4 @@ Feature: HFHS Cockpit check
       | hfhs-user|
     Given I open GUCCI Portal as hfhs-user2
     When switch to HFHS Cockpit
-    And I open 'Product Move' Widget from toolbar
+    Then I open 'Product Move' Widget from toolbar
