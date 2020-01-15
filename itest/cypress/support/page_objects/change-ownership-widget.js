@@ -56,7 +56,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
     cy.normalWait();
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, table);
-    cy.mediumWait();
+    cy.normalWait();
   };
 
   specifyAccount = (account:string, query:string, group:string) => {

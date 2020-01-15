@@ -121,7 +121,7 @@ class SearchProductWidget extends AbstractWidget {
     }
     this.checkProductsListExistence();
     this.addAll();
-    cy.mediumWait();
+    cy.normalWait();
     this.close();
   };
 
@@ -144,9 +144,9 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   addAllProducts = () => {
-    cy.mediumWait();
+    cy.normalWait();
     this.addAll();
-    cy.mediumWait();
+    cy.normalWait();
     this.close();
   };
 }
