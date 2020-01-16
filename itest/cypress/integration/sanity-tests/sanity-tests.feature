@@ -47,3 +47,10 @@ Feature: Sanity Tests
     And add all products founded by 'KDNR:108820309'
     When I click on 'A1 Internet Pur' product with '43/9740/10185187' call number from PRI Group
     Then I should see 'A1 Internet Pur' with '43/9740/10185187' call number product details
+
+  @focus
+  Scenario: Business transaction details: Check Filtering functionality
+    Given I open GUCCI Portal as hfhs-user3
+    And switch to HFHS Cockpit
+    And business transaction history widget is displayed
+    And transaction list mode group is presented
