@@ -16,7 +16,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   specifyGroup = (name: string, group: string) => {
     cy.mediumWait();
-    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div#${this.elements[name]}>span`).click();
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div#${this.elements[name]}>span`).click({ force: true });
   };
 
   openDialog = (name: string, group?:string) => {
@@ -56,7 +56,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
     cy.normalWait();
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, table);
-    cy.mediumWait();
+    cy.normalWait();
   };
 
   specifyAccount = (account:string, query:string, group:string) => {

@@ -16,7 +16,7 @@ class ProductDetailsWidget extends AbstractWidget {
   getName = () => 'Product Details';
 
   isInfoCorrect = (productName: string, callNumber: string) => {
-    cy.longWait();
+    cy.mediumWait();
     cy.get(`div[class="tab-dialog-button active"]>div:contains(${callNumber} - ${productName})`)
       .should('exist');
     cy.get(`div.mashroom-portal-tabify-app-wrapper>div[class="mashroom-portal-app-wrapper portal-app-product-details hide-header"]:contains(${callNumber})`)

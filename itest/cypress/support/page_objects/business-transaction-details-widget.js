@@ -28,6 +28,13 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
       cy.get(`div#${this.elements['Product Move item']}>div>span:eq(3)`).contains(table.hashes()[i].SourceAccount).should('exist');
     }
   };
+
+  isTabCaptionDisplayed = (caption: string) => {
+    cy
+      .get('div[class="tab-dialog-button active"]')
+      .find('div.title')
+      .should('have.text', caption);
+  };
 }
 
 export default BusinessTransactionDetailsWidget;

@@ -124,10 +124,10 @@ Given(/(.*) has no business transactions/, (username: string) => {
   cy.deleteAllForUser(username);
 });
 
-Given(/(.*) has business transaction #(.*) that was '(.*)' today with items/, (username, id, status, table) => {
+Given(/(.*) has (.*) business transaction #(.*) that was '(.*)' today with items/, (username, type, id, status, table) => {
   cy.deleteAllForUser(username);
   cy.deleteById(id);
-  cy.insertTransactionWithItems(username, id, status, table.hashes());
+  cy.insertTransactionWithItems(username, type, id, status, table.hashes());
 });
 
 Given(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {

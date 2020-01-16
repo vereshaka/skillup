@@ -25,8 +25,8 @@ Feature: HFHS Cockpit check
   @focus
   Scenario: Create simple order
     Given hfhs-user3 exists in GUCCI keycloak with the following groups:
-      | Group |
-      | hfhs-user|
+      | Group     |
+      | hfhs-user |
     Given I open GUCCI Portal as hfhs-user2
     When switch to HFHS Cockpit
     And I open 'Product Move' Widget from toolbar

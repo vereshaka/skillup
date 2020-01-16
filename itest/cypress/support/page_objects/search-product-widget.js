@@ -53,7 +53,7 @@ class SearchProductWidget extends AbstractWidget {
       .type(query);
     cy.get(`button[id="${this.elements['Search run']}"]`)
       .click();
-    cy.longWait();
+    cy.mediumWait();
   };
 
   isSearchElementExists = (index: string, searchItem: string) => {
@@ -76,7 +76,7 @@ class SearchProductWidget extends AbstractWidget {
       .click();
   };
 
-  addFollowingProducts = (table) => {
+  addFollowingProducts = (table: Object) => {
     table.hashes().forEach((row) => {
       cy.get(`div.ResultItemGroup:contains(${row.Product} ${row.Subscription})>input.ProductItemCheckbox`).click();
     });
@@ -102,16 +102,15 @@ class SearchProductWidget extends AbstractWidget {
     cy.get('a[href="#select-all"]').should('not.exist');
   };
 
-  selectCustomer = (customerName) => {
+  selectCustomer = (customerName: string) => {
     cy
       .get(`div[class="ResultItem CustomerItem"]:contains(${customerName})`)
       .find('a[name="productCountButton"]')
       .click();
-    // TODO: mikhailb: Should be removed when CCF-851 will be done
-    cy.wait(30000);
   };
 
   checkProductsListExistence = () => {
+    cy.mediumWait();
     cy.get('a[href="#select-all"]').should('exist');
   };
 
@@ -122,7 +121,7 @@ class SearchProductWidget extends AbstractWidget {
     }
     this.checkProductsListExistence();
     this.addAll();
-    cy.mediumWait();
+    cy.normalWait();
     this.close();
   };
 
@@ -145,9 +144,9 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   addAllProducts = () => {
-    cy.mediumWait();
+    cy.normalWait();
     this.addAll();
-    cy.mediumWait();
+    cy.normalWait();
     this.close();
   };
 }

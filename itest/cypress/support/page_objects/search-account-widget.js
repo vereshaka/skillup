@@ -21,7 +21,7 @@ class SearchAccountWidget extends AbstractWidget {
   search = (query:string) => {
     cy.get(`input[id="${this.elements['Search input']}"]`).type(query);
     cy.get(`button[id="${this.elements['Search run']}"]`).click();
-    cy.longWait();
+    cy.mediumWait();
   };
 
   selectAccount =(account: string) => {

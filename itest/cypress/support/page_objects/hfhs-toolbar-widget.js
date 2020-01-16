@@ -12,7 +12,7 @@ class HfhsToolbarWidget extends AbstractWidget {
   getName = () => 'HFHS Toolbar';
 
   clickToolbarButton = (buttonCaption: string) => {
-    cy.normalWait();
+    cy.mediumWait();
     cy.get('body').then(($body) => {
       if ($body.find(`span:contains(${buttonCaption})`).length) {
         cy.get(`button[id=${this.elements[buttonCaption]}]`)
