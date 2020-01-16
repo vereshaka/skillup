@@ -118,6 +118,85 @@ Boolean isPluggableModule(String packageName){
     else return false
 }
 
+String reportWidgetStatus(String widget_name, String widget_version, String release_version){
+    def name = widget_name
+    def prev_version = widget_version
+    def curr_version = widget_version
+    def highlight = ""
+    if (widget_version == ""){
+        highlight = 'bgcolor="#61f14d"'
+        prev_version = "-"
+        curr_version = release_version
+    }
+    else{
+        if (isReleaseNeeded(widget_version) == true) {
+            highlight = 'bgcolor="#f5e629"'
+            curr_version = release_version
+        }
+    }
+    def row = """
+    <tr ${highlight}>
+      <td>${name}</td>
+      <td>${prev_version}</td>
+      <td>${curr_version}</td>
+    </tr>
+    """
+    return row
+}
+
+String report(Map projects, String release_version){
+    def widget_status = ""
+    projects.each { k,v ->
+      widget_status = widget_status + "\n" + reportWidgetStatus(k,v,release_version)
+    }
+    Date date = new Date()
+    String datePart = date.format("dd.MM.yyyy")
+    String timePart = date.format("HH:mm")
+
+    def build_time = timePart + " " + datePart
+    def sheet = """
+    <!DOCTYPE html>
+    <html lang="en" dir="ltr">
+      <head>
+        <meta charset="utf-8">
+        <title>HFHS Release ${release_version}</title>
+      </head>
+      <body style="font-family:system-ui,sans-serif;">
+        <h1 align="center">HFHS release report</h1>
+        <div class="body">
+         <table border="0" width="100%">
+           <tr>
+             <td width="10%"></td>
+             <td>
+               <p>
+               Congratulations! <br/>
+               HFHS release version ${release_version} has been done successfully. Here is the list of widgets: <br/>
+               </p>
+               <p>
+               <table width="100%" border="0">
+                 <tr>
+                   <th width='50%'>Name</th>
+                   <th>Previous version</th>
+                   <th>Current version</th>
+                 </tr>
+                 ${widget_status}
+               </table>
+               </p>
+             </td>
+             <td width="10%"></td>
+           </tr>
+         </table>
+        </div>
+        <div class="footer">
+          <hr/>
+          <p style="font-size: 8pt; text-align:center"> This report was generated automatically at ${build_time} </p>
+        </div>
+      </body>
+    </html>
+    """
+    return sheet
+}
+
 pipeline{
     agent{
         node{
@@ -756,12 +835,17 @@ pipeline{
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
             sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            emailext to: INFORM_ABOUT_FAILURE,
+                     subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been finished",
+                     body: report(projects, base_build['baseVersion']),
+                     attachLog: false,
+                     mimeType: 'text/html'
         }
         failure {
             emailext to: INFORM_ABOUT_FAILURE,
-                    subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been failed",
-                    body: "Please go to ${BUILD_URL} and verify the build",
-                    attachLog: true
+                     subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been failed",
+                     body: "Please go to ${BUILD_URL} and verify the build",
+                     attachLog: true
         }
     }
 }
