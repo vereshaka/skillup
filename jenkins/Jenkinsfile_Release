@@ -253,7 +253,7 @@ pipeline{
                                                     description: "Make release of Base",
                                                     name: 'isBaseRelease'),
                                         booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
-                                                    description: "Make release of Common UI",
+                                                    description: "Make release of HFHS Connector",
                                                     name: 'isConnectorRelease'),
                                         string(defaultValue: "$base_ver",
                                             description: 'with version',
