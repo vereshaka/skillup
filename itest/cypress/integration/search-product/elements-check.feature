@@ -1,7 +1,7 @@
 Feature: Search Product Widget: Elements Check
 
   Background:
-    Given As hfhs-user2 with permission 'hfhs-user'
+    Given As admin with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
 
   Scenario: First position

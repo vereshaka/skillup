@@ -8,19 +8,19 @@ import ProductDetailsWidget from './product-details-widget';
 class ProductMoveWidget extends AbstractWidget {
   initElements() {
     this.elements = {
-      'Add Product': 'addProduct',
-      'Add Account': 'selectAccount_searchButton',
-      'Next Button': 'wizardNext',
-      'Exclude Invalid Products': 'excludeAllProductsWithWarningButton',
+      'Add Product': 'PM.selectingStep.addProduct.btn',
+      'Add Account': 'PM.selectAccount.link',
+      'Next Button': 'wizard_PM.next.btn_btn',
+      'Exclude Invalid Products': 'PM.excludeAllWarnProducts.btn',
     };
   }
 
   getName = () => 'Product Move';
 
   specifyGroup = (name: string, group: string) => {
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")>div[class="AccordionItemHeading AccordionItemHeadingColor"]`).click();
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup');
-    cy.get('@searchableGroup').find(`button[id="${this.elements[name]}"]`).click();
+    cy.mediumWait();
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains("${group}Products")`).as('searchableGroup');
+    cy.get('@searchableGroup').find(`div[id="${this.elements[name]}"]`).click();
   };
 
   openDialog = (name: string, group?:string) => {
@@ -76,8 +76,9 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   isPageOpened = () => {
-    cy.get(`button#${this.elements['Next Button']}`).click();
-    cy.get('ol.progtrckr>li:eq(2)').should('have.class', 'progtrckr-doing no-hl');
+    cy.normalWait();
+    cy.get(`button[id="${this.elements['Next Button']}"]`).click();
+    cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
   };
 
   isSelectedAccountsCorrect = (table:Object) => {
@@ -108,8 +109,8 @@ class ProductMoveWidget extends AbstractWidget {
 
   isTargetAccountCorrect = (table: Object) => {
     table.hashes().forEach((row) => {
-      cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(0)').should('have.text', row.AccountNumber);
-      cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(5)').should('have.text', `IBAN:${row.IBAN}`);
+      cy.get('div[class="HeadingItemsPosition"]>div.Flex>div.Flex>div:eq(0)>span:eq(0)').should('have.text', row.AccountNumber);
+      cy.get('div[class="HeadingItemsPosition"]>div.Flex>div.Flex>div:eq(1)>span:eq(1)').should('have.text', `${row.IBAN}`);
       if (row.LockedOrders === '') {
         cy.get('div.OrderBlock').should('not.exist');
       } else {
@@ -121,25 +122,24 @@ class ProductMoveWidget extends AbstractWidget {
   openProductInfo = (productName: string, callNumber:string, group: string) => {
     cy.get('body')
       .then(($body) => {
-        if ($body.find(`span#${this.elements['Exclude Invalid Products']}`).length) {
+        if ($body.find(`span[id="${this.elements['Exclude Invalid Products']}"]`).length) {
           cy.get(`span#${this.elements['Exclude Invalid Products']}`)
             .click();
         }
       });
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")>div[class="AccordionItemHeading AccordionItemHeadingColor"]`).click();
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup');
+    cy.get(`div[class="gucci-common-expandable-panel active"]:contains("${group}Products")`).as('searchableGroup');
     cy.get('@searchableGroup').find(`div:contains(${productName}${callNumber})>a:contains(${productName})`).click();
     this.currentWidget = new ProductDetailsWidget();
     cy.normalWait();
   };
 
   isErrorMessageNotExist = () => {
-    cy.get('div.ProductItemMove>div.WarningWrapper').should('not.exist');
+    cy.get('span.RestrMessage').should('not.exist');
   };
 
   isErrorMessageExist = (message: string) => {
-    cy.get('div.ProductItemMove>div.WarningWrapper').should('exist');
-    cy.get('div.ProductItemMove>div.WarningWrapper>span.RestrMessage')
+    cy.get('span.RestrMessage').should('exist');
+    cy.get('span.RestrMessage>span')
       .each(($el) => {
         cy.get($el)
           .should('have.text', message);

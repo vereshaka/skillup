@@ -2,7 +2,7 @@ Feature: Product Move
 
   @focus
   Scenario: Simple success flow: Order Validation
-    Given As hfhs-user2 with permission 'hfhs-user'
+    Given As admin with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:100883236'
       | Product  | Subscription     |
@@ -19,7 +19,7 @@ Feature: Product Move
 
   @focus
   Scenario: Adding products into filled group
-    Given I open GUCCI Portal as hfhs-user2
+    Given I open GUCCI Portal as admin
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:100668958'
       | Product                                | Subscription  |

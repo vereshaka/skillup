@@ -2,7 +2,7 @@ Feature: Product Details
 
   @focus
   Scenario: Show info about product
-    Given As hfhs-user2 with permission 'hfhs-user'
+    Given As admin with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
     When I click on 'A1 Kombi' product with '43/9740/11183504' call number from PRI Group
@@ -10,7 +10,7 @@ Feature: Product Details
 
   @focus
   Scenario: Collapse product structure
-    Given As hfhs-user2 with permission 'hfhs-user'
+    Given As admin with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
     When I click on 'A1 Kombi' product with '43/9740/11183504' call number from PRI Group
@@ -19,7 +19,7 @@ Feature: Product Details
 
   @focus
   Scenario: Collapse and expand product structure
-    Given As hfhs-user2 with permission 'hfhs-user'
+    Given As admin with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
     When I click on 'A1 Kombi' product with '43/9740/11183504' call number from PRI Group
@@ -29,7 +29,7 @@ Feature: Product Details
 
   @focus
   Scenario: Search subproducts
-    Given As hfhs-user2 with permission 'hfhs-user'
+    Given As admin with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
     When I click on 'A1 Kombi' product with '43/9740/11183504' call number from PRI Group
@@ -43,7 +43,7 @@ Feature: Product Details
 
   @focus
   Scenario: Check subproduct info
-    Given As hfhs-user2 with permission 'hfhs-user'
+    Given As admin with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
     When I click on 'A1 Kombi' product with '43/9740/11183504' call number from PRI Group

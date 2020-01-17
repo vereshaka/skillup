@@ -6,9 +6,9 @@ import SearchAccountWidget from './search-account-widget';
 class ChangeOwnershipWidget extends AbstractWidget {
   initElements() {
     this.elements = {
-      'Add Product': 'select_product_btn',
-      'Add Account': 'selectAccount_searchButton',
-      'Next Button': 'wizard_next_btn',
+      'Add Product': 'CO.selectProduct.btn',
+      'Add Account': 'CO.selectAccount.btn',
+      'Next Button': 'wizard_CO.navigateNext.btn_btn',
     };
   }
 
@@ -16,13 +16,13 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   specifyGroup = (name: string, group: string) => {
     cy.mediumWait();
-    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div#${this.elements[name]}>span`).click({ force: true });
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
   };
 
   openDialog = (name: string, group?:string) => {
     switch (name) {
       case 'Add Product':
-        cy.get(`span#${this.elements[name]}`).click();
+        cy.get(`span[id="${this.elements[name]}"]`).click();
         this.currentDialog = new SearchProductWidget();
         break;
       case 'Add Account':
@@ -65,7 +65,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 
   isPageOpened = () => {
-    cy.get(`button#${this.elements['Next Button']}`).click();
+    cy.get(`button[id="${this.elements['Next Button']}"]`).click();
     cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
   };
 
@@ -86,8 +86,8 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   isTargetAccountCorrect = (table: Object) => {
     table.hashes().forEach((row) => {
-      cy.get(`div.AccountInfoTestTest>div.AccountInfoTestTest:contains(${row.AccountNumber})`).should('exist');
-      cy.get(`div.AccountInfoTestTest>div.AccountInfoTestTest:contains(${row.IBAN})`).should('exist');
+      cy.get(`div.Flex>div.Flex:contains(${row.AccountNumber})`).should('exist');
+      cy.get(`div.Flex>div.Flex:contains(${row.IBAN})`).should('exist');
       if (row.LockedOrders === '') {
         cy.get('div.OrderBlock').should('not.exist');
       } else {

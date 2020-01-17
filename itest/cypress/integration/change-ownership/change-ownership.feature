@@ -2,7 +2,7 @@ Feature: Change Ownership
 
   @focus
   Scenario: Simple success flow: Order Validation
-    Given I open GUCCI Portal as hfhs-user2
+    Given I open GUCCI Portal as admin
     And open 'Change Ownership' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:108033579'
       | Product  | Subscription     | AccountNumber | AccountType |

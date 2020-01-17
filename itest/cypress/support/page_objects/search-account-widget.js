@@ -22,12 +22,14 @@ class SearchAccountWidget extends AbstractWidget {
     cy.get(`input[id="${this.elements['Search input']}"]`).type(query);
     cy.get(`button[id="${this.elements['Search run']}"]`).click();
     cy.mediumWait();
+    cy.mediumWait();
   };
 
   selectAccount =(account: string) => {
     cy.get('div[class="StatusMessage Error ProductItem"]').should('not.exist');
     cy.get(`div:contains(${account})>input[type="radio"]`).click();
     cy.get('button[id="process-button"]').click();
+    cy.normalWait();
   };
 
   addAccount = (account: string, query: string) => {

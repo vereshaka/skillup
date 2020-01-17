@@ -2,7 +2,7 @@ Feature: Search Account
 
   @focus
   Scenario: Account Search
-    Given I open GUCCI Portal as hfhs-user2
+    Given I open GUCCI Portal as admin
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:100883236'
     And open 'Add Account' dialog with 'PRI' group
