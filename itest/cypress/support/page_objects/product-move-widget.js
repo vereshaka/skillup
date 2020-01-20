@@ -86,10 +86,10 @@ class ProductMoveWidget extends AbstractWidget {
     length = Number(length);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < length; i++) {
-      cy.get(`div.ProductItemMove:eq(${i})>div>div>a`).contains(table.hashes()[i].Product).should('exist');
-      cy.get(`div.ProductItemMove:eq(${i})>div>div>span:eq(0)`).contains(table.hashes()[i].Subscription).should('exist');
-      cy.get(`div.ProductItemMove:eq(${i})>div>span:eq(1)`).contains(table.hashes()[i].AccountNumber).should('exist');
-      cy.get(`div.ProductItemMove:eq(${i})>div>span:eq(2)`).contains(table.hashes()[i].AccountType).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div>div>div>div>div>a`).contains(table.hashes()[i].Product).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div>div>div>div>div>span:eq(0)`).contains(table.hashes()[i].Subscription).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div>div>div>div>span:eq(1)`).contains(table.hashes()[i].AccountNumber).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div>div>div>div>span:eq(2)`).contains(table.hashes()[i].AccountType).should('exist');
       if (table.hashes()[i].LockedOrders === '') {
         cy.get('div.OrderBlock').should('not.exist');
       } else {
