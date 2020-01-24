@@ -29,7 +29,7 @@ def projects = [
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
-    "product-move" : "",
+    "microfrontend-hfhs-product-move" : "",
     "search-product" : "",
 ];
 
@@ -644,13 +644,13 @@ pipeline{
                 stage('Widget: Product Move'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "product-move" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-product-move" }?.value) == true
                         }
                     }
                     stages{
                         stage('Install deps'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -660,7 +660,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
@@ -671,7 +671,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         sh 'git status'
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git"
