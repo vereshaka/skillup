@@ -827,14 +827,11 @@ pipeline{
     }
     post{
         success{
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-processing:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-changeownership:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-detail:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-details:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-search-product:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            script{
+                projects.each{ k,v ->
+                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/${k}:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                }
+            }
             emailext to: INFORM_ABOUT_FAILURE,
                      subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been finished",
                      body: report(projects, base_build['baseVersion']),
