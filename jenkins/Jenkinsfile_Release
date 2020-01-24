@@ -23,14 +23,14 @@ Variable 'projects' contains list of widgets that can be released.
 def projects = [
     "microfrontend-hfhs-processing" : "",
     "microfrontend-hfhs-changeownership" : "",
-    "microfrontend-product-details" : "",
+    "microfrontend-hfhs-product-details" : "",
     "microfrontend-hfhs-base" : "",
     "microfrontend-hfhs-connector" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
-    "product-move" : "",
-    "search-product" : "",
+    "microfrontend-hfhs-product-move" : "",
+    "microfrontend-hfhs-search-product" : "",
 ];
 
 Boolean isReleaseNeeded(String packageVersion){
@@ -553,13 +553,13 @@ pipeline{
                 stage('Widget: Product Details'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-product-details" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-product-details" }?.value) == true
                         }
                     }
                     stages{
                         stage('Prepare'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -569,7 +569,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
@@ -580,7 +580,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-product-details.git"
@@ -599,13 +599,13 @@ pipeline{
                 stage('Widget: Search Product'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "search-product" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-search-product" }?.value) == true
                         }
                     }
                     stages{
                         stage('Install deps'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -615,7 +615,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
                                         sh 'git checkout package-lock.json'
@@ -626,7 +626,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git"
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git --tags"
@@ -644,13 +644,13 @@ pipeline{
                 stage('Widget: Product Move'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "product-move" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-product-move" }?.value) == true
                         }
                     }
                     stages{
                         stage('Install deps'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -660,7 +660,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
@@ -671,7 +671,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         sh 'git status'
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git"
@@ -827,14 +827,11 @@ pipeline{
     }
     post{
         success{
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-processing:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-changeownership:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-detail:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-details:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-search-product:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            script{
+                projects.each{ k,v ->
+                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/${k}:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                }
+            }
             emailext to: INFORM_ABOUT_FAILURE,
                      subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been finished",
                      body: report(projects, base_build['baseVersion']),
