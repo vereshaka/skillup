@@ -23,7 +23,7 @@ Variable 'projects' contains list of widgets that can be released.
 def projects = [
     "microfrontend-hfhs-processing" : "",
     "microfrontend-hfhs-changeownership" : "",
-    "microfrontend-product-details" : "",
+    "microfrontend-hfhs-product-details" : "",
     "microfrontend-hfhs-base" : "",
     "microfrontend-hfhs-connector" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
@@ -553,13 +553,13 @@ pipeline{
                 stage('Widget: Product Details'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-product-details" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-product-details" }?.value) == true
                         }
                     }
                     stages{
                         stage('Prepare'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -569,7 +569,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
@@ -580,7 +580,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-product-details.git"
