@@ -30,7 +30,7 @@ def projects = [
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
     "microfrontend-hfhs-product-move" : "",
-    "search-product" : "",
+    "microfrontend-hfhs-search-product" : "",
 ];
 
 Boolean isReleaseNeeded(String packageVersion){
@@ -599,13 +599,13 @@ pipeline{
                 stage('Widget: Search Product'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "search-product" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-search-product" }?.value) == true
                         }
                     }
                     stages{
                         stage('Install deps'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -615,7 +615,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
                                         sh 'git checkout package-lock.json'
@@ -626,7 +626,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git"
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git --tags"
