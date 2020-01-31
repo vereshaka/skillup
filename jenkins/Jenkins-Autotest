@@ -7,7 +7,7 @@ The tests performs every workday at 03:00
 pipeline{
     agent{
         node{
-            label 'node'
+            label 'cypress'
         }
     }
     triggers {
