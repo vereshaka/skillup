@@ -47,11 +47,11 @@ pipeline{
     post{
         always{
             nodejs('node10.16.3'){
-                dir('itest/'){
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/*.mp4', onlyIfSuccessful: false
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/videos/**/*.mp4', onlyIfSuccessful: false
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/*.png', onlyIfSuccessful: false
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/**/*.png', onlyIfSuccessful: false
+                dir('itest/cypress/'){
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'videos/*.mp4', onlyIfSuccessful: false
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'videos/**/*.mp4', onlyIfSuccessful: false
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'screenshots/*.png', onlyIfSuccessful: false
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'screenshots/**/*.png', onlyIfSuccessful: false
                 }
             }
             publishHTML([allowMissing: true, alwaysLinkToLastBuild: true,
