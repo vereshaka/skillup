@@ -18,8 +18,8 @@ pipeline{
             steps{
                 deleteDir()
                 checkout([$class: 'GitSCM', branches: [[name: '*/develop']], 
-                        doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
-                        userRemoteConfigs: [[credentialsId: 'a1-bitbucket', url: 'https://tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common.git']]])
+                          doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
+                          userRemoteConfigs: [[credentialsId: 'a1-bitbucket', url: 'https://tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common.git']]])
             }
         }
         stage('Install deps'){
@@ -55,13 +55,16 @@ pipeline{
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'cypress/screenshots/**/*.png', onlyIfSuccessful: false
                 }
             }
-            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, escapeUnderscores: false, includes: '**/*.html,**/*.json', keepAll: true, reportDir: 'itest/cypress/reports', reportFiles: 'hfhs.cucumber.html', reportName: 'Cypress Test Result', reportTitles: ''])
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true,
+                         escapeUnderscores: false, includes: '**/*.html,**/*.json',
+                         keepAll: true, reportDir: 'itest/cypress/reports',
+                         reportFiles: 'hfhs.cucumber.html', reportName: 'Cypress Test Result', reportTitles: ''])
         }
         failure {
             emailext to: 'grp.hfhs@sytoss.com',
-                    subject: "Jenkins Pipeline '${JOB_NAME}' (${BUILD_NUMBER}) failed",
-                    body: "Please go to ${BUILD_URL} and verify the build",
-                    attachLog: true
+                     subject: "Jenkins Pipeline '${JOB_NAME}' (${BUILD_NUMBER}) failed",
+                     body: "Please go to ${BUILD_URL} and verify the build",
+                     attachLog: true
         }
     }
 }
