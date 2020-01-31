@@ -101,3 +101,8 @@ When(/click on '(.*)' subproduct/, (subproductName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .openSubproductInfo(subproductName);
 });
+When(/click '(.*)'/, (buttonName) => {
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget(): ProductMoveWidget)
+    .clickOnButton(buttonName);
+});

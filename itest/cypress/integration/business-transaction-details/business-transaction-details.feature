@@ -7,6 +7,7 @@ Feature: Business Transaction Details
       | done   | 103777118       | 'A548334910'  | 'BPO_A1_HYBRID_POWER_150_40_2016' | 103777119       | 'A604916029'  | 'CO99571' | 'OK'  | 21603159          | 'NORM'          | 43              | 9740             | 201554877       | null                 |
     And I open GUCCI Portal as hfhs-user3
     And switch to HFHS Cockpit
+    And open 'Business Transaction History' widget from 'HFHS Cockpit'
     And I have selected 'my transactions' that were 'taken place' in the 'last month'
     When I select business transaction #4
     Then business transaction's details are displayed in new tab
@@ -20,6 +21,7 @@ Feature: Business Transaction Details
       | with_error | 103777118       | 'A548334910'  | 'BPO_A1_HYBRID_POWER_150_40_2016' | 103777119       | 'A604916029'  | 'CO99571' | 'OK'  | 21603159          | 'NORM'          | 43              | 9740             | 201554877       | null                 |
     And I open GUCCI Portal as hfhs-user3
     And switch to HFHS Cockpit
+    And open 'Business Transaction History' widget from 'HFHS Cockpit'
     And I have selected 'my transactions' that were 'taken place' in the 'last month'
     When I select business transaction #5
     Then business transaction's details are displayed in new tab

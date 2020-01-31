@@ -94,8 +94,21 @@ Then(/The following source account should be selected/, (table) => {
   }
 });
 Then(/Effective date is '(.*)'$/, (date) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .isDateCorrect(date);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+        .isDateCorrect(date);
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .isDateCorrect(date);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 Then(/Target account should be/, (table) => {
   const currentWidgetName = gucciWorld.getCurrentCockpit()
@@ -198,4 +211,8 @@ Then(/(Price|Terms|Characteristic) info should be presented/, (tab, table) => {
     default:
       throw new Error(`Unsupported tab. Name: ${tab}`);
   }
+});
+Then(/Product Move widget should exist/, () => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isWidgetExist();
 });

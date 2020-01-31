@@ -1,3 +1,4 @@
+import moment from 'moment';
 import AbstractWidget from './common/abstract-widget';
 import SearchProductWidget from './search-product-widget';
 import SearchAccountWidget from './search-account-widget';
@@ -9,6 +10,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
       'Add Product': 'CO.selectProduct.btn',
       'Add Account': 'CO.selectAccount.btn',
       'Next Button': 'wizard_CO.navigateNext.btn_btn',
+      'Date Picker': 'CO.datepiker',
     };
   }
 
@@ -94,6 +96,21 @@ class ChangeOwnershipWidget extends AbstractWidget {
         // Do nothing
       }
     });
+  };
+
+  isDateCorrect = (date:string) => {
+    if (date === 'now') {
+      const localDate = new Date();
+      cy.get(`input[id='${this.elements['Date Picker']}']`).invoke('attr', 'value').then((value) => {
+        cy.log(value);
+        const time = moment(value).format('DD.MM.YYYY');
+        cy.log(time);
+        // eslint-disable-next-line no-undef
+        expect(time).to.equal(moment(localDate).format('DD.MM.YYYY'));
+      });
+    } else {
+      cy.get(`input[id='${this.elements['Date Picker']}']`).clear().type(date).type('{enter}');
+    }
   };
 }
 

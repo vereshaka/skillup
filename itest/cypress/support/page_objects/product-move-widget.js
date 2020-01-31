@@ -8,10 +8,12 @@ import ProductDetailsWidget from './product-details-widget';
 class ProductMoveWidget extends AbstractWidget {
   initElements() {
     this.elements = {
-      'Add Product': 'PM.selectingStep.addProduct.btn',
+      'Add Product': 'PM.addProduct.icon',
       'Add Account': 'PM.selectAccount.link',
       'Next Button': 'wizard_PM.next.btn_btn',
       'Exclude Invalid Products': 'PM.excludeAllWarnProducts.btn',
+      'Date Picker': 'PM.datepiker',
+      'Previous Button': 'wizard_PM.previous.btn_btn',
     };
   }
 
@@ -26,7 +28,8 @@ class ProductMoveWidget extends AbstractWidget {
   openDialog = (name: string, group?:string) => {
     switch (name) {
       case 'Add Product':
-        cy.get(`span[id="${this.elements[name]}"]`).click();
+        cy.get(`span[id="${this.elements[name]}"]`).click({ force: true });
+        cy.longWait();
         this.currentDialog = new SearchProductWidget();
         break;
       case 'Add Account':
@@ -86,10 +89,10 @@ class ProductMoveWidget extends AbstractWidget {
     length = Number(length);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < length; i++) {
-      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div>div>div>div>div>a`).contains(table.hashes()[i].Product).should('exist');
-      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div>div>div>div>div>span:eq(0)`).contains(table.hashes()[i].Subscription).should('exist');
-      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div>div>div>div>span:eq(1)`).contains(table.hashes()[i].AccountNumber).should('exist');
-      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div>div>div>div>span:eq(2)`).contains(table.hashes()[i].AccountType).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].Product).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].Subscription).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].AccountNumber).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].AccountType).should('exist');
       if (table.hashes()[i].LockedOrders === '') {
         cy.get('div.OrderBlock').should('not.exist');
       } else {
@@ -101,9 +104,15 @@ class ProductMoveWidget extends AbstractWidget {
   isDateCorrect = (date:string) => {
     if (date === 'now') {
       const localDate = new Date();
-      cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${moment(localDate).format('D/M/YYYY')}`);
+      cy.get(`input[id='${this.elements['Date Picker']}']`).invoke('attr', 'value').then((value) => {
+        cy.log(value);
+        const time = moment(value).format('DD.MM.YYYY');
+        cy.log(time);
+        // eslint-disable-next-line no-undef
+        expect(time).to.equal(moment(localDate).format('DD.MM.YYYY'));
+      });
     } else {
-      cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${date}`);
+      cy.get(`input[id='${this.elements['Date Picker']}']`).clear().type(date).type('{enter}');
     }
   };
 
@@ -147,18 +156,25 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   addAnotherProduct = (query: string, table?: Object) => {
-    cy.normalWait();
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, table);
   };
 
   isButtonActive = (buttonName) => {
-    cy.get(`button[id="${this.elements[buttonName]}"]`).should('not.be.disabled');
+    cy.get(`div[id="${this.elements[buttonName]}"]`).should('not.have.class', 'disabled');
   };
 
   isTargetAccountNotSelected = () => {
     cy.get('div.AccountInfoTest').should('not.exist');
-  }
+  };
+
+  clickOnButton = (buttonName) => {
+    cy.get(`button[id="${this.elements[buttonName]}"]`).click();
+  };
+
+  isWidgetExist = () => {
+    cy.get('div.gucci-common-wizard').should('exist');
+  };
 }
 
 export default ProductMoveWidget;

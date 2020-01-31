@@ -5,6 +5,7 @@ Feature: Business Transaction History
     Given hfhs-user3 has no business transactions
     And I open GUCCI Portal as hfhs-user3
     And switch to HFHS Cockpit
+    And open 'Business Transaction History' widget from 'HFHS Cockpit'
     And business transaction history widget is displayed
     And transaction list mode group is presented
     When I have selected 'my transactions' that were 'taken place' in the 'last month'
@@ -17,6 +18,7 @@ Feature: Business Transaction History
       | done   | 103777118       | 'A548334910'  | 'BPO_A1_HYBRID_POWER_150_40_2016' | 103777119       | 'A604916029'  | 'CO99571' | 'OK'  | 21603159          | 'NORM'          | 43              | 9740             | 201554877       | null                 |
     And I open GUCCI Portal as hfhs-user3
     And switch to HFHS Cockpit
+    And open 'Business Transaction History' widget from 'HFHS Cockpit'
     And business transaction history widget is displayed
     And transaction list mode group is presented
     And I see 'my transactions' that were 'taken place' in the 'last month'
@@ -32,6 +34,7 @@ Feature: Business Transaction History
       | done   | 103777118       | 'A548334910'  | 'BPO_A1_HYBRID_POWER_150_40_2016' | 103777119       | 'A604916029'  | 'CO99571' | 'OK'  | 21603159          | 'NORM'          | 43              | 9740             | 201554877       | null                 |
     And I open GUCCI Portal as hfhs-user3
     And switch to HFHS Cockpit
+    And open 'Business Transaction History' widget from 'HFHS Cockpit'
     And business transaction history widget is displayed
     And transaction list mode group is presented
     And I see 'my transactions' that were 'done' in the 'last month'
@@ -47,6 +50,7 @@ Feature: Business Transaction History
       | with_error | 103777118       | 'A548334910'  | 'BPO_A1_HYBRID_POWER_150_40_2016' | 103777119       | 'A604916029'  | 'CO99571' | 'OK'  | 21603159          | 'NORM'          | 43              | 9740             | 201554877       | null                 |
     And I open GUCCI Portal as hfhs-user3
     And switch to HFHS Cockpit
+    And open 'Business Transaction History' widget from 'HFHS Cockpit'
     And business transaction history widget is displayed
     And transaction list mode group is presented
     And I see 'my transactions' that were 'done with error' in the 'last month'

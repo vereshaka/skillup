@@ -41,7 +41,7 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   clearSearch = () => {
-    cy.shortWait();
+    cy.normalWait();
     cy.get(`input[id="${this.elements['Search input']}"]`)
       .clear();
     cy.shortWait();
