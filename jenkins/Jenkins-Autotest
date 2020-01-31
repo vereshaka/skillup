@@ -19,7 +19,7 @@ pipeline{
                 deleteDir()
                 checkout([$class: 'GitSCM', branches: [[name: '*/develop']], 
                           doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
-                          userRemoteConfigs: [[credentialsId: 'a1-bitbucket', url: 'https://tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common.git']]])
+                          userRemoteConfigs: [[credentialsId: '8c90ce01-4736-4b5a-8661-ab6299330151', url: 'https://tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-common.git']]])
             }
         }
         stage('Install deps'){
