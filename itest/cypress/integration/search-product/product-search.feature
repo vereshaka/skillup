@@ -1,4 +1,6 @@
 Feature: Multiple search
+
+  @focus
   Scenario: Search by name
     Given I open GUCCI Portal as hfhs-user2
     And open 'Product Move' widget from 'HFHS Cockpit'
