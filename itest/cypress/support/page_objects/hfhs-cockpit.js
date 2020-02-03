@@ -27,6 +27,10 @@ class HfhsCockpit extends AbstractCockpit {
         this.toolbar.clickToolbarButton(name);
         this.currentWidget = new ChangeOwnershipWidget();
         break;
+      case 'Business Transaction History':
+        this.toolbar.clickToolbarButton(name);
+        this.currentWidget = new BusinessTransactionHistoryWidget();
+        break;
       default:
         throw new Error(`Unsupported widget. Name: ${name}`);
     }

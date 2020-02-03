@@ -6,6 +6,7 @@ class HfhsToolbarWidget extends AbstractWidget {
     this.elements = {
       'Product Move': 'openPM',
       'Change Ownership': 'openCO',
+      'Business Transaction History': 'openBT',
     };
   }
 

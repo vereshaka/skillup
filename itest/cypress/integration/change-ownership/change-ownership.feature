@@ -12,6 +12,7 @@ Feature: Change Ownership
     Then The following source account should be selected
       | Product  | Subscription     | AccountNumber | AccountType | LockedOrders |
       | A1 Kombi | 43/9740/11183504 | A362217278    | PRI         |              |
+    And Effective date is 'now'
     And Target account should be
       | AccountNumber    | IBAN                 | LockedOrders |
       | A362259643,00001 | AT752033100101121960 |              |

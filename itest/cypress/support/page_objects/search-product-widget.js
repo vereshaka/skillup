@@ -41,7 +41,7 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   clearSearch = () => {
-    cy.shortWait();
+    cy.normalWait();
     cy.get(`input[id="${this.elements['Search input']}"]`)
       .clear();
     cy.shortWait();
@@ -53,7 +53,7 @@ class SearchProductWidget extends AbstractWidget {
       .type(query);
     cy.get(`button[id="${this.elements['Search run']}"]`)
       .click();
-    cy.mediumWait();
+    cy.longWait();
   };
 
   isSearchElementExists = (index: string, searchItem: string) => {
