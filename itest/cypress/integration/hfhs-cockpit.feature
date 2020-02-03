@@ -1,5 +1,5 @@
-#Feature: HFHS Cockpit check
-#
+Feature: HFHS Cockpit check
+
 #  @focus
 #  Scenario: Login with admin rights
 #    Given hfhs-user3 exists in GUCCI keycloak with the following groups:

@@ -11,6 +11,7 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
   getName = (): string => 'Business Transaction Details';
 
   isInfoDisplayed = (table: Object) => {
+    cy.normalWait();
     let { length } = table.hashes();
     length = Number(length);
     for (let i = 0; i < length; i += 1) {
