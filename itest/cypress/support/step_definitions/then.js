@@ -212,11 +212,37 @@ Then(/(Price|Terms|Characteristic) info should be presented/, (tab, table) => {
       throw new Error(`Unsupported tab. Name: ${tab}`);
   }
 });
-Then(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
-  gucciWorld.getCurrentCockpit()
-    .openWidget(widgetName);
+Then(/'(Product Move|Change Ownership|Business Transaction History)' widget should exist/, () => {
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+        .isWidgetExist();
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .isWidgetExist();
+      break;
+    case 'Business Transaction History':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): BusinessTransactionHistoryWidget)
+        .isWidgetExist();
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
-Then(/Product Move widget should exist/, () => {
+Then(/Search Product works/, () => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .openDialog('Add Product');
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .isSearchProductWorks();
+});
+Then(/Business transaction details widget should exist/, () => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget()
+    .getCurrentDialog(): BusinessTransactionDetailsWidget)
     .isWidgetExist();
 });

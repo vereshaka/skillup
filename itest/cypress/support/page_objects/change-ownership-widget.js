@@ -112,6 +112,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
       cy.get(`input[id='${this.elements['Date Picker']}']`).clear().type(date).type('{enter}');
     }
   };
+
+  isWidgetExist = () => {
+    cy.mediumWait();
+    cy.get('div[class="mashroom-portal-app-wrapper portal-app-change-ownership hide-header"]').should('exist');
+  };
 }
 
 export default ChangeOwnershipWidget;

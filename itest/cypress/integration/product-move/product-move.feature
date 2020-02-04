@@ -46,4 +46,4 @@ Feature: Product Move
     When Order validation step is open
     And click 'Previous Button'
     And click 'Next Button'
-    Then Product Move widget should exist
+    Then 'Product Move' widget should exist

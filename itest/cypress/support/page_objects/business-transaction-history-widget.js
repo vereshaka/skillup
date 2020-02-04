@@ -25,6 +25,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
   };
 
   isAdminGroupExist = () => {
+    cy.normalWait();
     cy
       .get('div.NavigationPanel')
       .find('form')
@@ -98,8 +99,11 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
 
   filterTransactionList = (affiliation: string, status: string, date: string) => {
     this.selectAffiliationValue(affiliation);
+    cy.normalWait();
     this.selectStatusValue(status);
+    cy.normalWait();
     this.selectDateValue(date);
+    cy.normalWait();
     this.checkTransactionListLength();
   };
 
@@ -147,6 +151,16 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
     } else {
       throw new Error(`Unsupported dialog: ${name}`);
     }
+  };
+
+  isWidgetExist = () => {
+    cy.mediumWait();
+    cy.get('div[class="mashroom-portal-app-wrapper portal-app-business-transaction-history show-header"]').should('exist');
+  };
+
+  openFirstOperation = () => {
+    cy.get('tbody>tr:eq(0)>td>a').click();
+    this.currentDialog = new BusinessTransactionDetailsWidget();
   };
 
   getCurrentDialog = () => this.currentDialog;
