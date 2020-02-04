@@ -94,8 +94,21 @@ Then(/The following source account should be selected/, (table) => {
   }
 });
 Then(/Effective date is '(.*)'$/, (date) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
-    .isDateCorrect(date);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+        .isDateCorrect(date);
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .isDateCorrect(date);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 Then(/Target account should be/, (table) => {
   const currentWidgetName = gucciWorld.getCurrentCockpit()
@@ -144,22 +157,18 @@ Then(/'(.*)' message should be displayed/, (message: string) => {
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .isMessageDisplayed(message);
 });
-Then(/new tab should be displayed/, () => {
-  (gucciWorld
-    .getCurrentCockpit()
-    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
-    .isTabCaptionDisplayed();
-});
 Then(/business transaction's details are displayed in new tab/, (table: Object) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionDetailsWidget(): BusinessTransactionDetailsWidget)
+    .getBusinessTransactionHistoryWidget()
+    .getCurrentDialog(): BusinessTransactionDetailsWidget)
     .isInfoDisplayed(table);
 });
 Then(/new tab with caption '(.*)' should be displayed/, (caption: string) => {
   (gucciWorld
     .getCurrentCockpit()
-    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .getBusinessTransactionHistoryWidget()
+    .getCurrentDialog(): BusinessTransactionDetailsWidget)
     .isTabCaptionDisplayed(caption);
 });
 Then(/'(.*)' button should be active/, (buttonName) => {
@@ -206,4 +215,8 @@ Then(/(Price|Terms|Characteristic) info should be presented/, (tab, table) => {
 Then(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
   gucciWorld.getCurrentCockpit()
     .openWidget(widgetName);
+});
+Then(/Product Move widget should exist/, () => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
+    .isWidgetExist();
 });

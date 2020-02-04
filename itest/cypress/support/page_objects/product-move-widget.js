@@ -8,25 +8,28 @@ import ProductDetailsWidget from './product-details-widget';
 class ProductMoveWidget extends AbstractWidget {
   initElements() {
     this.elements = {
-      'Add Product': 'addProduct',
-      'Add Account': 'selectAccount_searchButton',
-      'Next Button': 'wizardNext',
-      'Exclude Invalid Products': 'excludeAllProductsWithWarningButton',
+      'Add Product': 'PM.addProduct.icon',
+      'Add Account': 'PM.selectAccount.link',
+      'Next Button': 'wizard_PM.next.btn_btn',
+      'Exclude Invalid Products': 'PM.excludeAllWarnProducts.btn',
+      'Date Picker': 'PM.datepiker',
+      'Previous Button': 'wizard_PM.previous.btn_btn',
     };
   }
 
   getName = () => 'Product Move';
 
   specifyGroup = (name: string, group: string) => {
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")>div[class="AccordionItemHeading AccordionItemHeadingColor"]`).click();
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup');
-    cy.get('@searchableGroup').find(`button[id="${this.elements[name]}"]`).click();
+    cy.mediumWait();
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains("${group}Products")`).as('searchableGroup');
+    cy.get('@searchableGroup').find(`div[id="${this.elements[name]}"]`).click();
   };
 
   openDialog = (name: string, group?:string) => {
     switch (name) {
       case 'Add Product':
-        cy.get(`span[id="${this.elements[name]}"]`).click();
+        cy.get(`span[id="${this.elements[name]}"]`).click({ force: true });
+        cy.longWait();
         this.currentDialog = new SearchProductWidget();
         break;
       case 'Add Account':
@@ -76,8 +79,9 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   isPageOpened = () => {
-    cy.get(`button#${this.elements['Next Button']}`).click();
-    cy.get('ol.progtrckr>li:eq(2)').should('have.class', 'progtrckr-doing no-hl');
+    cy.normalWait();
+    cy.get(`button[id="${this.elements['Next Button']}"]`).click();
+    cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
   };
 
   isSelectedAccountsCorrect = (table:Object) => {
@@ -85,10 +89,10 @@ class ProductMoveWidget extends AbstractWidget {
     length = Number(length);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < length; i++) {
-      cy.get(`div.ProductItemMove:eq(${i})>div>div>a`).contains(table.hashes()[i].Product).should('exist');
-      cy.get(`div.ProductItemMove:eq(${i})>div>div>span:eq(0)`).contains(table.hashes()[i].Subscription).should('exist');
-      cy.get(`div.ProductItemMove:eq(${i})>div>span:eq(1)`).contains(table.hashes()[i].AccountNumber).should('exist');
-      cy.get(`div.ProductItemMove:eq(${i})>div>span:eq(2)`).contains(table.hashes()[i].AccountType).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].Product).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].Subscription).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].AccountNumber).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].AccountType).should('exist');
       if (table.hashes()[i].LockedOrders === '') {
         cy.get('div.OrderBlock').should('not.exist');
       } else {
@@ -100,16 +104,22 @@ class ProductMoveWidget extends AbstractWidget {
   isDateCorrect = (date:string) => {
     if (date === 'now') {
       const localDate = new Date();
-      cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${moment(localDate).format('D/M/YYYY')}`);
+      cy.get(`input[id='${this.elements['Date Picker']}']`).invoke('attr', 'value').then((value) => {
+        cy.log(value);
+        const time = moment(value).format('DD.MM.YYYY');
+        cy.log(time);
+        // eslint-disable-next-line no-undef
+        expect(time).to.equal(moment(localDate).format('DD.MM.YYYY'));
+      });
     } else {
-      cy.get('div.ArrowPosition>span:eq(0)').should('have.text', `Moved at ${date}`);
+      cy.get(`input[id='${this.elements['Date Picker']}']`).clear().type(date).type('{enter}');
     }
   };
 
   isTargetAccountCorrect = (table: Object) => {
     table.hashes().forEach((row) => {
-      cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(0)').should('have.text', row.AccountNumber);
-      cy.get('div[class="AccountInfoTest AccountInfo_Confirmation"]>div>span:eq(5)').should('have.text', `IBAN:${row.IBAN}`);
+      cy.get('div[class="HeadingItemsPosition"]>div.Flex>div.Flex>div:eq(0)>span:eq(0)').should('have.text', row.AccountNumber);
+      cy.get('div[class="HeadingItemsPosition"]>div.Flex>div.Flex>div:eq(1)>span:eq(1)').should('have.text', `${row.IBAN}`);
       if (row.LockedOrders === '') {
         cy.get('div.OrderBlock').should('not.exist');
       } else {
@@ -121,25 +131,24 @@ class ProductMoveWidget extends AbstractWidget {
   openProductInfo = (productName: string, callNumber:string, group: string) => {
     cy.get('body')
       .then(($body) => {
-        if ($body.find(`span#${this.elements['Exclude Invalid Products']}`).length) {
+        if ($body.find(`span[id="${this.elements['Exclude Invalid Products']}"]`).length) {
           cy.get(`span#${this.elements['Exclude Invalid Products']}`)
             .click();
         }
       });
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")>div[class="AccordionItemHeading AccordionItemHeadingColor"]`).click();
-    cy.get(`div[class="accordion__item"]:contains("${group} Products")`).as('searchableGroup');
+    cy.get(`div[class="gucci-common-expandable-panel active"]:contains("${group}Products")`).as('searchableGroup');
     cy.get('@searchableGroup').find(`div:contains(${productName}${callNumber})>a:contains(${productName})`).click();
     this.currentWidget = new ProductDetailsWidget();
     cy.normalWait();
   };
 
   isErrorMessageNotExist = () => {
-    cy.get('div.ProductItemMove>div.WarningWrapper').should('not.exist');
+    cy.get('span.RestrMessage').should('not.exist');
   };
 
   isErrorMessageExist = (message: string) => {
-    cy.get('div.ProductItemMove>div.WarningWrapper').should('exist');
-    cy.get('div.ProductItemMove>div.WarningWrapper>span.RestrMessage')
+    cy.get('span.RestrMessage').should('exist');
+    cy.get('span.RestrMessage>span')
       .each(($el) => {
         cy.get($el)
           .should('have.text', message);
@@ -147,18 +156,25 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   addAnotherProduct = (query: string, table?: Object) => {
-    cy.normalWait();
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, table);
   };
 
   isButtonActive = (buttonName) => {
-    cy.get(`button[id="${this.elements[buttonName]}"]`).should('not.be.disabled');
+    cy.get(`div[id="${this.elements[buttonName]}"]`).should('not.have.class', 'disabled');
   };
 
   isTargetAccountNotSelected = () => {
     cy.get('div.AccountInfoTest').should('not.exist');
-  }
+  };
+
+  clickOnButton = (buttonName) => {
+    cy.get(`button[id="${this.elements[buttonName]}"]`).click();
+  };
+
+  isWidgetExist = () => {
+    cy.get('div.gucci-common-wizard').should('exist');
+  };
 }
 
 export default ProductMoveWidget;

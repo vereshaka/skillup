@@ -7,7 +7,6 @@ import ProductMoveWidget from '../page_objects/product-move-widget';
 import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 import ProductDetailsWidget from '../page_objects/product-details-widget';
-import HfhsCockpit from '../page_objects/hfhs-cockpit';
 
 When(/I have try to login as (.*) with (.*) credential/,
   (username, type) => {
@@ -80,12 +79,6 @@ When(/I select business transaction #(.*)/, (id) => {
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .selectTransaction(id);
 });
-When(/I have selected '(.*)' that were '(.*)' in the '(.*)'/, (affiliation, currentStatus, date) => {
-  (gucciWorld
-    .getCurrentCockpit()
-    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
-    .filterTransactionList(affiliation, currentStatus, date);
-});
 When(/selected (|'(.*)' customer and )all products/, (customerName?) => {
   (gucciWorld.getCurrentCockpit()
     .getCurrentWidget()
@@ -107,4 +100,9 @@ When(/type '(.*)' at search field/, (query) => {
 When(/click on '(.*)' subproduct/, (subproductName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .openSubproductInfo(subproductName);
+});
+When(/click '(.*)'/, (buttonName) => {
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget(): ProductMoveWidget)
+    .clickOnButton(buttonName);
 });

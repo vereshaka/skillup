@@ -6,13 +6,14 @@ class HfhsToolbarWidget extends AbstractWidget {
     this.elements = {
       'Product Move': 'openPM',
       'Change Ownership': 'openCO',
+      'Business Transaction History': 'openBT',
     };
   }
 
   getName = () => 'HFHS Toolbar';
 
   clickToolbarButton = (buttonCaption: string) => {
-    cy.normalWait();
+    cy.mediumWait();
     cy.get('body').then(($body) => {
       if ($body.find(`span:contains(${buttonCaption})`).length) {
         cy.get(`button[id=${this.elements[buttonCaption]}]`)

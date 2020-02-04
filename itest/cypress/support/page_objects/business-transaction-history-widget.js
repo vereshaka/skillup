@@ -1,9 +1,11 @@
 // @flow
 import moment from 'moment';
 import AbstractWidget from './common/abstract-widget';
-// import Dao from '../database/dao';
+import BusinessTransactionDetailsWidget from './business-transaction-details-widget';
 
 class BusinessTransactionHistoryWidget extends AbstractWidget {
+  currentDialog: AbstractWidget;
+
   initElements() {
     this.elements = {
     };
@@ -130,19 +132,24 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
     this.checkTransactionList(table);
   };
 
-  selectTransaction = (id) => {
-    cy
-      .get('a[href="#selectBusinessTransactionItem"]')
-      .contains(id)
-      .click();
+  selectTransaction = (id: string) => {
+    this.openDialog('Business Transaction Details', id);
   };
 
-  isTabCaptionDisplayed = (caption) => {
-    cy
-      .get('div[class="tab-dialog-button active"]')
-      .find('div.title')
-      .should('have.text', caption);
+  openDialog = (name: string, id:string) => {
+    if (name === 'Business Transaction Details') {
+      cy
+        .get('a[href="#selectBusinessTransactionItem"]')
+        .contains(id)
+        .click();
+
+      this.currentDialog = new BusinessTransactionDetailsWidget();
+    } else {
+      throw new Error(`Unsupported dialog: ${name}`);
+    }
   };
+
+  getCurrentDialog = () => this.currentDialog;
 }
 
 export default BusinessTransactionHistoryWidget;

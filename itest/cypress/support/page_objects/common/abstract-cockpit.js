@@ -12,12 +12,13 @@ class AbstractCockpit {
     throw new Error('Implement me: getTitle');
   };
 
-  open() {
-    cy.get('div.menu-drawer').click();
-    cy.get(`a:contains(${this.getName()})`).click();
-    // TODO: yevgenyv: please check is it possible replace wait on isOpen
-    cy.shortWait();
-  }
+  open = () => {
+    cy.visit(`${Cypress.env('portalUrl')}portal/web/hfhs`);
+    // cy.get('div.menu-drawer').click();
+    // cy.get(`a:contains(${this.getName()})`).click();
+    // // TODO: yevgenyv: please check is it possible replace wait on isOpen
+    // cy.shortWait();
+  };
 
   isOpen() {
     cy.get('h1').should('have.text', this.getTitle());

@@ -1,9 +1,9 @@
-var fs = require('fs');
+const fs = require('fs');
 
 function deleteFolderRecursive(path) {
   if (fs.existsSync(path) && fs.lstatSync(path).isDirectory()) {
-    fs.readdirSync(path).forEach(function(file, index){
-      var curPath = path + "/" + file;
+    fs.readdirSync(path).forEach((file, index) => {
+      const curPath = `${path}/${file}`;
 
       if (fs.lstatSync(curPath).isDirectory()) { // recurse
         deleteFolderRecursive(curPath);
@@ -17,12 +17,12 @@ function deleteFolderRecursive(path) {
   }
   console.log(`Recreating directory "${path}"...`);
   fs.mkdirSync(path);
-};
+}
 
-console.log("Cleaning working tree...");
+console.log('Cleaning working tree...');
 
-deleteFolderRecursive("./cypress/reports");
-deleteFolderRecursive("./cypress/videos");
-deleteFolderRecursive("./cypress/screenshots");
+deleteFolderRecursive('./cypress/reports');
+deleteFolderRecursive('./cypress/videos');
+deleteFolderRecursive('./cypress/screenshots');
 
-console.log("Successfully cleaned working tree!");
+console.log('Successfully cleaned working tree!');

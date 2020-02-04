@@ -16,7 +16,7 @@ class ProductDetailsWidget extends AbstractWidget {
   getName = () => 'Product Details';
 
   isInfoCorrect = (productName: string, callNumber: string) => {
-    cy.longWait();
+    cy.mediumWait();
     cy.get(`div[class="tab-dialog-button active"]>div:contains(${callNumber} - ${productName})`)
       .should('exist');
     cy.get(`div.mashroom-portal-tabify-app-wrapper>div[class="mashroom-portal-app-wrapper portal-app-product-details hide-header"]:contains(${callNumber})`)
@@ -49,6 +49,8 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   checkFoundedProducts = (number: string, table?: Object) => {
+    cy.get('div.floating-input').click();
+    cy.get('div[role="menuitem"]:contains(Name + SidID)').click();
     const numberOfProducts = Number(number);
     if (numberOfProducts === 0) {
       cy.get(`span#${this.elements['Search Count']}`)
@@ -74,6 +76,8 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   openSubproductInfo = (subproductName) => {
+    cy.get('div.floating-input').click();
+    cy.get('div[role="menuitem"]:contains(Name + SidID)').click();
     cy.get(`span:contains(${subproductName})`)
       .click({ force: true });
   };

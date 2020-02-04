@@ -31,8 +31,7 @@ class GucciWorld {
     cy.shortWait();
   }
 
-  login(username: string, withCorrectPassword: boolean = true) {
-    this.openLoginForm();
+  fillLoginForm = (username: string, withCorrectPassword: boolean) => {
     cy.get('input[id=\'username\']')
       .type(username);
     if (withCorrectPassword) {
@@ -44,6 +43,16 @@ class GucciWorld {
     }
     cy.get('input[value="Log In"]')
       .click();
+  };
+
+  login(username: string, withCorrectPassword: boolean = true) {
+    this.openLoginForm();
+    this.fillLoginForm(username, withCorrectPassword);
+    cy.get('body').then(($body) => {
+      if ($body.find('input[value="Log In"]').length) {
+        this.fillLoginForm(username, withCorrectPassword);
+      }
+    });
     this.user = {
       username,
     };

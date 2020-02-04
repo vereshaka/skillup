@@ -3,6 +3,9 @@
   "watchForFileChanges": false,
   "chromeWebSecurity": false,
   "env": {
-    "portalUrl": "https://hfhs-mock.gucci-qa.at.inside"
+    "portalUrl": "https://hfhs-mock.gucci-qa.at.inside",
+    "dbUsername": "CSOF",
+    "dbPassword": "test1234!",
+    "dbConnectionString": "vldbsqt105.at.inside:2329/CSOFD"
   }
 }

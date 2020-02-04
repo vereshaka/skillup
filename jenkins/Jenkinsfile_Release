@@ -23,14 +23,14 @@ Variable 'projects' contains list of widgets that can be released.
 def projects = [
     "microfrontend-hfhs-processing" : "",
     "microfrontend-hfhs-changeownership" : "",
-    "microfrontend-product-details" : "",
+    "microfrontend-hfhs-product-details" : "",
     "microfrontend-hfhs-base" : "",
     "microfrontend-hfhs-connector" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
-    "product-move" : "",
-    "search-product" : "",
+    "microfrontend-hfhs-product-move" : "",
+    "microfrontend-hfhs-search-product" : "",
 ];
 
 Boolean isReleaseNeeded(String packageVersion){
@@ -118,6 +118,85 @@ Boolean isPluggableModule(String packageName){
     else return false
 }
 
+String reportWidgetStatus(String widget_name, String widget_version, String release_version){
+    def name = widget_name
+    def prev_version = widget_version
+    def curr_version = widget_version
+    def highlight = ""
+    if (widget_version == ""){
+        highlight = 'bgcolor="#61f14d"'
+        prev_version = "-"
+        curr_version = release_version
+    }
+    else{
+        if (isReleaseNeeded(widget_version) == true) {
+            highlight = 'bgcolor="#f5e629"'
+            curr_version = release_version
+        }
+    }
+    def row = """
+    <tr ${highlight}>
+      <td>${name}</td>
+      <td>${prev_version}</td>
+      <td>${curr_version}</td>
+    </tr>
+    """
+    return row
+}
+
+String report(Map projects, String release_version){
+    def widget_status = ""
+    projects.each { k,v ->
+      widget_status = widget_status + "\n" + reportWidgetStatus(k,v,release_version)
+    }
+    Date date = new Date()
+    String datePart = date.format("dd.MM.yyyy")
+    String timePart = date.format("HH:mm")
+
+    def build_time = timePart + " " + datePart
+    def sheet = """
+    <!DOCTYPE html>
+    <html lang="en" dir="ltr">
+      <head>
+        <meta charset="utf-8">
+        <title>HFHS Release ${release_version}</title>
+      </head>
+      <body style="font-family:system-ui,sans-serif;">
+        <h1 align="center">HFHS release report</h1>
+        <div class="body">
+         <table border="0" width="100%">
+           <tr>
+             <td width="10%"></td>
+             <td>
+               <p>
+               Congratulations! <br/>
+               HFHS release version ${release_version} has been done successfully. Here is the list of widgets: <br/>
+               </p>
+               <p>
+               <table width="100%" border="0">
+                 <tr>
+                   <th width='50%'>Name</th>
+                   <th>Previous version</th>
+                   <th>Current version</th>
+                 </tr>
+                 ${widget_status}
+               </table>
+               </p>
+             </td>
+             <td width="10%"></td>
+           </tr>
+         </table>
+        </div>
+        <div class="footer">
+          <hr/>
+          <p style="font-size: 8pt; text-align:center"> This report was generated automatically at ${build_time} </p>
+        </div>
+      </body>
+    </html>
+    """
+    return sheet
+}
+
 pipeline{
     agent{
         node{
@@ -174,7 +253,7 @@ pipeline{
                                                     description: "Make release of Base",
                                                     name: 'isBaseRelease'),
                                         booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
-                                                    description: "Make release of Common UI",
+                                                    description: "Make release of HFHS Connector",
                                                     name: 'isConnectorRelease'),
                                         string(defaultValue: "$base_ver",
                                             description: 'with version',
@@ -474,13 +553,13 @@ pipeline{
                 stage('Widget: Product Details'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-product-details" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-product-details" }?.value) == true
                         }
                     }
                     stages{
                         stage('Prepare'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -490,7 +569,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
@@ -501,7 +580,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("microfrontend-product-details/"){
+                                dir("microfrontend-hfhs-product-details/"){
                                     sh 'git status'
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-product-details.git"
@@ -520,13 +599,13 @@ pipeline{
                 stage('Widget: Search Product'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "search-product" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-search-product" }?.value) == true
                         }
                     }
                     stages{
                         stage('Install deps'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -536,7 +615,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
                                         sh 'git checkout package-lock.json'
@@ -547,7 +626,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("search-product/"){
+                                dir("microfrontend-hfhs-search-product/"){
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git"
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git --tags"
@@ -565,13 +644,13 @@ pipeline{
                 stage('Widget: Product Move'){
                     when{
                         expression{
-                            isReleaseNeeded(projects.find{it.key == "product-move" }?.value) == true
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-product-move" }?.value) == true
                         }
                     }
                     stages{
                         stage('Install deps'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm i'
@@ -581,7 +660,7 @@ pipeline{
                         }
                         stage('Build'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     sh 'git status'
                                     nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                                         sh 'npm run build'
@@ -592,7 +671,7 @@ pipeline{
                         }
                         stage('Publish'){
                             steps{
-                                dir("product-move/"){
+                                dir("microfrontend-hfhs-product-move/"){
                                     withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                                         sh 'git status'
                                         sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git"
@@ -748,20 +827,22 @@ pipeline{
     }
     post{
         success{
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-processing:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-changeownership:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-detail:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-details:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-search-product:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-product-move:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-toolbar:latest | tail -n +2 | awk '{print \$3}') -f || true"
-            sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/microfrontend-hfhs-business-transaction-history:latest | tail -n +2 | awk '{print \$3}') -f || true"
+            script{
+                projects.each{ k,v ->
+                    sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/${k}:latest | tail -n +2 | awk '{print \$3}') -f || true"
+                }
+            }
+            emailext to: INFORM_ABOUT_FAILURE,
+                     subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been finished",
+                     body: report(projects, base_build['baseVersion']),
+                     attachLog: false,
+                     mimeType: 'text/html'
         }
         failure {
             emailext to: INFORM_ABOUT_FAILURE,
-                    subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been failed",
-                    body: "Please go to ${BUILD_URL} and verify the build",
-                    attachLog: true
+                     subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been failed",
+                     body: "Please go to ${BUILD_URL} and verify the build",
+                     attachLog: true
         }
     }
 }
