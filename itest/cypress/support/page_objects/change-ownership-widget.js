@@ -117,6 +117,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
     cy.mediumWait();
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-change-ownership hide-header"]').should('exist');
   };
+
+  selectDiscount = (discount) => {
+    cy.get('div[class="gucci-common-select-field-button"]:eq(0)').click();
+    cy.get('div.gucci-common-select-field-drop-down-wrapper').find(`span:contains(${discount})`).click();
+  };
 }
 
 export default ChangeOwnershipWidget;
