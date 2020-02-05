@@ -95,6 +95,7 @@ class GucciWorld {
     }
     this.cockpit = this.getCockpitByName(name);
     this.cockpit.open();
+    cy.normalWait();
   }
 
   isCurrentCockpit(name: string) {

@@ -154,7 +154,7 @@ class SearchProductWidget extends AbstractWidget {
     cy.normalWait();
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-search-product"]').should('exist');
     cy.get('div[class="mashroom-portal-app-loading-error"]').should('not.exist');
-};
+  };
 }
 
 export default SearchProductWidget;

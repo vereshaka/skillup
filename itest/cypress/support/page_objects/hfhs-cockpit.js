@@ -7,6 +7,14 @@ import BusinessTransactionHistoryWidget from './business-transaction-history-wid
 import ChangeOwnershipWidget from './change-ownership-widget';
 
 class HfhsCockpit extends AbstractCockpit {
+  initElements() {
+    this.elements = {
+      'Product Move': 'openPM',
+      'Change Ownership': 'openCO',
+      'Business Transaction History': 'openBT',
+    };
+  }
+
   toolbar: HfhsToolbarWidget = new HfhsToolbarWidget();
 
   businessTransactionHistory: BusinessTransactionHistoryWidget = new BusinessTransactionHistoryWidget();
@@ -36,8 +44,9 @@ class HfhsCockpit extends AbstractCockpit {
     }
   };
 
-  checkProductMoveButtonExistence = () => {
-    cy.get('button#openPM');
+  checkButtonExistence = (buttonName) => {
+    cy.shortWait();
+    cy.get(`button[id='${this.elements[buttonName]}']`).should('not.be.disabled');
   };
 }
 

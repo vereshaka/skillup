@@ -26,10 +26,10 @@ Then(/'(.*)' is (not |)available/,
       gucciWorld.isCockpitExist(cockpitName);
     }
   });
-Then(/^I should see active Product Move button$/,
-  () => {
+Then(/^I should see active '(Product Move|Change Ownership|Business Transaction History)' button$/,
+  (buttonName) => {
     (gucciWorld.getCurrentCockpit(): HfhsCockpit)
-      .checkProductMoveButtonExistence();
+      .checkButtonExistence(buttonName);
   });
 
 Then(/^business transaction history widget is displayed$/,

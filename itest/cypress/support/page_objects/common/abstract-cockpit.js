@@ -4,6 +4,16 @@ import AbstractWidget from './abstract-widget';
 class AbstractCockpit {
   currentWidget: AbstractWidget;
 
+  elements: Object;
+
+  constructor() {
+    this.initElements();
+  }
+
+  initElements() {
+    throw new Error(`Implement me: ${this.getName()}.initElements`);
+  }
+
   getName = (): string => {
     throw new Error('Implement me: getName');
   };
@@ -13,11 +23,11 @@ class AbstractCockpit {
   };
 
   open = () => {
-    cy.visit(`${Cypress.env('portalUrl')}portal/web/hfhs`);
-    // cy.get('div.menu-drawer').click();
-    // cy.get(`a:contains(${this.getName()})`).click();
-    // // TODO: yevgenyv: please check is it possible replace wait on isOpen
-    // cy.shortWait();
+    // cy.visit(`${Cypress.env('portalUrl')}portal/web/hfhs`);
+    cy.get('div.menu-drawer').click();
+    cy.get(`a:contains(${this.getName()})`).click();
+    // TODO: yevgenyv: please check is it possible replace wait on isOpen
+    cy.shortWait();
   };
 
   isOpen() {
