@@ -173,7 +173,8 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   isWidgetExist = () => {
-    cy.get('div.gucci-common-wizard').should('exist');
+    cy.mediumWait();
+    cy.get('div[class="mashroom-portal-app-wrapper portal-app-move-product hide-header"]').should('exist');
   };
 }
 

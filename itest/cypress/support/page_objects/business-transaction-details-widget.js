@@ -36,6 +36,11 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
       .find('div.title')
       .should('have.text', caption);
   };
+
+  isWidgetExist = () => {
+    cy.mediumWait();
+    cy.get('div[class="mashroom-portal-app-wrapper portal-app-business-transaction-detail hide-header"]').should('exist');
+  };
 }
 
 export default BusinessTransactionDetailsWidget;

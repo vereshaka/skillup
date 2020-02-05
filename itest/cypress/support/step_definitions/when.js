@@ -106,3 +106,9 @@ When(/click '(.*)'/, (buttonName) => {
     .getCurrentWidget(): ProductMoveWidget)
     .clickOnButton(buttonName);
 });
+When(/I open first operation from list/, () => {
+  (gucciWorld
+    .getCurrentCockpit()
+    .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
+    .openFirstOperation();
+});
