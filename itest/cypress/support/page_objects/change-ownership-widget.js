@@ -2,6 +2,7 @@ import moment from 'moment';
 import AbstractWidget from './common/abstract-widget';
 import SearchProductWidget from './search-product-widget';
 import SearchAccountWidget from './search-account-widget';
+import ProductDetailsWidget from "./product-details-widget";
 
 
 class ChangeOwnershipWidget extends AbstractWidget {
@@ -15,6 +16,16 @@ class ChangeOwnershipWidget extends AbstractWidget {
   }
 
   getName = () => 'Change Ownership';
+
+
+  isInfoCorrect = (productName: string, callNumber: string) => {
+    cy.mediumWait();
+    cy.get(`div[class="tab-dialog-button active"]>div:contains(${callNumber} - ${productName})`)
+        .should('exist');
+    cy.get(`div.mashroom-portal-tabify-app-wrapper>div[class="mashroom-portal-app-wrapper portal-app-product-details hide-header"]:contains(${callNumber})`)
+        .should('be.visible');
+  };
+
 
   specifyGroup = (name: string, group: string) => {
     cy.mediumWait();
@@ -52,6 +63,14 @@ class ChangeOwnershipWidget extends AbstractWidget {
     });
   };
 
+  searchProducts = (query: string) => {
+    cy.normalWait();
+    this.isAlreadyAdded();
+    cy.normalWait();
+    this.openDialog('Add Product');
+    new SearchProductWidget().search(query);
+  };
+
   addProducts = (query: string, table?: Object) => {
     cy.normalWait();
     this.isAlreadyAdded();
@@ -66,10 +85,39 @@ class ChangeOwnershipWidget extends AbstractWidget {
     new SearchAccountWidget().addAccount(account, query);
   };
 
+  isErrorMessageNotExist = () => {
+    cy.get('span.RestrMessage').should('not.exist');
+  };
+
+  isErrorMessageExist = (message: string) => {
+    cy.get('span.RestrMessage').should('exist');
+    cy.get('span.RestrMessage>span')
+        .each(($el) => {
+          cy.get($el)
+              .should('have.text', message);
+        });
+  };
   isPageOpened = () => {
     cy.get(`button[id="${this.elements['Next Button']}"]`).click();
     cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
   };
+
+  isSelectedAccountsCorrectt = (table:Object) => {
+ let { length } = table.hashes();
+    length = Number(length);
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < length; i++) {
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].Product).should('exist');
+      cy.get(`div[class="ProductsWrapper "]>div:eq(${i})>div`).contains(table.hashes()[i].Subscription).should('exist');
+      if (table.hashes()[i].LockedOrders === '') {
+        cy.get('div.OrderBlock').should('not.exist');
+      } else {
+        // Do nothing
+      }
+    }
+
+  };
+
 
   isSelectedAccountsCorrect = (table:Object) => {
     let { length } = table.hashes();
@@ -85,7 +133,6 @@ class ChangeOwnershipWidget extends AbstractWidget {
       }
     }
   };
-
   isTargetAccountCorrect = (table: Object) => {
     table.hashes().forEach((row) => {
       cy.get(`div.Flex>div.Flex:contains(${row.AccountNumber})`).should('exist');
@@ -97,6 +144,27 @@ class ChangeOwnershipWidget extends AbstractWidget {
       }
     });
   };
+
+
+  openProductInfo = (productName: string, callNumber:string, group: string) => {
+    cy.get('body')
+        .then(($body) => {
+          if ($body.find(`span[id="${this.elements['Exclude Invalid Products']}"]`).length) {
+            cy.get(`span#${this.elements['Exclude Invalid Products']}`)
+                .click();
+          }
+        });
+    cy.get(`div[class="gucci-common-expandable-panel active"]:contains("${group}")`).as('searchableGroup');
+    cy.get('@searchableGroup').find(`div:contains(${productName}${callNumber})>a:contains(${productName})`).click();
+    this.currentWidget = new ProductDetailsWidget();
+    cy.normalWait();
+  };
+
+  isWidgetExist = () => {
+    cy.mediumWait();
+    cy.get('div[class="mashroom-portal-app-wrapper portal-app-change-ownership hide-header"]').should('exist');
+  };
+
 
   isDateCorrect = (date:string) => {
     if (date === 'now') {
@@ -111,11 +179,6 @@ class ChangeOwnershipWidget extends AbstractWidget {
     } else {
       cy.get(`input[id='${this.elements['Date Picker']}']`).clear().type(date).type('{enter}');
     }
-  };
-
-  isWidgetExist = () => {
-    cy.mediumWait();
-    cy.get('div[class="mashroom-portal-app-wrapper portal-app-change-ownership hide-header"]').should('exist');
   };
 }
 

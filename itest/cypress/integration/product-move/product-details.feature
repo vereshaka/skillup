@@ -8,6 +8,16 @@ Feature: Product Details
     When I click on 'A1 Kombi' product with '43/9740/11183504' call number from PRI Group
     Then I should see 'A1 Kombi' with '43/9740/11183504' call number product details
 
+
+  #@focus
+  #Scenario: Show info about product - Change Ownership
+   # Given As hfhs-user2 with permission 'hfhs-user'
+    #And open 'Change Ownership' widget from 'HFHS Cockpit'
+    #And add all products founded by 'KDNR:108033579'
+    #When I click on 'A1 Kombi' COS product with '43/9740/11183504' call number from PRI Group
+    #Then I should see 'A1 Kombi' with '43/9740/11183504' call number product details
+
+
   @focus
   Scenario: Collapse product structure
     Given As hfhs-user2 with permission 'hfhs-user'

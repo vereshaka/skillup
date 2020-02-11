@@ -131,6 +131,12 @@ Then(/The following products should be selected/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isSelectedAccountsCorrect(table);
 });
+
+Then(/The following products COS should be selected/, (table) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+      .isSelectedAccountsCorrectt(table);
+});
+
 Then(/latest business transaction's info is displayed in new tab/, (table: Object) => {
   (gucciWorld
     .getCurrentCockpit()
@@ -140,6 +146,11 @@ Then(/latest business transaction's info is displayed in new tab/, (table: Objec
 Then(/I should see '(.*)' with '(.*)' call number product details/, (productName, callNumber) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .isInfoCorrect(productName, callNumber);
+    });
+
+Then(/I should see '(.*)' COS with '(.*)' call number product details/, (productName, callNumber) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ChangeOwnershipWidget)
+      .isInfoCorrect(productName, callNumber);
 });
 Then(/error (|'(.*)' )should (|not )be displayed/, (message, existOrNo) => {
   if (existOrNo === 'not ') {
@@ -151,6 +162,8 @@ Then(/error (|'(.*)' )should (|not )be displayed/, (message, existOrNo) => {
       .isErrorMessageExist(message);
   }
 });
+
+
 Then(/'(.*)' message should be displayed/, (message: string) => {
   (gucciWorld
     .getCurrentCockpit()

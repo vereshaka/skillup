@@ -1,8 +1,8 @@
-Feature: Search Product Widget: Elements Check
+Feature: Search Product Widget: Elements Check COS
 
   Background:
     Given As hfhs-user2 with permission 'hfhs-user'
-    And open 'Product Move' widget from 'HFHS Cockpit'
+    And open 'Change Ownership' widget from 'HFHS Cockpit'
 
   Scenario: First position
     Given open 'Add Product' dialog
@@ -54,5 +54,4 @@ Feature: Search Product Widget: Elements Check
       | ACC: 20000974688a | You have incorrect value 20000974688a in prefix ACC: Account Number can be number of 12 digits. Arrangement Number should conform to the following format AXXXXXXXXX,XXXXX where X is digit|
       | ACC:  2000097468  | You have incorrect value 2000097468 in prefix ACC: Account Number can be number of 12 digits. Arrangement Number should conform to the following format AXXXXXXXXX,XXXXX where X is digit|
       # | SUB: 8443823      | Unexpected technical error: CUSTINV-999 - Unerwarteter technischer Fehler im Inventar. Zusätzliche Information: Entity Subscription with id 8443823 not found|
-       |TSUB: TS74144 && TSTYPE | When searching by TSUB are mandatory field/s - TSTYPE|
-      |KDNR: A1 Festnetz && KDNR:100200108 |   You have duplicated fields - KDNR|
+      |TSUB: TS74144 && TSTYPE | When searching by TSUB are mandatory field/s - TSTYPE|

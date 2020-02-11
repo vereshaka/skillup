@@ -97,6 +97,10 @@ Given(/^I open GUCCI Portal as (.*)$/,
 Given(/search products by '(.*)'/, (query) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).searchProducts(query);
 });
+
+Given(/search products COS by '(.*)'/, (query) => {
+    (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).searchProducts(query);
+});
 Given(/found customer should have contract capable equals '(.*)'/, (value) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
     .checkContractCapable(value);

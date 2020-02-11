@@ -11,6 +11,12 @@
     "test:open:int": "./node_modules/.bin/cypress open --env configFile=integration",
     "test:open:dev": "./node_modules/.bin/cypress open --env configFile=development",
     "test:open:mock": "./node_modules/.bin/cypress open --env configFile=hfhsmock",
+    "test:no_proxy": "  set NO_PROXY=hfhs-mock.gucci-qa.at.inside,dev.gucci-qa.at.inside,int.gucci-qa.at.inside,auth.gucci-qa.at.inside,ppp.test.a1.net,apple && npm run test:open:mock",
+    "test:no_proxyd": "  set NO_PROXY=hfhs-mock.gucci-qa.at.inside,dev.gucci-qa.at.inside,int.gucci-qa.at.inside,auth.gucci-qa.at.inside,ppp.test.a1.net,apple && npm run test:open:dev",
+    "test:no_proxyi": "  set NO_PROXY=hfhs-mock.gucci-qa.at.inside,dev.gucci-qa.at.inside,int.gucci-qa.at.inside,auth.gucci-qa.at.inside,ppp.test.a1.net,int.gucci-qa.at.inside/portal/web/hfhs,apple && npm run test:open:int",
+    "test:run:dev": "./node_modules/.bin/cypress run --env configFile=development",
+    "test:run:mock": "./node_modules/.bin/cypress run --env configFile=hfhsmock",
+    "test:no_proxy2": "set NO_PROXY=hfhs-mock.gucci-qa.at.inside,dev.gucci-qa.at.inside,int.gucci-qa.at.inside,auth.gucci-qa.at.inside,ppp.test.a1.net,apple && npm run test:run:mock",
     "lint": "eslint --ext .js --fix ./cypress",
     "build": "npm run clean && npm run test:run & npm run cucumber:reporter",
     "flow": "flow check"

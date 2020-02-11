@@ -66,6 +66,13 @@ When(/I click on '(.*)' product with '(.*)' call number from (.*[A-Z]) Group/, (
     .getCurrentWidget(): ProductMoveWidget)
     .openProductInfo(productName, callNumber, group);
 });
+
+When(/I click on '(.*)' COS product with '(.*)' call number from (.*[A-Z]) Group/, (productName, callNumber, group) => {
+  (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget(): ChangeOwnershipWidget)
+      .openProductInfo(productName, callNumber, group);
+});
+
 When(/^add all products$/,
   () => {
     (gucciWorld.getCurrentCockpit()
