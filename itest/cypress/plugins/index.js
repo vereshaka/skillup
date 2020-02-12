@@ -20,6 +20,7 @@ module.exports = (on, config) => {
   on('before:browser:launch', (browser = {}, args) => {
     if (browser.name === 'chrome' || browser.name === 'chromium') {
       args.push('--incognito');
+      // args.push('--lang=de');
     }
     return args;
   });
