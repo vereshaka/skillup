@@ -33,6 +33,7 @@ class SearchAccountWidget extends AbstractWidget {
   };
 
   addAccount = (account: string, query: string) => {
+    cy.mediumWait();
     this.clearSearch();
     this.search(query);
     this.selectAccount(account);
