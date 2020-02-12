@@ -85,6 +85,7 @@ class SearchProductWidget extends AbstractWidget {
   close = () => {
     cy.get('button[id="process-button"]')
       .click();
+    cy.mediumWait();
   };
 
   searchAndAdd = (query: string, table?: Object) => {

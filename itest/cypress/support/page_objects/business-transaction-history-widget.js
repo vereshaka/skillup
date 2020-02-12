@@ -146,6 +146,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
         .get('a[href="#selectBusinessTransactionItem"]')
         .contains(id)
         .click();
+      cy.mediumWait();
 
       this.currentDialog = new BusinessTransactionDetailsWidget();
     } else {

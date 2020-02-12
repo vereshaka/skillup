@@ -18,6 +18,7 @@ class HfhsToolbarWidget extends AbstractWidget {
       if ($body.find(`span:contains(${buttonCaption})`).length) {
         cy.get(`button[id=${this.elements[buttonCaption]}]`)
           .click();
+        cy.mediumWait();
       } else {
         throw new Error(`${buttonCaption} not found`);
       }
