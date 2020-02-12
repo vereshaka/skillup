@@ -98,6 +98,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
   };
 
   filterTransactionList = (affiliation: string, status: string, date: string) => {
+    cy.mediumWait();
     this.selectAffiliationValue(affiliation);
     cy.normalWait();
     this.selectStatusValue(status);
@@ -146,6 +147,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
         .get('a[href="#selectBusinessTransactionItem"]')
         .contains(id)
         .click();
+      cy.mediumWait();
 
       this.currentDialog = new BusinessTransactionDetailsWidget();
     } else {
