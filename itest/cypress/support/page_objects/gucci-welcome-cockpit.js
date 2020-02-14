@@ -1,6 +1,7 @@
 // @flow
 
 import AbstractCockpit from './common/abstract-cockpit';
+import { getValue } from './utils/config';
 
 class GucciWelcomeCockpit extends AbstractCockpit {
   initElements() {
@@ -9,7 +10,7 @@ class GucciWelcomeCockpit extends AbstractCockpit {
 
   getName = (): string => 'Welcome';
 
-  getTitle = (): string => 'Welcome';
+  getTitle = (): string => getValue('Welcome');
 }
 
 export default GucciWelcomeCockpit;

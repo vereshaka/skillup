@@ -128,15 +128,16 @@ class ChangeOwnershipWidget extends AbstractWidget {
     cy.get('div.gucci-common-select-field-drop-down-wrapper').find(`span:contains(${getValue(discount)})`).click();
   };
 
-  isTransactionFeeCorrect = (transactionFee: Number) => {
-    const enTransactionFee = transactionFee.toLocaleString('en-EN', { minimumFractionDigits: 2 });
-    const deTransactionFee = transactionFee.toLocaleString('de-DE', { minimumFractionDigits: 2 });
+  isTransactionFeeCorrect = (transactionFee: string) => {
+    const fee = Number(transactionFee);
+    const enTransactionFee = fee.toLocaleString('en-EN', { minimumFractionDigits: 2 });
+    const deTransactionFee = fee.toLocaleString('de-DE', { minimumFractionDigits: 2 });
     switch (Cypress.env('localisation')) {
       case 'EN':
-        cy.get(`div[class="TransactionFeeTitle"]:contains(${enTransactionFee})`).should('exist');
+        cy.get('div[class="TransactionFeeTitle"]').should('have.text', `Transaction fee €${enTransactionFee}`);
         break;
       case 'DE':
-        cy.get(`div[class="TransactionFeeTitle"]:contains(${deTransactionFee})`).should('exist');
+        cy.get('div[class="TransactionFeeTitle"]').should('have.text', `ermitteltes Entgelt ${deTransactionFee}\u00a0€`);
         break;
       default:
         throw new Error(`Unsupported localisation. Name: ${Cypress.env('localisation')}`);

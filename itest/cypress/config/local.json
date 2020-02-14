@@ -7,6 +7,6 @@
     "dbUsername": "csof",
     "dbPassword": "csof",
     "dbConnectionString": "db01.sytoss.intra:1521/sytoss03",
-    "localisation": "DE"
+    "localisation": "EN"
   }
 }

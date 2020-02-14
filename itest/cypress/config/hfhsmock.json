@@ -7,6 +7,6 @@
     "dbUsername": "CSOF",
     "dbPassword": "test1234!",
     "dbConnectionString": "vldbsqt105.at.inside:2329/CSOFD",
-    "localisation": "DE"
+    "localisation": "EN"
   }
 }

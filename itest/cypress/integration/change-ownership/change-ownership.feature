@@ -1,6 +1,6 @@
 Feature: Change Ownership
 
-
+  @focus
   Scenario: Simple success flow: Order Validation
     Given I open GUCCI Portal as hfhs-user2
     And open 'Change Ownership' widget from 'HFHS Cockpit'
@@ -26,5 +26,5 @@ Feature: Change Ownership
       | A1 Kombi | 43/9740/11183504 | A362217278    | PRI         |
     And specify 'A362259643,00001' account founded by 'KDNR:105475536' for 'A362217278 PRI' group
     When Order validation step is open
-    And Transaction fee discount is 'no discount'
-    Then Transaction fee should be '47.00'
+    And Transaction fee discount is '50% discount'
+    Then Transaction fee should be '23.50'

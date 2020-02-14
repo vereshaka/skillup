@@ -1,7 +1,7 @@
 // @flow
 import type { user } from './types/user';
 import {
-  getPassword, getValue,
+  getPassword,
 } from '../utils/config';
 import AbstractCockpit from './abstract-cockpit';
 import HfhsCockpit from '../hfhs-cockpit';
@@ -25,10 +25,6 @@ class GucciWorld {
   getPasswordFor = (username: string): string => username;
 
   openLoginForm() {
-    const number = 47.00;
-    cy.log('EN', number.toLocaleString('en-EN', { minimumFractionDigits: 2 }));
-    cy.log('DE', number.toLocaleString('de-DE', { minimumFractionDigits: 2 }));
-    cy.log('DE', getValue('50% discount'));
     this.visitPortal();
     cy.shortWait();
     this.logout();

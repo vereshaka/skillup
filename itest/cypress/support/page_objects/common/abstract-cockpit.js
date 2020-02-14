@@ -25,7 +25,7 @@ class AbstractCockpit {
   open = () => {
     // cy.visit(`${Cypress.env('portalUrl')}portal/web/hfhs`);
     cy.get('div.menu-drawer').click();
-    cy.get(`a:contains(${this.getName()})`).click();
+    cy.get(`a:contains(${this.getTitle()})`).click();
     // TODO: yevgenyv: please check is it possible replace wait on isOpen
     cy.shortWait();
   };
