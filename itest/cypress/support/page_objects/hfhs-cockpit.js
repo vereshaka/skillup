@@ -5,6 +5,7 @@ import HfhsToolbarWidget from './hfhs-toolbar-widget';
 import ProductMoveWidget from './product-move-widget';
 import BusinessTransactionHistoryWidget from './business-transaction-history-widget';
 import ChangeOwnershipWidget from './change-ownership-widget';
+import { getValue } from './utils/config';
 
 class HfhsCockpit extends AbstractCockpit {
   initElements() {
@@ -21,7 +22,7 @@ class HfhsCockpit extends AbstractCockpit {
 
   getName = (): string => 'HFHS Cockpit';
 
-  getTitle = (): string => 'HFHS Cockpit';
+  getTitle = (): string => getValue('HFHS Cockpit');
 
   getBusinessTransactionHistoryWidget = () => this.businessTransactionHistory;
 

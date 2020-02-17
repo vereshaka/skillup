@@ -246,3 +246,7 @@ Then(/Business transaction details widget should exist/, () => {
     .getCurrentDialog(): BusinessTransactionDetailsWidget)
     .isWidgetExist();
 });
+Then(/Transaction fee should be '(.*)'/, (transactionFee) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+    .isTransactionFeeCorrect(transactionFee);
+});

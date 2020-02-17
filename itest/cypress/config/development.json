@@ -3,6 +3,7 @@
   "watchForFileChanges": false,
   "chromeWebSecurity": false,
   "env": {
-    "portalUrl": "https://dev.gucci-qa.at.inside/"
+    "portalUrl": "https://dev.gucci-qa.at.inside/",
+    "localisation": "DE"
   }
 }
