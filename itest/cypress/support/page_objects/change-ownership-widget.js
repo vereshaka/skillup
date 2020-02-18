@@ -103,7 +103,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 
   isSelectedAccountsCorrectt = (table:Object) => {
- let { length } = table.hashes();
+    let { length } = table.hashes();
     length = Number(length);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < length; i++) {
@@ -180,6 +180,17 @@ class ChangeOwnershipWidget extends AbstractWidget {
       cy.get(`input[id='${this.elements['Date Picker']}']`).clear().type(date).type('{enter}');
     }
   };
+
+  isErrorExists = (error: string) => {
+    if (error === '') {
+      cy.get('div[class="StatusMessage Error ProductItem"]>h3:contains(You have incorrect)')
+          .should('not.exist');
+    } else {
+      cy.get(`div[class="StatusMessage Error ProductItem"]>h3:contains(${error})`)
+          .should('exist');
+    }
+  };
+
 }
 
 export default ChangeOwnershipWidget;

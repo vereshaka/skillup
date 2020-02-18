@@ -24,10 +24,10 @@ Feature: Product Move
     And add products founded by 'KDNR:100668958'
       | Product                                | Subscription  |
       | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 |
-    And I specify '200007414127' account founded by 'KDNR:100134526' for 'NORM' group
+    And I specify '200004228703' account founded by 'KDNR:100134526' for 'NORM' group
     When I add another product founded by 'KDNR:100134526'
       | Product                            | Subscription |
-      | Alte ISDN Produkte, ohne Breitband | 43/463/33233 |
+      | Alte ISDN Produkte, ohne Breitband | 43/1/7692711 |
     Then The following products should be selected
       | Product                                | Subscription  | AccountNumber | AccountType | LockedOrders |
       | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 | 200000532086  | NORM        |              |
@@ -54,13 +54,12 @@ Feature: Product Move
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:102384192'
       | Product            | Subscription      |
-      | A1 Business Kombi  |  43/9740/11585900067 |
+      | A1 Business Kombi  |  43/9740/11585967 |
     And specify '200010017140' account founded by 'KDNR:109474694' for 'NORM' group
     When Order validation step is open
     Then The following source account should be selected
       | Product           | Subscription      | AccountNumber   | AccountType  | LockedOrders |
       | A1 Business Kombi | 43/9740/11585967  | 200002130173    | NORM         |              |
-
     And Effective date is 'now'
     And Target account should be
       | AccountNumber    | IBAN              | LockedOrders |
@@ -117,12 +116,12 @@ Feature: Product Move
     When Order validation step is open
     Then The following source account should be selected
       | Product                    | Subscription        | AccountNumber       | AccountType     | LockedOrders |
-      | A1 SIP Trunk Premium 15    |  43/9740/11538237   | 200008096828          | NORM             |              |
+      | A1 MPLS Access Business    |  43/9740/11431692   | 200007730806           | NORM             |              |
 
     And Effective date is 'now'
     And Target account should be
       | AccountNumber        | IBAN                       | LockedOrders |
-      | 200000097968         |                           |              |
+      | 200007730806         |                           |              |
 
 
 
@@ -175,11 +174,11 @@ Feature: Product Move
     And I specify '200004066276' account founded by 'KDNR:100100100' for 'NORM' group
     When I add another product founded by 'KDNR:100100100'
       | Product           | Subscription     |
-      | A1 Festnetz       | 43/3452/84788 |
+      | A1 Business Internet 20 Aktion          | 43/9740/11622299 |
     Then The following products should be selected
       | Product                            | Subscription  | AccountNumber | AccountType | LockedOrders |
-      | Alte ISDN Produkte, ohne Breitband | 43/2234/72286 | 200000532086  | NORM        |              |
-      | A1 Festnetz                        | 43/3452/84788 | 200004067169  | NORM        |              |
+      | Alte ISDN Produkte, ohne Breitband | 43/9740/10429317 | 200000532086  | NORM        |              |
+      |A1 Business Internet 20 Aktion                      | 43/9740/11622299 | 200010696132   | NORM        |              |
     And Target account should not be selected
     And 'Add Account' button should be active
 

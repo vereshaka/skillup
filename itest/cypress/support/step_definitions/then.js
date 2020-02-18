@@ -57,9 +57,15 @@ Then(/transaction list mode group is (not |)presented/,
   });
 
 Then(/^'(.*)' should be displayed$/, (error) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget)
     .isErrorExists(error);
 });
+
+Then(/^'(.*)' COS should be displayed$/, (error) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+      .isErrorExists(error);
+});
+
 Then(/(^\d+) element should be '(.*)'/, (index, searchItem) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
     .isSearchElementExists(index, searchItem);

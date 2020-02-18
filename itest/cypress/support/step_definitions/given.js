@@ -75,6 +75,7 @@ Given(/specify '(.*)' account founded by '(.*)' for '(.*[A-Z])' group/, (account
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
+
 Given(/^open '(.*)' dialog$/, (dialogName) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).openDialog(dialogName);
 });

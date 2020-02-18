@@ -78,7 +78,8 @@ class ProductMoveWidget extends AbstractWidget {
     new SearchAccountWidget().addAccount(account, query);
   };
 
-  isPageOpened = () => {
+
+ isPageOpened = () => {
     cy.normalWait();
     cy.get(`button[id="${this.elements['Next Button']}"]`).click();
     cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
@@ -154,6 +155,17 @@ class ProductMoveWidget extends AbstractWidget {
           .should('have.text', message);
       });
   };
+
+
+    isErrorExists = (error: string) => {
+        if (error === '') {
+            cy.get('div[class="StatusMessage Error ProductItem"]>h3:contains(You have incorrect)')
+                .should('not.exist');
+        } else {
+            cy.get(`div[class="StatusMessage Error ProductItem"]>h3:contains(${error})`)
+                .should('exist');
+        }
+    };
 
   addAnotherProduct = (query: string, table?: Object) => {
     this.openDialog('Add Product');
