@@ -3,7 +3,7 @@ import AbstractWidget from './common/abstract-widget';
 import SearchProductWidget from './search-product-widget';
 import SearchAccountWidget from './search-account-widget';
 import ProductDetailsWidget from "./product-details-widget";
-
+import { getValue } from './utils/config';
 
 class ChangeOwnershipWidget extends AbstractWidget {
   initElements() {
@@ -12,6 +12,8 @@ class ChangeOwnershipWidget extends AbstractWidget {
       'Add Account': 'CO.selectAccount.btn',
       'Next Button': 'wizard_CO.navigateNext.btn_btn',
       'Date Picker': 'CO.datepiker',
+      Cancel: 'CO.navigationCancel.btn',
+      'Confirm cancel': 'CO.confirmModal.btn',
     };
   }
 
@@ -52,12 +54,14 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 
   cancelProductMoveProcess = () => {
-    cy.get('button#wizardCancel').click();
+    cy.get(`button[id='${this.elements.Cancel}']`).click();
+    cy.shortWait();
+    cy.get(`button[id='${this.elements['Confirm cancel']}']`).click();
   };
 
   isAlreadyAdded = () => {
     cy.get('body').then(($body) => {
-      if ($body.find('div.AccountInfoTest').length || $body.find('div.ProductItemMove').length) {
+      if ($body.find('div[class="gucci-common-expandable-panel active"]').length || $body.find('div.ProductItemMove').length) {
         this.cancelProductMoveProcess();
       }
     });
@@ -72,7 +76,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 
   addProducts = (query: string, table?: Object) => {
-    cy.normalWait();
+    cy.mediumWait();
     this.isAlreadyAdded();
     cy.normalWait();
     this.openDialog('Add Product');
@@ -191,6 +195,26 @@ class ChangeOwnershipWidget extends AbstractWidget {
     }
   };
 
+  selectDiscount = (discount) => {
+    cy.get('div[class="gucci-common-select-field-button"]:eq(0)').click();
+    cy.get('div.gucci-common-select-field-drop-down-wrapper').find(`span:contains(${getValue(discount)})`).click();
+  };
+
+  isTransactionFeeCorrect = (transactionFee: string) => {
+    const fee = Number(transactionFee);
+    const enTransactionFee = fee.toLocaleString('en-EN', { minimumFractionDigits: 2 });
+    const deTransactionFee = fee.toLocaleString('de-DE', { minimumFractionDigits: 2 });
+    switch (Cypress.env('localisation')) {
+      case 'EN':
+        cy.get('div[class="TransactionFeeTitle"]').should('have.text', `Transaction fee €${enTransactionFee}`);
+        break;
+      case 'DE':
+        cy.get('div[class="TransactionFeeTitle"]').should('have.text', `ermitteltes Entgelt ${deTransactionFee}\u00a0€`);
+        break;
+      default:
+        throw new Error(`Unsupported localisation. Name: ${Cypress.env('localisation')}`);
+    }
+  };
 }
 
 export default ChangeOwnershipWidget;

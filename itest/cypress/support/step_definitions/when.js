@@ -119,3 +119,8 @@ When(/I open first operation from list/, () => {
     .getBusinessTransactionHistoryWidget(): BusinessTransactionHistoryWidget)
     .openFirstOperation();
 });
+When(/Transaction fee discount is '(no discount|50% discount|100% discount)'/, (discount) => {
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget(): ChangeOwnershipWidget)
+    .selectDiscount(discount);
+});
