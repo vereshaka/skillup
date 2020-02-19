@@ -1,7 +1,7 @@
 // @flow
 import type { user } from './types/user';
 import {
-  getPassword,
+  getPassword, getValue,
 } from '../utils/config';
 import AbstractCockpit from './abstract-cockpit';
 import HfhsCockpit from '../hfhs-cockpit';
@@ -91,6 +91,11 @@ class GucciWorld {
   };
 
   openCockpit(name: string) {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`h1:contains(${getValue('Welcome')})`).length), {
+      errorMsg: 'Welcome cockpit not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     if (this.cockpit) {
       this.cockpit.close();
     }
@@ -100,6 +105,11 @@ class GucciWorld {
   }
 
   isCurrentCockpit(name: string) {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`h1:contains(${getValue('Welcome')})`).length), {
+      errorMsg: 'Welcome cockpit not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     this.getCockpitByName(name)
       .isOpen();
   }

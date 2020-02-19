@@ -20,7 +20,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
   getName = () => 'Change Ownership';
 
   specifyGroup = (name: string, group: string) => {
-    cy.mediumWait();
+    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
+      errorMsg: 'Change Ownership not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
   };
 
@@ -58,15 +62,23 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 
   addProducts = (query: string, table?: Object) => {
-    cy.mediumWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Change Ownership not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     this.isAlreadyAdded();
-    cy.normalWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Change Ownership not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, table);
-    cy.normalWait();
   };
 
   specifyAccount = (account:string, query:string, group:string) => {
+    cy.normalWait();
     this.openDialog('Add Account', group);
     new SearchAccountWidget().addAccount(account, query);
   };

@@ -14,13 +14,14 @@ class ProductMoveWidget extends AbstractWidget {
       'Exclude Invalid Products': 'PM.excludeAllWarnProducts.btn',
       'Date Picker': 'PM.datepiker',
       'Previous Button': 'wizard_PM.previous.btn_btn',
+      Cancel: 'PM.navigationCancel.btn',
+      'Confirm cancel': 'PM.confirmModal.btn',
     };
   }
 
   getName = () => 'Product Move';
 
   specifyGroup = (name: string, group: string) => {
-    cy.mediumWait();
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains("${group}Products")`).as('searchableGroup');
     cy.get('@searchableGroup').find(`div[id="${this.elements[name]}"]`).click();
   };
@@ -29,7 +30,6 @@ class ProductMoveWidget extends AbstractWidget {
     switch (name) {
       case 'Add Product':
         cy.get(`span[id="${this.elements[name]}"]`).click({ force: true });
-        cy.longWait();
         this.currentDialog = new SearchProductWidget();
         break;
       case 'Add Account':
@@ -46,34 +46,58 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   cancelProductMoveProcess = () => {
-    cy.get('button#wizardCancel').click();
+    cy.get(`button[id='${this.elements.Cancel}']`).click();
+    cy.shortWait();
+    cy.get(`button[id='${this.elements['Confirm cancel']}']`).click();
   };
 
   isAlreadyAdded = () => {
     cy.get('body').then(($body) => {
-      if ($body.find('div.AccountInfoTest').length || $body.find('div.ProductItemMove').length) {
+      if ($body.find('div[class="gucci-common-expandable-panel active"]').length || $body.find('div.ProductItemMove').length) {
         this.cancelProductMoveProcess();
       }
     });
   };
 
   addProducts = (query: string, table?: Object) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     cy.normalWait();
     this.isAlreadyAdded();
-    cy.normalWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     this.openDialog('Add Product');
     new SearchProductWidget().searchAndAdd(query, table);
   };
 
   searchProducts = (query: string) => {
-    cy.normalWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     this.isAlreadyAdded();
-    cy.normalWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     this.openDialog('Add Product');
     new SearchProductWidget().search(query);
   };
 
   specifyAccount = (account:string, query:string, group:string) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`div[id="${this.elements['Add Account']}"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     this.openDialog('Add Account', group);
     new SearchAccountWidget().addAccount(account, query);
   };

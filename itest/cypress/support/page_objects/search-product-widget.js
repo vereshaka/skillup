@@ -41,7 +41,6 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   clearSearch = () => {
-    cy.normalWait();
     cy.get(`input[id="${this.elements['Search input']}"]`)
       .clear();
     cy.shortWait();
@@ -53,7 +52,11 @@ class SearchProductWidget extends AbstractWidget {
       .type(query);
     cy.get(`button[id="${this.elements['Search run']}"]`)
       .click();
-    cy.longWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
+      errorMsg: 'Products not loaded',
+      timeout: 10000,
+      interval: 1000,
+    });
   };
 
   isSearchElementExists = (index: string, searchItem: string) => {
@@ -85,10 +88,14 @@ class SearchProductWidget extends AbstractWidget {
   close = () => {
     cy.get('button[id="process-button"]')
       .click();
-    cy.mediumWait();
   };
 
   searchAndAdd = (query: string, table?: Object) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`input[id="${this.elements['Search input']}"]`).length), {
+      errorMsg: `${this.elements['Search input']} not loaded`,
+      timeout: 20000,
+      interval: 1000,
+    });
     this.search(query);
     cy.get('div[class="StatusMessage Error ProductItem"]').should('not.exist');
     if (table) {
