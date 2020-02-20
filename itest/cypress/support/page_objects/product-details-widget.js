@@ -50,7 +50,7 @@ class ProductDetailsWidget extends AbstractWidget {
 
   checkFoundedProducts = (number: string, table?: Object) => {
     cy.get('div.floating-input').click();
-    cy.get('div[role="menuitem"]:contains(Name + SidID)').click();
+    cy.get('div[role="menuitem"]:contains(Name And SidID)').click();
     const numberOfProducts = Number(number);
     if (numberOfProducts === 0) {
       cy.get(`span#${this.elements['Search Count']}`)
@@ -77,7 +77,7 @@ class ProductDetailsWidget extends AbstractWidget {
 
   openSubproductInfo = (subproductName) => {
     cy.get('div.floating-input').click();
-    cy.get('div[role="menuitem"]:contains(Name + SidID)').click();
+    cy.get('div[role="menuitem"]:contains(Name And SidID)').click();
     cy.get(`span:contains(${subproductName})`)
       .click({ force: true });
   };

@@ -11,7 +11,12 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
   getName = (): string => 'Business Transaction Details';
 
   isInfoDisplayed = (table: Object) => {
-    cy.normalWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0
+      && $body.find('div[class="ProductItemMove BusinessTransactionInfoTitle"]').length), {
+      errorMsg: 'BTD not loaded',
+      timeout: 10000,
+      interval: 1000,
+    });
     let { length } = table.hashes();
     length = Number(length);
     for (let i = 0; i < length; i += 1) {
@@ -31,6 +36,12 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
   };
 
   isTabCaptionDisplayed = (caption: string) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0
+      && $body.find('div[class="ProductItemMove BusinessTransactionInfoTitle"]').length), {
+      errorMsg: 'BTD not loaded',
+      timeout: 10000,
+      interval: 1000,
+    });
     cy
       .get('div[class="tab-dialog-button active"]')
       .find('div.title')
@@ -38,7 +49,12 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
   };
 
   isWidgetExist = () => {
-    cy.mediumWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0
+      && $body.find('div[class="ProductItemMove BusinessTransactionInfoTitle"]').length), {
+      errorMsg: 'BTD not loaded',
+      timeout: 10000,
+      interval: 1000,
+    });
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-business-transaction-detail hide-header"]').should('exist');
   };
 }

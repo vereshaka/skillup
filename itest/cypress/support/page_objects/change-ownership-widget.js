@@ -131,7 +131,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 
   isWidgetExist = () => {
-    cy.mediumWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Change Ownership not loaded',
+      timeout: 20000,
+      interval: 1000,
+    });
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-change-ownership hide-header"]').should('exist');
   };
 

@@ -54,7 +54,7 @@ class SearchProductWidget extends AbstractWidget {
       .click();
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
       errorMsg: 'Products not loaded',
-      timeout: 10000,
+      timeout: 20000,
       interval: 1000,
     });
   };
@@ -118,7 +118,11 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   checkProductsListExistence = () => {
-    cy.mediumWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
+      errorMsg: 'Products not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get('a[href="#select-all"]').should('exist');
   };
 
@@ -159,7 +163,11 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   isSearchProductWorks = () => {
-    cy.normalWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`input[id="${this.elements['Search input']}"]`).length), {
+      errorMsg: `${this.elements['Search input']} not loaded`,
+      timeout: 20000,
+      interval: 1000,
+    });
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-search-product"]').should('exist');
     cy.get('div[class="mashroom-portal-app-loading-error"]').should('not.exist');
   };
