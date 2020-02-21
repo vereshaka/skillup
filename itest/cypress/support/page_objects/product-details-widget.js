@@ -16,7 +16,11 @@ class ProductDetailsWidget extends AbstractWidget {
   getName = () => 'Product Details';
 
   isInfoCorrect = (productName: string, callNumber: string) => {
-    cy.mediumWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="main-container"]').length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get(`div[class="tab-dialog-button active"]>div:contains(${callNumber} - ${productName})`)
       .should('exist');
     cy.get(`div.mashroom-portal-tabify-app-wrapper>div[class="mashroom-portal-app-wrapper portal-app-product-details hide-header"]:contains(${callNumber})`)
@@ -24,7 +28,11 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   clickOnStructureButton = (buttonName) => {
-    cy.normalWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="main-container"]').length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get(`span#${this.elements[buttonName]}`)
       .click();
   };
@@ -42,6 +50,11 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   search = (query: string) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="main-container"]').length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get(`span#${this.elements['Search Loupe']}`)
       .click();
     cy.get(`input#${this.elements['Search Field']}`)
@@ -76,6 +89,11 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   openSubproductInfo = (subproductName) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="main-container"]').length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get('div.floating-input').click();
     cy.get('div[role="menuitem"]:contains(Name And SidID)').click();
     cy.get(`span:contains(${subproductName})`)

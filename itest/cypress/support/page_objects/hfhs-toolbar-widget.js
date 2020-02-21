@@ -15,7 +15,7 @@ class HfhsToolbarWidget extends AbstractWidget {
   clickToolbarButton = (buttonCaption: string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`button[id=${this.elements[buttonCaption]}]`).length), {
       errorMsg: `${this.elements[buttonCaption]} not loaded`,
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     cy.get(`button[id=${this.elements[buttonCaption]}]`).click();

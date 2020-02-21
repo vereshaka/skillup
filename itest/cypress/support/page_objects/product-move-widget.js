@@ -62,14 +62,13 @@ class ProductMoveWidget extends AbstractWidget {
   addProducts = (query: string, table?: Object) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
       errorMsg: 'Product Move not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
-    cy.normalWait();
     this.isAlreadyAdded();
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
       errorMsg: 'Product Move not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     this.openDialog('Add Product');
@@ -79,13 +78,13 @@ class ProductMoveWidget extends AbstractWidget {
   searchProducts = (query: string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
       errorMsg: 'Product Move not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     this.isAlreadyAdded();
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
       errorMsg: 'Product Move not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     this.openDialog('Add Product');
@@ -95,7 +94,7 @@ class ProductMoveWidget extends AbstractWidget {
   specifyAccount = (account:string, query:string, group:string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`div[id="${this.elements['Add Account']}"]`).length), {
       errorMsg: 'Product Move not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     this.openDialog('Add Account', group);
@@ -153,6 +152,11 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   openProductInfo = (productName: string, callNumber:string, group: string) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get('body')
       .then(($body) => {
         if ($body.find(`span[id="${this.elements['Exclude Invalid Products']}"]`).length) {
@@ -163,7 +167,6 @@ class ProductMoveWidget extends AbstractWidget {
     cy.get(`div[class="gucci-common-expandable-panel active"]:contains("${group}Products")`).as('searchableGroup');
     cy.get('@searchableGroup').find(`div:contains(${productName}${callNumber})>a:contains(${productName})`).click();
     this.currentWidget = new ProductDetailsWidget();
-    cy.normalWait();
   };
 
   isErrorMessageNotExist = () => {
@@ -197,9 +200,9 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   isWidgetExist = () => {
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="mashroom-portal-app-wrapper portal-app-move-product hide-header"]').length), {
       errorMsg: 'Product Move not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-move-product hide-header"]').should('exist');

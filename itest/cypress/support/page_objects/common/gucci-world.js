@@ -93,7 +93,7 @@ class GucciWorld {
   openCockpit(name: string) {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`h1:contains(${getValue('Welcome')})`).length), {
       errorMsg: 'Welcome cockpit not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     if (this.cockpit) {
@@ -106,7 +106,7 @@ class GucciWorld {
   isCurrentCockpit(name: string) {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`h1:contains(${getValue('Welcome')})`).length), {
       errorMsg: 'Welcome cockpit not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     this.getCockpitByName(name)

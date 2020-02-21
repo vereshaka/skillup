@@ -1,7 +1,7 @@
 {
   "testFiles": "**/*.{feature,features}",
   "watchForFileChanges": false,
-  "chromeWebSecurity": false,
+  "chromeWebSecurity": true,
   "env": {
     "portalUrl": "http://gucci-portal.k8s.sytoss.intra/",
     "dbUsername": "csof",

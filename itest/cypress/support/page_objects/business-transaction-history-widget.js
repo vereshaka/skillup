@@ -100,30 +100,30 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
   filterTransactionList = (affiliation: string, status: string, date: string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="BusinessTransactionsWrapper"]').length), {
       errorMsg: 'BTH not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
       errorMsg: 'BTH not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     this.selectAffiliationValue(affiliation);
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
       errorMsg: 'BTH not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     this.selectStatusValue(status);
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
       errorMsg: 'BTH not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     this.selectDateValue(date);
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
       errorMsg: 'BTH not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     this.checkTransactionListLength();
@@ -168,7 +168,6 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
         .get('a[href="#selectBusinessTransactionItem"]')
         .contains(id)
         .click();
-      cy.mediumWait();
 
       this.currentDialog = new BusinessTransactionDetailsWidget();
     } else {
@@ -179,7 +178,7 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
   isWidgetExist = () => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="BusinessTransactionsWrapper"]').length), {
       errorMsg: 'BTH not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-business-transaction-history show-header"]').should('exist');

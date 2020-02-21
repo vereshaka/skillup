@@ -14,7 +14,7 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0
       && $body.find('div[class="ProductItemMove BusinessTransactionInfoTitle"]').length), {
       errorMsg: 'BTD not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     let { length } = table.hashes();
@@ -39,7 +39,7 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0
       && $body.find('div[class="ProductItemMove BusinessTransactionInfoTitle"]').length), {
       errorMsg: 'BTD not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     cy
@@ -52,7 +52,7 @@ class BusinessTransactionDetailsWidget extends AbstractWidget {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0
       && $body.find('div[class="ProductItemMove BusinessTransactionInfoTitle"]').length), {
       errorMsg: 'BTD not loaded',
-      timeout: 10000,
+      timeout: 30000,
       interval: 1000,
     });
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-business-transaction-detail hide-header"]').should('exist');

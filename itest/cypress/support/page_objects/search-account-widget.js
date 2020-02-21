@@ -26,7 +26,7 @@ class SearchAccountWidget extends AbstractWidget {
   selectAccount =(account: string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
       errorMsg: 'Accounts not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     cy.get('div[class="StatusMessage Error ProductItem"]').should('not.exist');
@@ -37,7 +37,7 @@ class SearchAccountWidget extends AbstractWidget {
   addAccount = (account: string, query: string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`input[id="${this.elements['Search input']}"]`).length), {
       errorMsg: `${this.elements['Search input']} not loaded`,
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     this.clearSearch();

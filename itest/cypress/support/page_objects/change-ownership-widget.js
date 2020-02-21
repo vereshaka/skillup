@@ -22,7 +22,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
   specifyGroup = (name: string, group: string) => {
     cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
       errorMsg: 'Change Ownership not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
@@ -64,13 +64,13 @@ class ChangeOwnershipWidget extends AbstractWidget {
   addProducts = (query: string, table?: Object) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
       errorMsg: 'Change Ownership not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     this.isAlreadyAdded();
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
       errorMsg: 'Change Ownership not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     this.openDialog('Add Product');
@@ -133,7 +133,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
   isWidgetExist = () => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
       errorMsg: 'Change Ownership not loaded',
-      timeout: 20000,
+      timeout: 30000,
       interval: 1000,
     });
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-change-ownership hide-header"]').should('exist');
