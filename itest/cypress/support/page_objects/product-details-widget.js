@@ -1,4 +1,5 @@
 import AbstractWidget from './common/abstract-widget';
+import { getValue } from './utils/config';
 
 class ProductDetailsWidget extends AbstractWidget {
   initElements() {
@@ -62,8 +63,6 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   checkFoundedProducts = (number: string, table?: Object) => {
-    cy.get('div.floating-input').click();
-    cy.get('div[role="menuitem"]:contains(Name And SidID)').click();
     const numberOfProducts = Number(number);
     if (numberOfProducts === 0) {
       cy.get(`span#${this.elements['Search Count']}`)
@@ -89,13 +88,6 @@ class ProductDetailsWidget extends AbstractWidget {
   };
 
   openSubproductInfo = (subproductName) => {
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="main-container"]').length), {
-      errorMsg: 'Product Move not loaded',
-      timeout: 30000,
-      interval: 1000,
-    });
-    cy.get('div.floating-input').click();
-    cy.get('div[role="menuitem"]:contains(Name And SidID)').click();
     cy.get(`span:contains(${subproductName})`)
       .click({ force: true });
   };
@@ -147,6 +139,16 @@ class ProductDetailsWidget extends AbstractWidget {
         .contains(table.hashes()[i].Value)
         .should('exist');
     }
+  };
+
+  selectMode = (mode) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="main-container"]').length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
+    cy.get('div.floating-input').click();
+    cy.get(`div[role="menuitem"]:contains(${getValue(mode)})`).click();
   };
 }
 
