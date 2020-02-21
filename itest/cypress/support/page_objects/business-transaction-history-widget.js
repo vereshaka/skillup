@@ -14,6 +14,12 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
   getName = (): string => 'Business Transaction History';
 
   isWidgetExists = () => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="BusinessTransactionsWrapper"]').length
+      && $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
+      errorMsg: 'BTH not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get('div.BusinessTransactionsWrapper');
   };
 
@@ -98,12 +104,8 @@ class BusinessTransactionHistoryWidget extends AbstractWidget {
   };
 
   filterTransactionList = (affiliation: string, status: string, date: string) => {
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="BusinessTransactionsWrapper"]').length), {
-      errorMsg: 'BTH not loaded',
-      timeout: 30000,
-      interval: 1000,
-    });
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="BusinessTransactionsWrapper"]').length
+      && $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
       errorMsg: 'BTH not loaded',
       timeout: 30000,
       interval: 1000,
