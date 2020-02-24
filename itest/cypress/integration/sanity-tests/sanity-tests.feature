@@ -67,7 +67,6 @@ Feature: Sanity Tests
   @focus
   Scenario: Business transaction details
     Given I open GUCCI Portal as hfhs-user3
-    And switch to HFHS Cockpit
     And open 'Business Transaction History' widget from 'HFHS Cockpit'
     And business transaction history widget is displayed
     And transaction list mode group is presented

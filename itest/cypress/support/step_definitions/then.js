@@ -269,3 +269,7 @@ Then(/Transaction fee should be '(.*)'/, (transactionFee) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
     .isTransactionFeeCorrect(transactionFee);
 });
+Then(/Legal Representative info should be displayed/, (table) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+    .isLegalRepresentativeDisplayed(table);
+});

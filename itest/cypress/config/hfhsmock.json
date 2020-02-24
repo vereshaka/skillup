@@ -1,7 +1,7 @@
 {
   "testFiles": "**/*.{feature,features}",
   "watchForFileChanges": false,
-  "chromeWebSecurity": false,
+  "chromeWebSecurity": true,
   "env": {
     "portalUrl": "https://hfhs-mock.gucci-qa.at.inside/",
     "dbUsername": "CSOF",

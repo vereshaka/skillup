@@ -28,3 +28,12 @@ Feature: Change Ownership
     When Order validation step is open
     And Transaction fee discount is '50% discount'
     Then Transaction fee should be '23.50'
+
+  @focus
+  Scenario: Check Legal Representative info
+    Given I open GUCCI Portal as hfhs-user2
+    And open 'Change Ownership' widget from 'HFHS Cockpit'
+    When I search products by 'KDNR:103670419'
+    Then Legal Representative info should be displayed
+      | Type       | KDNR      |
+      | Sachwalter | 109385719 |
