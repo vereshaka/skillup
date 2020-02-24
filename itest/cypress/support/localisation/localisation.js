@@ -8,6 +8,9 @@ module.exports = {
     'Change Ownership': 'Change Ownership',
     'HFHS Cockpit': 'HFHS Cockpit',
     Welcome: 'Welcome',
+    Name: 'Name',
+    SidID: 'SidID',
+    'Name And SidID': 'Name And SidID',
   },
   DE: {
     'no discount': 'Kein Rabatt',
@@ -18,5 +21,8 @@ module.exports = {
     'Change Ownership': 'Übertragung',
     'HFHS Cockpit': 'Kundenübergreifende Prozesse',
     Welcome: 'Willkommen',
+    Name: 'Name',
+    SidID: 'SidID',
+    'Name And SidID': 'Name And SidID',
   },
 };
