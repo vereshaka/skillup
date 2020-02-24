@@ -12,16 +12,6 @@ Feature: Change Ownership not allowed
     When I try to search by 'KDNR:105475536' query
     Then 'No accounts were found' COS should be displayed
 
-  @focus
-  Scenario: Simple success flow: Order Validation -NORM to PRI
-    Given As hfhs-user2 with permission 'hfhs-user'
-    And open 'Change Ownership' widget from 'HFHS Cockpit'
-    And add products founded by 'KDNR:108307073'
-      | Product                          | Subscription      |
-      | A1 Breitband Kombi inkl. Tablet  |   43/1/5952349    |
-    And open 'Add Account' dialog with 'NORM' group
-    When I try to search by 'KDNR:101310752' query
-    Then 'No accounts were found' should be displayed
 
   @focus
   Scenario: Simple success flow: Order Validation -PRI to SNW

@@ -4,6 +4,7 @@ import AbstractWidget from './common/abstract-widget';
 import SearchProductWidget from './search-product-widget';
 import SearchAccountWidget from './search-account-widget';
 import ProductDetailsWidget from './product-details-widget';
+import {getValue} from "./utils/config";
 
 class ProductMoveWidget extends AbstractWidget {
   initElements() {
@@ -25,6 +26,8 @@ class ProductMoveWidget extends AbstractWidget {
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains("${group}Products")`).as('searchableGroup');
     cy.get('@searchableGroup').find(`div[id="${this.elements[name]}"]`).click();
   };
+
+
 
   openDialog = (name: string, group?:string) => {
     switch (name) {

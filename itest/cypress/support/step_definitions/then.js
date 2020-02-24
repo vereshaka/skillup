@@ -1,5 +1,5 @@
 // @flow
-import { Then } from 'cypress-cucumber-preprocessor/steps';
+import {Then, When} from 'cypress-cucumber-preprocessor/steps';
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
 import ProductMoveWidget from '../page_objects/product-move-widget';
@@ -116,6 +116,7 @@ Then(/Effective date is '(.*)'$/, (date) => {
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
+
 Then(/Target account should be/, (table) => {
   const currentWidgetName = gucciWorld.getCurrentCockpit()
     .getCurrentWidget()

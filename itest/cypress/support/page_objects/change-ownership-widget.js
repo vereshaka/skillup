@@ -38,6 +38,12 @@ class ChangeOwnershipWidget extends AbstractWidget {
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
   };
 
+  specifyGroup2 = (name: string, group: string) => {
+    cy.mediumWait();
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div[Icon.faExclamationTriangle.fax]`);
+
+  };
+
   openDialog = (name: string, group?:string) => {
     switch (name) {
       case 'Add Product':
@@ -209,6 +215,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
   selectDiscount = (discount) => {
     cy.get('div[class="gucci-common-select-field-button"]:eq(0)').click();
     cy.get('div.gucci-common-select-field-drop-down-wrapper').find(`span:contains(${getValue(discount)})`).click();
+  };
+
+  selectCustomerCommunication = (customer) => {
+    cy.get('div[class="gucci-common-select-field-button"]:eq(1)').click();
+    cy.get('div.gucci-common-select-field-drop-down-wrapper').find(`span:contains(${getValue(customer)})`).click();
   };
 
   isTransactionFeeCorrect = (transactionFee: string) => {

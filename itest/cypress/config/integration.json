@@ -4,6 +4,6 @@
     "chromeWebSecurity": false,
     "env": {
         "portalUrl": "https://int.gucci-qa.at.inside/",
-        "localisation": "DE"
+        "localisation": "EN"
     }
 }

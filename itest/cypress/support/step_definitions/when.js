@@ -1,5 +1,5 @@
 // @flow
-import { When } from 'cypress-cucumber-preprocessor/steps';
+import {Then, When} from 'cypress-cucumber-preprocessor/steps';
 
 import gucciWorld from './hooks';
 import SearchProductWidget from '../page_objects/search-product-widget';
@@ -131,3 +131,9 @@ When(/select '(Name|SidID|Name And SidID)' mode/, (mode) => {
 When(/search products by '(.*)'/, (query) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).searchProducts(query);
 });
+When(/Transaction customer communication is '(New and Previous customer|Suppress customer letters|New customer|Previous customer)'/, (customer) => {
+  (gucciWorld.getCurrentCockpit()
+      .getCurrentWidget(): ChangeOwnershipWidget)
+      .selectCustomerCommunication(customer);
+});
+

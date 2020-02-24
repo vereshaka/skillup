@@ -12,6 +12,12 @@ module.exports = {
     SidID: 'SidID',
     'Name And SidID': 'Name And SidID',
   },
+    'New customer': 'New customer',
+    'Previous customer': 'Previous customer',
+    'New and Previous customer':'New and Previous customer',
+    'Suppress customer letters':'Suppress customer letters',
+
+      },
   DE: {
     'no discount': 'Kein Rabatt',
     '50% discount': '50% Rabatt',
