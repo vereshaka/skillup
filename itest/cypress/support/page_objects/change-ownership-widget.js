@@ -159,6 +159,22 @@ class ChangeOwnershipWidget extends AbstractWidget {
         throw new Error(`Unsupported localisation. Name: ${Cypress.env('localisation')}`);
     }
   };
+
+  searchProducts = (query: string) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
+    this.isAlreadyAdded();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
+    this.openDialog('Add Product');
+    new SearchProductWidget().search(query);
+  };
 }
 
 export default ChangeOwnershipWidget;
