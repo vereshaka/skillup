@@ -67,8 +67,7 @@ class SearchProductWidget extends AbstractWidget {
   isHistoryExists = (table: Object) => {
     let { length } = table.hashes();
     length = Number(length);
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < length; i += 1) {
       cy.get(`select[id="${this.elements.History}"]>option:eq(${i})`)
         .should('have.text', table.hashes()[i].Search);
     }
@@ -172,9 +171,14 @@ class SearchProductWidget extends AbstractWidget {
     cy.get('div[class="mashroom-portal-app-loading-error"]').should('not.exist');
   };
 
-  isLegalRepresentativeDisplayed = () => {
+  isLegalRepresentativeDisplayed = (table) => {
     cy.get('div[class="LegalRepresentativeWrapper"]').should('exist');
     cy.get('div[class="LegalRepresentative"]').should('exist');
+    let { length } = table.hashes();
+    length = Number(length);
+    for (let i = 0; i < length; i += 1) {
+      cy.get(`div[class="LegalRepresentative"]>div:eq(${i})`).should('have.text', `legal representation (${table.hashes()[i].Type}) ${table.hashes()[i].KDNR}`);
+    }
   };
 }
 

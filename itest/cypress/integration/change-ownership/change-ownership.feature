@@ -35,3 +35,5 @@ Feature: Change Ownership
     And open 'Change Ownership' widget from 'HFHS Cockpit'
     When I search products by 'KDNR:103670419'
     Then Legal Representative info should be displayed
+      | Type       | KDNR      |
+      | Sachwalter | 109385719 |
