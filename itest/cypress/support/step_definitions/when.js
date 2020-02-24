@@ -121,3 +121,6 @@ When(/select '(Name|SidID|Name And SidID)' mode/, (mode) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .selectMode(mode);
 });
+When(/search products by '(.*)'/, (query) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).searchProducts(query);
+});
