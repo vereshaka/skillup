@@ -254,3 +254,11 @@ Then(/Legal Representative info should be displayed/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
     .isLegalRepresentativeDisplayed(table);
 });
+Then(/I should see that product '(transferable|not transferable|conditionally transferable)'/, (transferability) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+    .isProductTransferable(transferability);
+});
+Then(/Select account button '(active|disabled)'/, (isActive) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+    .isSelectAccountActive(isActive);
+});

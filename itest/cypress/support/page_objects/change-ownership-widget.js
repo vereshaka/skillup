@@ -175,6 +175,40 @@ class ChangeOwnershipWidget extends AbstractWidget {
     this.openDialog('Add Product');
     new SearchProductWidget().search(query);
   };
+
+  isProductTransferable = (transferability) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('span[class="WarningWrapperCommon"]').length), {
+      errorMsg: 'Product Structure not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
+    switch (transferability) {
+      case 'transferable':
+        cy.get('div[class="ProductsWrapper "]').find('span[class="WarningWrapperCommon"]>span>span').should('have.class', 'Icon faCheck');
+        break;
+      case 'not transferable':
+        cy.get('div[class="ProductsWrapper "]').find('span[class="WarningWrapperCommon"]>span>span').should('have.class', 'Icon faExclamationTriangle');
+        break;
+      case 'conditionally transferable':
+        cy.get('div[class="ProductsWrapper "]').find('span[class="WarningWrapperCommon"]>span>span').should('have.class', 'Icon faBell');
+        break;
+      default:
+        throw new Error(`Unsupported transferability. Name: ${transferability}`);
+    }
+  };
+
+  isSelectAccountActive = (isActive) => {
+    switch (isActive) {
+      case 'active':
+        cy.get(`div[id='${this.elements['Add Account']}']`).should('not.have.class', 'disabled');
+        break;
+      case 'disabled':
+        cy.get(`div[id='${this.elements['Add Account']}']`).should('have.class', 'disabled');
+        break;
+      default:
+        throw new Error(`Unsupported status. Name: ${isActive}`);
+    }
+  };
 }
 
 export default ChangeOwnershipWidget;

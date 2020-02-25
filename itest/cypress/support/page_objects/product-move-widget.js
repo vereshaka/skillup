@@ -33,6 +33,11 @@ class ProductMoveWidget extends AbstractWidget {
         this.currentDialog = new SearchProductWidget();
         break;
       case 'Add Account':
+        cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+          errorMsg: 'Product Move not loaded',
+          timeout: 30000,
+          interval: 1000,
+        });
         if (group) {
           this.specifyGroup(name, group);
           this.currentDialog = new SearchAccountWidget();
