@@ -52,7 +52,6 @@ Feature: Product search basic check
       | Product                                    | Subscription        | AccountNumber      | AccountType | LockedOrders |
       |A1 Internet XS                              | 43/9740/11252161    |          |          |              |
 
-  @focus
   Scenario:  Search by Account -  Location ID
     Given I open GUCCI Portal as hfhs-user2
     And open 'Change Ownership' widget from 'HFHS Cockpit'

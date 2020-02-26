@@ -38,7 +38,6 @@ Feature: Change Ownership
       | AccountNumber    | IBAN                 | LockedOrders |
       | A362259643,00001 | AT752033100101121960 |              |
 
-  @focus
   Scenario: Simple success flow: Order Validation - customer communication
     Given I open GUCCI Portal as hfhs-user2
     And open 'Change Ownership' widget from 'HFHS Cockpit'

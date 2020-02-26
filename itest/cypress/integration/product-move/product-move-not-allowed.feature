@@ -34,7 +34,6 @@ Feature: Product Move not allowed
     When I try to search by 'KDNR:108894694' query
     Then 'No accounts were found' should be displayed
 
-  @focus
   Scenario: Simple success flow: Order Validation -PRI to MTA
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'

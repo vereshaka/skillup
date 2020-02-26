@@ -27,11 +27,11 @@ Feature: Product Move
     And I specify '200010017140' account founded by 'KDNR:109474694' for 'NORM' group
     When I add another product founded by 'KDNR:109474694'
       | Product                            | Subscription |
-      | A1 Business Kombi                  | 43/9740/11585967 |
+      | A1 Business Kombi                  | 43/9740/11003004 |
     Then The following products should be selected
       | Product                                | Subscription  | AccountNumber | AccountType | LockedOrders |
       | A1 Breitband Pro Business asymmetrisch | 43/2234/79160 | 200000532086  | NORM        |              |
-      | A1 Business Kombi                      | 43/9740/11585967  | 200002130173  | NORM        |              |
+      | A1 Business Kombi                      | 43/9740/11003004  | 200010017140   | NORM        |              |
     And Target account should not be selected
     And 'Add Account' button should be active
 
@@ -105,7 +105,6 @@ Feature: Product Move
 
 
 
-  @focus
   Scenario: Simple success flow: Order Validation - A1 SIP Trunk Premium 15
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
@@ -164,7 +163,6 @@ Feature: Product Move
 
 
 
-  @focus
   Scenario: Adding products into filled group
     Given I open GUCCI Portal as hfhs-user3
     And open 'Product Move' widget from 'HFHS Cockpit'

@@ -52,7 +52,8 @@ Feature: Product search basic check
       | Product                                    | Subscription        | AccountNumber      | AccountType | LockedOrders |
       |A1 Internet XS                              | 43/9740/11252161    | A363293670         | PRI         |              |
 
-  @focus
+
+
   Scenario:  Search by Account -  Location ID
     Given I open GUCCI Portal as hfhs-user2
     And open 'Product Move' widget from 'HFHS Cockpit'
@@ -98,4 +99,4 @@ Feature: Product search basic check
     And selected all products
     Then The following products should be selected
       | Product                                              | Subscription      | AccountNumber      | AccountType | LockedOrders |
-      |A1 Smart Home                                          |  BVK.71   | A361812131         | PRI        |              |
+      |A1 Smart Home                                          |  BVK.71   | A361812131                | PRI        |              |

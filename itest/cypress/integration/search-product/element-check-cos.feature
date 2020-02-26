@@ -38,20 +38,20 @@ Feature: Search Product Widget: Elements Check COS
     When Click on Help Button
     Then Help Page and Close Button should be exist
 
-  Scenario Outline: Query Errors check
-    Given open 'Add Product' dialog
-    When I try to search by '<query>' query
-    Then '<msg>' should be displayed
-
-    Examples:
-      | query             | msg                                                                                           |
-      | KDNR:1234         | You have incorrect value 1234 in prefix KDNR: Customer Number can be number of 9 digits       |
-      | KDNR:1234567890   | You have incorrect value 1234567890 in prefix KDNR: Customer Number can be number of 9 digits |
-      | KDNR:123456789    |                                                                                               |
-      | KDNR:10010010     | You have incorrect value 10010010 in prefix KDNR: Customer Number can be number of 9 digits   |
-      | KDNR: 10010010a   | You have incorrect value 10010010a in prefix KDNR: Customer Number can be number of 9 digits  |
-      # | LOK: a            | Unexpected technical error: TECHNICAL - For input string: "a"; nested exception is java.lang.NumberFormatException: For input string: "a" |
-      | ACC: 20000974688a | You have incorrect value 20000974688a in prefix ACC: Account Number can be number of 12 digits. Arrangement Number should conform to the following format AXXXXXXXXX,XXXXX where X is digit|
-      | ACC:  2000097468  | You have incorrect value 2000097468 in prefix ACC: Account Number can be number of 12 digits. Arrangement Number should conform to the following format AXXXXXXXXX,XXXXX where X is digit|
-      # | SUB: 8443823      | Unexpected technical error: CUSTINV-999 - Unerwarteter technischer Fehler im Inventar. Zusätzliche Information: Entity Subscription with id 8443823 not found|
-      |TSUB: TS74144 && TSTYPE | When searching by TSUB are mandatory field/s - TSTYPE|
+#  Scenario Outline: Query Errors check
+#    Given open 'Add Product' dialog
+#    When I try to search by '<query>' query
+#    Then '<msg>' should be displayed
+#
+#    Examples:
+#      | query             | msg                                                                                           |
+#      | KDNR:1234         | You have incorrect value 1234 in prefix KDNR: Customer Number can be number of 9 digits       |
+#      | KDNR:1234567890   | You have incorrect value 1234567890 in prefix KDNR: Customer Number can be number of 9 digits |
+#      | KDNR:123456789    |                                                                                               |
+#      | KDNR:10010010     | You have incorrect value 10010010 in prefix KDNR: Customer Number can be number of 9 digits   |
+#      | KDNR: 10010010a   | You have incorrect value 10010010a in prefix KDNR: Customer Number can be number of 9 digits  |
+#      # | LOK: a            | Unexpected technical error: TECHNICAL - For input string: "a"; nested exception is java.lang.NumberFormatException: For input string: "a" |
+#      | ACC: 20000974688a | You have incorrect value 20000974688a in prefix ACC: Account Number can be number of 12 digits. Arrangement Number should conform to the following format AXXXXXXXXX,XXXXX where X is digit|
+#      | ACC:  2000097468  | You have incorrect value 2000097468 in prefix ACC: Account Number can be number of 12 digits. Arrangement Number should conform to the following format AXXXXXXXXX,XXXXX where X is digit|
+#      # | SUB: 8443823      | Unexpected technical error: CUSTINV-999 - Unerwarteter technischer Fehler im Inventar. Zusätzliche Information: Entity Subscription with id 8443823 not found|
+#      |TSUB: TS74144 && TSTYPE | When searching by TSUB are mandatory field/s - TSTYPE|
