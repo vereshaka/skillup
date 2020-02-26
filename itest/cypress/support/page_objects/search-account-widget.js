@@ -54,6 +54,11 @@ class SearchAccountWidget extends AbstractWidget {
   };
 
   areAccountsFounded = (table: Object) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
+      errorMsg: 'Accounts not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     const { length } = table.hashes();
     cy
       .get('div#searchResult')
@@ -73,6 +78,11 @@ class SearchAccountWidget extends AbstractWidget {
   };
 
   searchAndCheck = (query: string, table: Object) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`input[id="${this.elements['Search input']}"]`).length), {
+      errorMsg: `${this.elements['Search input']} not loaded`,
+      timeout: 30000,
+      interval: 1000,
+    });
     this.isSearchDialogCorrectlyDisplayed();
     this.search(query);
     this.areAccountsFounded(table);

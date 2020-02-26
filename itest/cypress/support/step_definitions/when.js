@@ -137,3 +137,30 @@ When(/Transaction customer communication is '(New and Previous customer|Suppress
       .selectCustomerCommunication(customer);
 });
 
+When(/I add (|all )products founded by '(.*)'/, (isAll: string, query: string, table?) => {
+  const currentWidgetName = gucciWorld.getCurrentCockpit().getCurrentWidget().getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      if (isAll === 'all ') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ProductMoveWidget).addProducts(query);
+      }
+      if (isAll === '') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ProductMoveWidget).addProducts(query, table);
+      }
+      break;
+    case 'Change Ownership':
+      if (isAll === 'all ') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipWidget).addProducts(query);
+      }
+      if (isAll === '') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipWidget).addProducts(query, table);
+      }
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
+});
