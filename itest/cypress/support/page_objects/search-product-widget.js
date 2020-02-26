@@ -47,6 +47,11 @@ class SearchProductWidget extends AbstractWidget {
   };
 
   search = (query: string) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`input[id="${this.elements['Search input']}"]`).length), {
+      errorMsg: `${this.elements['Search input']} not loaded`,
+      timeout: 30000,
+      interval: 1000,
+    });
     this.clearSearch();
     cy.get(`input[id="${this.elements['Search input']}"]`)
       .type(query);
@@ -178,6 +183,27 @@ class SearchProductWidget extends AbstractWidget {
     length = Number(length);
     for (let i = 0; i < length; i += 1) {
       cy.get(`div[class="LegalRepresentative"]>div:eq(${i})`).should('have.text', `legal representation (${table.hashes()[i].Type}) ${table.hashes()[i].KDNR}`);
+    }
+  };
+
+  isProductsExist = (table) => {
+    let { length } = table.hashes();
+    length = Number(length);
+    for (let i = 0; i < length; i += 1) {
+      cy.get(`div[class="ResultItem ProductItem Active"]:eq(${i})`).find('div[class="ResultItemGroup"]>div>span:eq(0)').should('have.text', table.hashes()[i].Product);
+      cy.get(`div[class="ResultItem ProductItem Active"]:eq(${i})`).find('div[class="ResultItemGroup"]>div>span:eq(1)').should('have.text', table.hashes()[i].Subscription);
+      cy.get(`div[class="ResultItem ProductItem Active"]:eq(${i})`).find('div[class="ResultItemGroup"]>div>div>span:eq(1)').should('have.text', table.hashes()[i].AccountNumber);
+      cy.get(`div[class="ResultItem ProductItem Active"]:eq(${i})`).find('div[class="ResultItemGroup"]>div>div>span:eq(2)').should('have.text', table.hashes()[i].AccountType);
+    }
+  };
+
+  isPartiesExist = (table) => {
+    let { length } = table.hashes();
+    length = Number(length);
+    for (let i = 0; i < length; i += 1) {
+      cy.get(`div[id='customerItem${table.hashes()[i].PartyNumber}']`).find('div[class="CustomerPanelWrapper"]>div>div:eq(0)>span:eq(0)').should('have.text', table.hashes()[i].PartyName);
+      cy.get(`div[id='customerItem${table.hashes()[i].PartyNumber}']`).find('div[class="CustomerPanelWrapper"]>div>div:eq(0)>span:eq(1)').should('have.text', table.hashes()[i].PartyNumber);
+      cy.get(`div[id='customerItem${table.hashes()[i].PartyNumber}']`).find('div[class="CustomerPanelWrapper"]>div>div:eq(1)>span:eq(0)').should('have.text', table.hashes()[i].Address);
     }
   };
 }

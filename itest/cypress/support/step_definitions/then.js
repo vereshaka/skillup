@@ -262,3 +262,17 @@ Then(/Select account button '(active|disabled)'/, (isActive) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
     .isSelectAccountActive(isActive);
 });
+Then(/I should see following '(products|parties)'/, (queryType, table) => {
+  switch (queryType) {
+    case 'products':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+        .isProductsExist(table);
+      break;
+    case 'parties':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)
+        .isPartiesExist(table);
+      break;
+    default:
+      throw new Error(`Unsupported query type. Name: ${queryType}`);
+  }
+});
