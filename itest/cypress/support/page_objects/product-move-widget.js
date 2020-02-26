@@ -29,6 +29,11 @@ class ProductMoveWidget extends AbstractWidget {
   openDialog = (name: string, group?:string) => {
     switch (name) {
       case 'Add Product':
+        cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
+          errorMsg: 'Product Move not loaded',
+          timeout: 30000,
+          interval: 1000,
+        });
         cy.get(`span[id="${this.elements[name]}"]`).click({ force: true });
         this.currentDialog = new SearchProductWidget();
         break;

@@ -151,3 +151,9 @@ When(/I add (|all )products founded by '(.*)'/, (isAll: string, query: string, t
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
+When(/I search by '(.*)'/, (query) => {
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getCurrentDialog(): SearchProductWidget)
+    .search(query);
+});
