@@ -58,6 +58,11 @@ class ProductDetailsWidget extends AbstractWidget {
     });
     cy.get(`span#${this.elements['Search Loupe']}`)
       .click();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`input#${this.elements['Search Field']}[class="search-input active"]`).length), {
+      errorMsg: 'Product Move not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get(`input#${this.elements['Search Field']}`)
       .type(query);
   };
