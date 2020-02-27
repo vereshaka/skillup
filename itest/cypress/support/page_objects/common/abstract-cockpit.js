@@ -25,7 +25,12 @@ class AbstractCockpit {
   open = () => {
     // cy.visit(`${Cypress.env('portalUrl')}portal/web/hfhs`);
     cy.get('div.menu-drawer').click();
-    cy.get(`a:contains(${this.getTitle()})`).click();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find('nav[class="open"]').length), {
+      errorMsg: 'Nav Panel not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
+    cy.get(`a:contains(${this.getTitle()})`).click({force: true});
     // TODO: yevgenyv: please check is it possible replace wait on isOpen
     cy.shortWait();
   };

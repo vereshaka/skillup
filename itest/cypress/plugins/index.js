@@ -17,11 +17,14 @@ module.exports = (on, config) => {
   };
   on('file:preprocessor', webpack(options));
 
-  on('before:browser:launch', (browser = {}, args) => {
-    if (browser.name === 'chrome' || browser.name === 'chromium') {
-      args.push('--incognito');
+  on('before:browser:launch', (browser = {}, launchOptions) => {
+    if (browser.name === 'firefox') {
+      launchOptions.args.push('-private');
     }
-    return args;
+    if (browser.family === 'chromium') {
+      launchOptions.args.push('--incognito');
+    }
+    return launchOptions;
   });
   on('task', {
     'deleteById:db': async ({ id, dbParams }) => {
