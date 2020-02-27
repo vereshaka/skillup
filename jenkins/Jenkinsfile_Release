@@ -15,6 +15,7 @@ def overview = "Version proposal"
 def ver_list = ""
 def base_ver = ""
 def base_build = null
+def sanity_test_job_name = "hfhs-release-sanity-test"
 
 /* 
 Variable 'projects' contains list of widgets that can be released.
@@ -801,7 +802,6 @@ pipeline{
             }
         }
         stage("Deploy widgets to INT"){
-            //
             environment {
                 NODE_ENV = 'integration'
                 NAMESPACE = 'gucci-int'
@@ -822,7 +822,11 @@ pipeline{
                     }
                 }
             }
-            //
+        }
+        stage("Perform sanity tests"){
+            steps{
+                build job: sanity_test_job_name,  propagate: false, quietPeriod: 300
+            }
         }
     }
     post{
