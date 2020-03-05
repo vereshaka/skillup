@@ -10,7 +10,7 @@ module.exports = {
     Welcome: 'Welcome',
     Name: 'Name',
     SidID: 'SidID',
-    'Name And SidID': 'Name And SidID',
+    'Names and SidIds': 'Names and SidIds',
   },
   DE: {
     'no discount': 'Kein Rabatt',
@@ -23,6 +23,6 @@ module.exports = {
     Welcome: 'Willkommen',
     Name: 'Name',
     SidID: 'SidID',
-    'Name And SidID': 'Name And SidID',
+    'Names and SidIds': 'Namen und SidIds',
   },
 };

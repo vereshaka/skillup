@@ -34,7 +34,7 @@ Feature: Product Details
     And add all products founded by 'KDNR:108033579'
     When I click on 'A1 Kombi' product with '43/9740/11183504' call number from PRI Group
     And type 'Festnetz' at search field
-    And select 'Name And SidID' mode
+    And select 'Names and SidIds' mode
     Then 4 products should be highlighted
       | ProductName                | SidID                                   |
       | A1 Festnetz                | BPO_A1_FESTNETZ_COMPONENT_2013          |
@@ -48,7 +48,7 @@ Feature: Product Details
     And open 'Product Move' widget from 'HFHS Cockpit'
     And add all products founded by 'KDNR:108033579'
     When I click on 'A1 Kombi' product with '43/9740/11183504' call number from PRI Group
-    And select 'Name And SidID' mode
+    And select 'Names and SidIds' mode
     And click on 'A1 Online-Festplatte 1GB' subproduct
     Then Price info should be presented
       | Name                                         | Value                           | Frequency | BasePrice | Price | TaxRate |

@@ -117,7 +117,7 @@ When(/Transaction fee discount is '(no discount|50% discount|100% discount)'/, (
     .getCurrentWidget(): ChangeOwnershipWidget)
     .selectDiscount(discount);
 });
-When(/select '(Name|SidID|Name And SidID)' mode/, (mode) => {
+When(/select '(Name|SidID|Names and SidIds)' mode/, (mode) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .selectMode(mode);
 });
