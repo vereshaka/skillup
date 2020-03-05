@@ -1,0 +1,9 @@
+{
+  "testFiles": "**/*.{feature,features}",
+  "watchForFileChanges": false,
+  "chromeWebSecurity": false,
+  "env": {
+    "portalUrl": "https://int.gucci-qa.at.inside/",
+    "localisation": "EN"
+  }
+}
