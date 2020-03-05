@@ -8,7 +8,7 @@ import GucciWorld from '../page_objects/common/gucci-world';
 const gucciWorld = new GucciWorld();
 
 Before(() => {
-  if (Cypress.env('configFile') === 'hfhsmock') {
+  if (Cypress.env('mockUrl')) {
     cy.request('PUT', `${Cypress.env('mockUrl')}`, { mode: 'read_personal_only', timeout: 2000 });
   }
 });

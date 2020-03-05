@@ -7,7 +7,6 @@
     "dbUsername": "csof",
     "dbPassword": "csof",
     "dbConnectionString": "db01.sytoss.intra:1521/sytoss03",
-    "localisation": "EN",
-    "mockUrl": "http://mock.k8s.sytoss.intra/api/configure"
+    "localisation": "EN"
   }
 }
