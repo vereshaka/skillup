@@ -41,8 +41,8 @@ Boolean isReleaseNeeded(String packageVersion){
 }
 
 String Conclusion(String ver){
-    if (isReleaseNeeded(ver) == true ) return "Release Needed (" + ver + ")"
-    else return "Release Not Needed (" + ver + ")"
+    if (isReleaseNeeded(ver) == true ) return """Release needed ( ${ver} )"""
+    else return """Release NOT needed ( ${ver} )"""
 }
 
 String ComponentVersion(String name, String version){
