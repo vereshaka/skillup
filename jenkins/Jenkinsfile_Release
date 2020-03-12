@@ -198,6 +198,23 @@ String report(Map projects, String release_version){
     return sheet
 }
 
+String widgetResolution(String widget_name, String widget_version){
+    def resolution = Conclusion(widget_version)
+    return """    ${widget_name}: ${resolution}"""
+}
+
+String releaseOverview(String release_version, Map projects){
+    def widget_status = ""
+    projects.each { k,v ->
+      widget_status = widget_status + "\n" + widgetResolution(k,v)
+    }
+    def sheet = """
+Version proposal: ${release_version}
+${widget_status}
+"""
+return sheet
+}
+
 pipeline{
     agent{
         node{
@@ -235,10 +252,7 @@ pipeline{
                                 } 
                             }
                             proposal_version = getMostHighVersion(ver_list)
-                            overview = overview + ": " + proposal_version + "\n    "
-                            projects.each { k,v ->
-                                overview = overview + k + ": " + Conclusion(v) + "\n    "
-                            }
+                            overview = releaseOverview(proposal_version, projects)
                             echo "${overview}"
                             base_ver = base_ver + proposal_version
                         }
