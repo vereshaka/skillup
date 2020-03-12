@@ -218,7 +218,7 @@ pipeline{
                             sh "docker login -u ${USERNAME} -p ${PASSWORD} tasktrack.telekom.at/gucci-docker-local"
                             script{
                                 projects.each {k,v ->
-                                    sh "git clone https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${k}.git"
+                                    sh "git clone -b develop --single-branch https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${k}.git"
                                 }
                             }
                         }
