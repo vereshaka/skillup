@@ -276,3 +276,7 @@ Then(/I should see following '(products|parties)'/, (queryType, table) => {
       throw new Error(`Unsupported query type. Name: ${queryType}`);
   }
 });
+Then(/Execution Date warning should exist/, () => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+    .isWarningExist();
+});

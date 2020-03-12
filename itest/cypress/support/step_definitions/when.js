@@ -157,3 +157,7 @@ When(/I search by '(.*)'/, (query) => {
     .getCurrentDialog(): SearchProductWidget)
     .search(query);
 });
+When(/set effective date not end of month/, () => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+    .setEffectiveDate();
+});

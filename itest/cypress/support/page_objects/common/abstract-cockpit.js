@@ -30,7 +30,7 @@ class AbstractCockpit {
       timeout: 30000,
       interval: 1000,
     });
-    cy.get(`a:contains(${this.getTitle()})`).click({force: true});
+    cy.get(`a:contains(${this.getTitle()})`).click({ force: true });
     // TODO: yevgenyv: please check is it possible replace wait on isOpen
     cy.shortWait();
   };
