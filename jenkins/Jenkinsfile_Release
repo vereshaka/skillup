@@ -839,7 +839,7 @@ pipeline{
         }
         stage("Perform sanity tests"){
             steps{
-                build job: sanity_test_job_name,  propagate: false, quietPeriod: 300
+                build job: sanity_test_job_name,  propagate: false, quietPeriod: 150
             }
         }
     }
