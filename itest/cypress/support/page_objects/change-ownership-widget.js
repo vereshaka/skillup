@@ -214,6 +214,25 @@ class ChangeOwnershipWidget extends AbstractWidget {
         throw new Error(`Unsupported status. Name: ${isActive}`);
     }
   };
+
+  setEffectiveDate = () => {
+    const localDate = new Date();
+    const month = localDate.getMonth() + 1;
+    const year = localDate.getFullYear();
+    const myDate = new Date().getDate();
+    const dayInMonth = new Date(year, month, 0).getDate();
+    let newDate;
+    if (myDate >= dayInMonth - 1) {
+      newDate = moment(localDate).add(3, 'days').format('DD.MM.YYYY');
+    } else {
+      newDate = moment(localDate).add(1, 'days').format('DD.MM.YYYY');
+    }
+    cy.get(`input[id='${this.elements['Date Picker']}']`).clear().type(newDate).type('{enter}');
+  };
+
+  isWarningExist = () => {
+    cy.get('div[class="EffectiveDateWarning Icon faExclamationTriangle fax"]:contains(Set Execution Date to the last day of a calendar month if possible)').should('exist');
+  };
 }
 
 export default ChangeOwnershipWidget;
