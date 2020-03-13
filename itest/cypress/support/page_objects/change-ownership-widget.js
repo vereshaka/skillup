@@ -84,6 +84,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 
   isPageOpened = () => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`button[id="${this.elements['Next Button']}"][disabled]`).length === 0), {
+      errorMsg: 'Change Ownership not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get(`button[id="${this.elements['Next Button']}"]`).click();
     cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
   };
