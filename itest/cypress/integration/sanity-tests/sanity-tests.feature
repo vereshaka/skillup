@@ -16,6 +16,13 @@ Feature: Sanity Tests
     Then 'Change Ownership' widget should exist
 
   @focus
+  Scenario: Check Change Ownership by successor widget
+    Given I open GUCCI Portal as hfhs-user2
+    When switch to HFHS Cockpit
+    And I open 'Change Ownership by successor' Widget from toolbar
+    Then 'Change Ownership by successor' widget should exist
+
+  @focus
   Scenario: Check Business Transaction History widget
     Given I open GUCCI Portal as hfhs-user2
     When switch to HFHS Cockpit

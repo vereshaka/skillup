@@ -8,6 +8,7 @@ import HfhsCockpit from '../page_objects/hfhs-cockpit';
 import BusinessTransactionDetailsWidget from '../page_objects/business-transaction-details-widget';
 import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 import ProductDetailsWidget from '../page_objects/product-details-widget';
+import ChangeOwnershipBySuccessorWidget from '../page_objects/change-ownership-by-successor-widget';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => {
@@ -89,6 +90,10 @@ Then(/The following source account should be selected/, (table) => {
       (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
         .isSelectedAccountsCorrect(table);
       break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .isSelectedAccountsCorrect(table);
+      break;
     default:
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
@@ -106,6 +111,10 @@ Then(/Effective date is '(.*)'$/, (date) => {
       (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
         .isDateCorrect(date);
       break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .isDateCorrect(date);
+      break;
     default:
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
@@ -121,6 +130,10 @@ Then(/Target account should be/, (table) => {
       break;
     case 'Change Ownership':
       (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .isTargetAccountCorrect(table);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
         .isTargetAccountCorrect(table);
       break;
     default:
@@ -212,7 +225,7 @@ Then(/(Price|Terms|Characteristic) info should be presented/, (tab, table) => {
       throw new Error(`Unsupported tab. Name: ${tab}`);
   }
 });
-Then(/'(Product Move|Change Ownership|Business Transaction History)' widget should exist/, () => {
+Then(/'(Product Move|Change Ownership|Change Ownership by successor|Business Transaction History)' widget should exist/, () => {
   const currentWidgetName = gucciWorld.getCurrentCockpit()
     .getCurrentWidget()
     .getName();
@@ -227,6 +240,10 @@ Then(/'(Product Move|Change Ownership|Business Transaction History)' widget shou
       break;
     case 'Business Transaction History':
       (gucciWorld.getCurrentCockpit().getCurrentWidget(): BusinessTransactionHistoryWidget)
+        .isWidgetExist();
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
         .isWidgetExist();
       break;
     default:

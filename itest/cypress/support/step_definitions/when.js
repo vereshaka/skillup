@@ -7,6 +7,7 @@ import ProductMoveWidget from '../page_objects/product-move-widget';
 import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 import ProductDetailsWidget from '../page_objects/product-details-widget';
+import ChangeOwnershipBySuccessorWidget from '../page_objects/change-ownership-by-successor-widget';
 
 When(/I have try to login as (.*) with (.*) credential/,
   (username, type) => {
@@ -47,6 +48,11 @@ When(/Order validation step is open/, () => {
     case 'Change Ownership':
       (gucciWorld.getCurrentCockpit()
         .getCurrentWidget(): ChangeOwnershipWidget)
+        .isPageOpened();
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
         .isPageOpened();
       break;
     default:
