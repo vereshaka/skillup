@@ -203,6 +203,17 @@ When(/I search by '(.*)'/, (query) => {
     .search(query);
 });
 When(/set effective date not end of month/, () => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
-    .setEffectiveDate();
+  const currentWidgetName = gucciWorld.getCurrentCockpit().getCurrentWidget().getName();
+  switch (currentWidgetName) {
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .setEffectiveDate();
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .setEffectiveDate();
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });

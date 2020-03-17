@@ -333,6 +333,19 @@ Then(/I should see following '(products|parties)'/, (queryType, table) => {
   }
 });
 Then(/Execution Date warning should exist/, () => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
-    .isWarningExist();
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .isWarningExist();
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .isWarningExist();
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
