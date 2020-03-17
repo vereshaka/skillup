@@ -57,3 +57,15 @@ Feature: Change Ownership by successor
       | TUS Legacy | 43/9732/1008001 | 200008146444  | NORM        |
     Then I should see that product 'not transferable'
     And Select account button 'disabled'
+
+  @focus
+  Scenario: Check date
+    Given I open GUCCI Portal as hfhs-user2
+    And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
+    And add products founded by 'KDNR:102849412'
+      | Product  | Subscription     | AccountNumber | AccountType |
+      | A1 Mobil Start | 43/9143/00557 | 200002376215    | NORM         |
+    And specify '200003507657' account founded by 'KDNR:102567907' for '200002376215 NORM' group
+    When Order validation step is open
+    And set effective date not end of month
+    Then Execution Date warning should exist
