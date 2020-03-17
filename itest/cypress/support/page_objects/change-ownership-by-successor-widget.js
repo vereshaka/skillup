@@ -5,7 +5,7 @@ import SearchAccountWidget from './search-account-widget';
 import { getValue } from './utils/config';
 
 
-class ChangeOwnershipWidget extends AbstractWidget {
+class ChangeOwnershipBySuccessorWidget extends AbstractWidget {
   initElements() {
     this.elements = {
       'Add Product': 'CO.selectProduct.btn',
@@ -17,11 +17,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
     };
   }
 
-  getName = () => 'Change Ownership';
+  getName = () => 'Change Ownership by successor';
 
   specifyGroup = (name: string, group: string) => {
     cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
-      errorMsg: 'Change Ownership not loaded',
+      errorMsg: 'Change Ownership by successor not loaded',
       timeout: 30000,
       interval: 1000,
     });
@@ -63,13 +63,13 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   addProducts = (query: string, table?: Object) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
-      errorMsg: 'Change Ownership not loaded',
+      errorMsg: 'Change Ownership by successor not loaded',
       timeout: 30000,
       interval: 1000,
     });
     this.isAlreadyAdded();
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
-      errorMsg: 'Change Ownership not loaded',
+      errorMsg: 'Change Ownership by successor not loaded',
       timeout: 30000,
       interval: 1000,
     });
@@ -85,7 +85,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   isPageOpened = () => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`button[id="${this.elements['Next Button']}"][disabled]`).length === 0), {
-      errorMsg: 'Change Ownership not loaded',
+      errorMsg: 'Change Ownership by successor not loaded',
       timeout: 30000,
       interval: 1000,
     });
@@ -137,7 +137,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   isWidgetExist = () => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
-      errorMsg: 'Change Ownership not loaded',
+      errorMsg: 'Change Ownership by successor not loaded',
       timeout: 30000,
       interval: 1000,
     });
@@ -167,13 +167,13 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   searchProducts = (query: string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
-      errorMsg: 'Change Ownership not loaded',
+      errorMsg: 'Change Ownership by successor not loaded',
       timeout: 30000,
       interval: 1000,
     });
     this.isAlreadyAdded();
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
-      errorMsg: 'Change Ownership not loaded',
+      errorMsg: 'Change Ownership by successor not loaded',
       timeout: 30000,
       interval: 1000,
     });
@@ -235,4 +235,4 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 }
 
-export default ChangeOwnershipWidget;
+export default ChangeOwnershipBySuccessorWidget;
