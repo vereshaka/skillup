@@ -167,13 +167,13 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   searchProducts = (query: string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
-      errorMsg: 'Product Move not loaded',
+      errorMsg: 'Change Ownership not loaded',
       timeout: 30000,
       interval: 1000,
     });
     this.isAlreadyAdded();
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`span[id="${this.elements['Add Product']}"]`).length), {
-      errorMsg: 'Product Move not loaded',
+      errorMsg: 'Change Ownership not loaded',
       timeout: 30000,
       interval: 1000,
     });
