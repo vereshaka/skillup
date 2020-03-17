@@ -146,6 +146,9 @@ When(/search products by '(.*)'/, (query) => {
     .getCurrentWidget()
     .getName();
   switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).searchProducts(query);
+      break;
     case 'Change Ownership':
       (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).searchProducts(query);
       break;
