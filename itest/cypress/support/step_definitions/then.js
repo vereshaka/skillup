@@ -264,8 +264,21 @@ Then(/Business transaction details widget should exist/, () => {
     .isWidgetExist();
 });
 Then(/Transaction fee should be '(.*)'/, (transactionFee) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
-    .isTransactionFeeCorrect(transactionFee);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .isTransactionFeeCorrect(transactionFee);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .isTransactionFeeCorrect(transactionFee);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 Then(/Legal Representative info should be displayed/, (table) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchProductWidget)

@@ -119,9 +119,23 @@ When(/I open first operation from list/, () => {
     .openFirstOperation();
 });
 When(/Transaction fee discount is '(no discount|50% discount|100% discount)'/, (discount) => {
-  (gucciWorld.getCurrentCockpit()
-    .getCurrentWidget(): ChangeOwnershipWidget)
-    .selectDiscount(discount);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipWidget)
+        .selectDiscount(discount);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .selectDiscount(discount);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 When(/select '(Name|SidID|Names and SidIds)' mode/, (mode) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
