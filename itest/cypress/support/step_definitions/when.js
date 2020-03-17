@@ -182,6 +182,16 @@ When(/I add (|all )products founded by '(.*)'/, (isAll: string, query: string, t
           .getCurrentWidget(): ChangeOwnershipWidget).addProducts(query, table);
       }
       break;
+    case 'Change Ownership by successor':
+      if (isAll === 'all ') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipBySuccessorWidget).addProducts(query);
+      }
+      if (isAll === '') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipBySuccessorWidget).addProducts(query, table);
+      }
+      break;
     default:
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
