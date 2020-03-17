@@ -142,7 +142,22 @@ When(/select '(Name|SidID|Names and SidIds)' mode/, (mode) => {
     .selectMode(mode);
 });
 When(/search products by '(.*)'/, (query) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).searchProducts(query);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).searchProducts(query);
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).searchProducts(query);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget).searchProducts(query);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 When(/I add (|all )products founded by '(.*)'/, (isAll: string, query: string, table?) => {
   const currentWidgetName = gucciWorld.getCurrentCockpit().getCurrentWidget().getName();
