@@ -37,3 +37,23 @@ Feature: Change Ownership by successor
     Then Legal Representative info should be displayed
       | Type       | KDNR      |
       | Sachwalter | 109385719 |
+
+  @focus
+  Scenario: Check Transferability: transferable
+    Given I open GUCCI Portal as hfhs-user2
+    And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
+    When I add products founded by 'KDNR:108033579'
+      | Product  | Subscription     | AccountNumber | AccountType |
+      | A1 Kombi | 43/9740/11183504 | A362217278    | PRI         |
+    Then I should see that product 'transferable'
+    And Select account button 'active'
+
+  @focus
+  Scenario: Check Transferability: not transferable
+    Given I open GUCCI Portal as hfhs-user2
+    And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
+    When I add products founded by 'ACC:200008146444'
+      | Product    | Subscription    | AccountNumber | AccountType |
+      | TUS Legacy | 43/9732/1008001 | 200008146444  | NORM        |
+    Then I should see that product 'not transferable'
+    And Select account button 'disabled'
