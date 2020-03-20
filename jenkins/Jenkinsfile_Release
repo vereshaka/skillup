@@ -22,6 +22,7 @@ Variable 'projects' contains list of widgets that can be released.
 */
 
 def projects = [
+    "microfrontend-hfhs-bulk-operation" : "",
     "microfrontend-hfhs-processing" : "",
     "microfrontend-hfhs-changeownership" : "",
     "microfrontend-hfhs-product-details" : "",
@@ -427,6 +428,52 @@ pipeline{
         }
         stage('Build widgets'){
             stages{
+                stage('Widget: Bulk Operation'){
+                    when{
+                        expression{
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-bulk-operation" }?.value) == true
+                        }
+                    }
+                    stages{
+                        stage('Prepare'){
+                            steps{
+                                dir("microfrontend-hfhs-bulk-operation/"){
+                                    sh 'git status'
+                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                        sh 'npm i'
+                                    }
+                                }
+                            }
+                        }
+                        stage('Build'){
+                            steps{
+                                dir("microfrontend-hfhs-bulk-operation/"){
+                                    sh 'git status'
+                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                        sh 'npm run build'
+                                        sh "npm version ${base_build['baseVersion']} --force"
+                                    }
+                                }
+                            }
+                        }
+                        stage('Publish'){
+                            steps{
+                                dir("microfrontend-hfhs-bulk-operation/"){
+                                    sh 'git status'
+                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-bulk-operation.git"
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-bulk-operation.git --tags"
+                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                            sh "npm run docker-push-image"
+                                            sh "npm publish"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 stage('Widget: Processing'){
                     when{
                         expression{
