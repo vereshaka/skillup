@@ -1,6 +1,6 @@
 Feature: Change Ownership
 
-  @focus
+  @focus   @int
   Scenario: Simple success flow: Order Validation
     Given I open GUCCI Portal as hfhs-user2
     And open 'Change Ownership' widget from 'HFHS Cockpit'
