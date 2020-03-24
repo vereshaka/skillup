@@ -19,7 +19,9 @@ module.exports = (on, config) => {
 
   on('before:browser:launch', (browser = {}, launchOptions) => {
     if (browser.name === 'firefox') {
-      launchOptions.args.push('-private');
+      launchOptions.args.push('-private-window');
+      // eslint-disable-next-line no-param-reassign
+      launchOptions.preferences['extensions.allowPrivateBrowsingByDefault'] = true;
     }
     if (browser.family === 'chromium') {
       launchOptions.args.push('--incognito');
