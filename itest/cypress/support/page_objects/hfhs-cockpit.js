@@ -6,6 +6,7 @@ import ProductMoveWidget from './product-move-widget';
 import BusinessTransactionHistoryWidget from './business-transaction-history-widget';
 import ChangeOwnershipWidget from './change-ownership-widget';
 import { getValue } from './utils/config';
+import ChangeOwnershipBySuccessorWidget from './change-ownership-by-successor-widget';
 
 class HfhsCockpit extends AbstractCockpit {
   initElements() {
@@ -13,6 +14,7 @@ class HfhsCockpit extends AbstractCockpit {
       'Product Move': 'openPM',
       'Change Ownership': 'openCO',
       'Business Transaction History': 'openBT',
+      'Change Ownership by successor': 'openCOS',
     };
   }
 
@@ -39,6 +41,10 @@ class HfhsCockpit extends AbstractCockpit {
       case 'Business Transaction History':
         this.toolbar.clickToolbarButton(name);
         this.currentWidget = new BusinessTransactionHistoryWidget();
+        break;
+      case 'Change Ownership by successor':
+        this.toolbar.clickToolbarButton(name);
+        this.currentWidget = new ChangeOwnershipBySuccessorWidget();
         break;
       default:
         throw new Error(`Unsupported widget. Name: ${name}`);

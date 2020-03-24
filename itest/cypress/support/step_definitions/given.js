@@ -6,6 +6,7 @@ import SearchProductWidget from '../page_objects/search-product-widget';
 import SearchAccountWidget from '../page_objects/search-account-widget';
 import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
+import ChangeOwnershipBySuccessorWidget from '../page_objects/change-ownership-by-successor-widget';
 
 Given(/^As anonymous user I open GUCCI Portal$/, () => {
   gucciWorld.openLoginForm();
@@ -56,6 +57,16 @@ Given(/add (|all )products founded by '(.*)'/, (isAll: string, query: string, ta
           .getCurrentWidget(): ChangeOwnershipWidget).addProducts(query, table);
       }
       break;
+    case 'Change Ownership by successor':
+      if (isAll === 'all ') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipBySuccessorWidget).addProducts(query);
+      }
+      if (isAll === '') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipBySuccessorWidget).addProducts(query, table);
+      }
+      break;
     default:
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
@@ -69,6 +80,10 @@ Given(/specify '(.*)' account founded by '(.*)' for '(.*[A-Z])' group/, (account
       break;
     case 'Change Ownership':
       (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .specifyAccount(account, query, group);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
         .specifyAccount(account, query, group);
       break;
     default:

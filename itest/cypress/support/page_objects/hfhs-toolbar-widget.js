@@ -7,6 +7,7 @@ class HfhsToolbarWidget extends AbstractWidget {
       'Product Move': 'openPM',
       'Change Ownership': 'openCO',
       'Business Transaction History': 'openBT',
+      'Change Ownership by successor': 'openCOS',
     };
   }
 

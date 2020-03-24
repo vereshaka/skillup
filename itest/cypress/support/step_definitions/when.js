@@ -7,6 +7,7 @@ import ProductMoveWidget from '../page_objects/product-move-widget';
 import BusinessTransactionHistoryWidget from '../page_objects/business-transaction-history-widget';
 import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 import ProductDetailsWidget from '../page_objects/product-details-widget';
+import ChangeOwnershipBySuccessorWidget from '../page_objects/change-ownership-by-successor-widget';
 
 When(/I have try to login as (.*) with (.*) credential/,
   (username, type) => {
@@ -47,6 +48,11 @@ When(/Order validation step is open/, () => {
     case 'Change Ownership':
       (gucciWorld.getCurrentCockpit()
         .getCurrentWidget(): ChangeOwnershipWidget)
+        .isPageOpened();
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
         .isPageOpened();
       break;
     default:
@@ -113,16 +119,45 @@ When(/I open first operation from list/, () => {
     .openFirstOperation();
 });
 When(/Transaction fee discount is '(no discount|50% discount|100% discount)'/, (discount) => {
-  (gucciWorld.getCurrentCockpit()
-    .getCurrentWidget(): ChangeOwnershipWidget)
-    .selectDiscount(discount);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipWidget)
+        .selectDiscount(discount);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .selectDiscount(discount);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 When(/select '(Name|SidID|Names and SidIds)' mode/, (mode) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .selectMode(mode);
 });
 When(/search products by '(.*)'/, (query) => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).searchProducts(query);
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).searchProducts(query);
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).searchProducts(query);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget).searchProducts(query);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });
 When(/I add (|all )products founded by '(.*)'/, (isAll: string, query: string, table?) => {
   const currentWidgetName = gucciWorld.getCurrentCockpit().getCurrentWidget().getName();
@@ -147,6 +182,16 @@ When(/I add (|all )products founded by '(.*)'/, (isAll: string, query: string, t
           .getCurrentWidget(): ChangeOwnershipWidget).addProducts(query, table);
       }
       break;
+    case 'Change Ownership by successor':
+      if (isAll === 'all ') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipBySuccessorWidget).addProducts(query);
+      }
+      if (isAll === '') {
+        (gucciWorld.getCurrentCockpit()
+          .getCurrentWidget(): ChangeOwnershipBySuccessorWidget).addProducts(query, table);
+      }
+      break;
     default:
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
@@ -158,6 +203,17 @@ When(/I search by '(.*)'/, (query) => {
     .search(query);
 });
 When(/set effective date not end of month/, () => {
-  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
-    .setEffectiveDate();
+  const currentWidgetName = gucciWorld.getCurrentCockpit().getCurrentWidget().getName();
+  switch (currentWidgetName) {
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+        .setEffectiveDate();
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .setEffectiveDate();
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
 });

@@ -22,6 +22,7 @@ Variable 'projects' contains list of widgets that can be released.
 */
 
 def projects = [
+    "microfrontend-hfhs-bulk-operation" : "",
     "microfrontend-hfhs-processing" : "",
     "microfrontend-hfhs-changeownership" : "",
     "microfrontend-hfhs-product-details" : "",
@@ -41,8 +42,8 @@ Boolean isReleaseNeeded(String packageVersion){
 }
 
 String Conclusion(String ver){
-    if (isReleaseNeeded(ver) == true ) return "Release Needed (" + ver + ")"
-    else return "Release Not Needed (" + ver + ")"
+    if (isReleaseNeeded(ver) == true ) return """Release needed ( ${ver} )"""
+    else return """Release NOT needed ( ${ver} )"""
 }
 
 String ComponentVersion(String name, String version){
@@ -198,6 +199,23 @@ String report(Map projects, String release_version){
     return sheet
 }
 
+String widgetResolution(String widget_name, String widget_version){
+    def resolution = Conclusion(widget_version)
+    return """    ${widget_name}: ${resolution}"""
+}
+
+String releaseOverview(String release_version, Map projects){
+    def widget_status = ""
+    projects.each { k,v ->
+      widget_status = widget_status + "\n" + widgetResolution(k,v)
+    }
+    def sheet = """
+Version proposal: ${release_version}
+${widget_status}
+"""
+return sheet
+}
+
 pipeline{
     agent{
         node{
@@ -218,7 +236,7 @@ pipeline{
                             sh "docker login -u ${USERNAME} -p ${PASSWORD} tasktrack.telekom.at/gucci-docker-local"
                             script{
                                 projects.each {k,v ->
-                                    sh "git clone https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${k}.git"
+                                    sh "git clone -b develop --single-branch https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${k}.git"
                                 }
                             }
                         }
@@ -235,10 +253,7 @@ pipeline{
                                 } 
                             }
                             proposal_version = getMostHighVersion(ver_list)
-                            overview = overview + ": " + proposal_version + "\n    "
-                            projects.each { k,v ->
-                                overview = overview + k + ": " + Conclusion(v) + "\n    "
-                            }
+                            overview = releaseOverview(proposal_version, projects)
                             echo "${overview}"
                             base_ver = base_ver + proposal_version
                         }
@@ -413,6 +428,52 @@ pipeline{
         }
         stage('Build widgets'){
             stages{
+                stage('Widget: Bulk Operation'){
+                    when{
+                        expression{
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-bulk-operation" }?.value) == true
+                        }
+                    }
+                    stages{
+                        stage('Prepare'){
+                            steps{
+                                dir("microfrontend-hfhs-bulk-operation/"){
+                                    sh 'git status'
+                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                        sh 'npm i'
+                                    }
+                                }
+                            }
+                        }
+                        stage('Build'){
+                            steps{
+                                dir("microfrontend-hfhs-bulk-operation/"){
+                                    sh 'git status'
+                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                        sh 'npm run build'
+                                        sh "npm version ${base_build['baseVersion']} --force"
+                                    }
+                                }
+                            }
+                        }
+                        stage('Publish'){
+                            steps{
+                                dir("microfrontend-hfhs-bulk-operation/"){
+                                    sh 'git status'
+                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-bulk-operation.git"
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-bulk-operation.git --tags"
+                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                            sh "npm run docker-push-image"
+                                            sh "npm publish"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 stage('Widget: Processing'){
                     when{
                         expression{
@@ -825,7 +886,7 @@ pipeline{
         }
         stage("Perform sanity tests"){
             steps{
-                build job: sanity_test_job_name,  propagate: false, quietPeriod: 300
+                build job: sanity_test_job_name,  propagate: false, quietPeriod: 150
             }
         }
     }
