@@ -237,16 +237,6 @@ class ChangeOwnershipWidget extends AbstractWidget {
   isWarningExist = () => {
     cy.get('div[class="EffectiveDateWarning Icon faExclamationTriangle fax"]:contains(Set Execution Date to the last day of a calendar month if possible)').should('exist');
   };
-
-  searchAccount = (query:string, group:string) => {
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`div[id="${this.elements['Add Account']}"]`).length), {
-      errorMsg: 'Change Ownership not loaded',
-      timeout: 30000,
-      interval: 1000,
-    });
-    this.openDialog('Add Account', group);
-    new SearchAccountWidget().searchByQuery(query);
-  };
 }
 
 export default ChangeOwnershipWidget;

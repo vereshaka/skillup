@@ -77,7 +77,7 @@ class SearchAccountWidget extends AbstractWidget {
     }
   };
 
-  searchAndCheck = (query: string, table: Object) => {
+  searchAndCheck = (query: string, table?: Object) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`input[id="${this.elements['Search input']}"]`).length), {
       errorMsg: `${this.elements['Search input']} not loaded`,
       timeout: 30000,
@@ -85,17 +85,9 @@ class SearchAccountWidget extends AbstractWidget {
     });
     this.isSearchDialogCorrectlyDisplayed();
     this.search(query);
-    this.areAccountsFounded(table);
-  };
-
-  searchByQuery = (query: string) => {
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`input[id="${this.elements['Search input']}"]`).length), {
-      errorMsg: `${this.elements['Search input']} not loaded`,
-      timeout: 30000,
-      interval: 1000,
-    });
-    this.clearSearch();
-    this.search(query);
+    if (table) {
+      this.areAccountsFounded(table);
+    }
   };
 
   checkUrl = (kums) => {

@@ -87,5 +87,6 @@ Feature: Change Ownership
     And add products founded by 'KDNR:108033579'
       | Product  | Subscription     | AccountNumber | AccountType |
       | A1 Kombi | 43/9740/11183504 | A362217278    | PRI         |
-    When I search account by 'KDNR:105475536' for 'A362217278 PRI' group
+    When I open 'Add Account' dialog for 'A362217278 PRI' group
+    And search account by 'KDNR:105475536'
     Then Create Account link should be with '105475536' ending
