@@ -9,6 +9,7 @@ import BusinessTransactionDetailsWidget from '../page_objects/business-transacti
 import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 import ProductDetailsWidget from '../page_objects/product-details-widget';
 import ChangeOwnershipBySuccessorWidget from '../page_objects/change-ownership-by-successor-widget';
+import SearchAccountWidget from '../page_objects/search-account-widget';
 
 Then('I should receive {string} message on login form',
   (errorMessage) => {
@@ -348,4 +349,8 @@ Then(/Execution Date warning should exist/, () => {
     default:
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
+});
+Then(/Create Account link should be with '(.*)' end/, (kums) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
+    .checkUrl(kums);
 });

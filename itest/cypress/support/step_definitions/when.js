@@ -217,3 +217,7 @@ When(/set effective date not end of month/, () => {
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
+When(/I search account by '(.*)' for '(.*)' group/, (query, group) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+    .searchAccount(query, group);
+});
