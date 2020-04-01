@@ -78,7 +78,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
   };
 
   specifyAccount = (account:string, query:string, group:string) => {
-    cy.normalWait();
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`div[id="${this.elements['Add Account']}"]`).length), {
+      errorMsg: 'Change Ownership not loaded',
+      timeout: 30000,
+      interval: 1000,
+    });
     this.openDialog('Add Account', group);
     new SearchAccountWidget().addAccount(account, query);
   };

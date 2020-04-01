@@ -8,6 +8,7 @@ import BusinessTransactionHistoryWidget from '../page_objects/business-transacti
 import ChangeOwnershipWidget from '../page_objects/change-ownership-widget';
 import ProductDetailsWidget from '../page_objects/product-details-widget';
 import ChangeOwnershipBySuccessorWidget from '../page_objects/change-ownership-by-successor-widget';
+import SearchAccountWidget from '../page_objects/search-account-widget';
 
 When(/I have try to login as (.*) with (.*) credential/,
   (username, type) => {
@@ -216,4 +217,12 @@ When(/set effective date not end of month/, () => {
     default:
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
+});
+When(/open '(.*)' dialog for '(.*)' group/, (dialogName, group) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget)
+    .openDialog(dialogName, group);
+});
+When(/search account by '(.*)'/, (query) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
+    .searchAndCheck(query);
 });

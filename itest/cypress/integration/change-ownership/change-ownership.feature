@@ -79,3 +79,14 @@ Feature: Change Ownership
     When Order validation step is open
     And set effective date not end of month
     Then Execution Date warning should exist
+
+  @focus
+  Scenario: Check Create Account
+    Given I open GUCCI Portal as hfhs-user2
+    And open 'Change Ownership' widget from 'HFHS Cockpit'
+    And add products founded by 'KDNR:108033579'
+      | Product  | Subscription     | AccountNumber | AccountType |
+      | A1 Kombi | 43/9740/11183504 | A362217278    | PRI         |
+    When I open 'Add Account' dialog for 'A362217278 PRI' group
+    And search account by 'KDNR:105475536'
+    Then Create Account link should be with '105475536' ending
