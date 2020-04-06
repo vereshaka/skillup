@@ -23,7 +23,7 @@ class ProductMoveWidget extends AbstractWidget {
 
   specifyGroup = (name: string, group: string) => {
     cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
-      errorMsg: 'Product Move not loaded',
+      errorMsg: 'Select Account disabled',
       timeout: 30000,
       interval: 1000,
     });
