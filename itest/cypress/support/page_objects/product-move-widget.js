@@ -22,8 +22,13 @@ class ProductMoveWidget extends AbstractWidget {
   getName = () => 'Product Move';
 
   specifyGroup = (name: string, group: string) => {
+    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
+      errorMsg: 'Select Account disabled',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains("${group}Products")`).as('searchableGroup');
-    cy.get('@searchableGroup').find(`div[id="${this.elements[name]}"]`).click();
+    cy.get('@searchableGroup').find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
   };
 
   openDialog = (name: string, group?:string) => {
