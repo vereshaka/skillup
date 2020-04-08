@@ -226,3 +226,21 @@ When(/search account by '(.*)'/, (query) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
     .searchAndCheck(query);
 });
+When(/I delete products/, (table) => {
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).deleteProducts(table);
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).deleteProducts(table);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget).deleteProducts(table);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
+});

@@ -16,6 +16,7 @@ class ProductMoveWidget extends AbstractWidget {
       'Previous Button': 'wizard_PM.previous.btn_btn',
       Cancel: 'PM.navigationCancel.btn',
       'Confirm cancel': 'PM.confirmModal.btn',
+      'Exclude Product': 'PM.excludeProduct.btn',
     };
   }
 
@@ -223,6 +224,18 @@ class ProductMoveWidget extends AbstractWidget {
       interval: 1000,
     });
     cy.get('div[class="mashroom-portal-app-wrapper portal-app-move-product hide-header"]').should('exist');
+  };
+
+  deleteProducts = (table) => {
+    table.hashes().forEach((row) => {
+      cy.get(`div[class='gucci-common-expandable-panel-header']:contains(${row.Product}${row.Subscription})`)
+        .find(`span[id='${this.elements['Exclude Product']}']`).click();
+      cy.get(`button[id='${this.elements['Confirm cancel']}']`).click();
+    });
+  };
+
+  isSelectingProductsStepOpen = () => {
+    cy.get('h3:contains(Select products to move.)').should('exist');
   };
 }
 

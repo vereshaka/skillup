@@ -47,3 +47,15 @@ Feature: Product Move
     And click 'Previous Button'
     And click 'Next Button'
     Then 'Product Move' widget should exist
+
+  @focus
+  Scenario: Delete product
+    Given As hfhs-user2 with permission 'hfhs-user'
+    And open 'Product Move' widget from 'HFHS Cockpit'
+    And add products founded by 'KDNR:100883236'
+      | Product  | Subscription     |
+      | A1 Kombi | 43/9740/10935673 |
+    When I delete products
+      | Product  | Subscription     |
+      | A1 Kombi | 43/9740/10935673 |
+    Then I should see Product Selection step

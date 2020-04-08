@@ -69,3 +69,15 @@ Feature: Change Ownership by successor
     When Order validation step is open
     And set effective date not end of month
     Then Execution Date warning should exist
+
+  @focus
+  Scenario: Delete product
+    Given As hfhs-user2 with permission 'hfhs-user'
+    And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
+    And add products founded by 'KDNR:100883236'
+      | Product  | Subscription     |
+      | A1 Kombi | 43/9740/10935673 |
+    When I delete products
+      | Product  | Subscription     |
+      | A1 Kombi | 43/9740/10935673 |
+    Then I should see Product Selection step

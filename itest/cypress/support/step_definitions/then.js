@@ -354,3 +354,21 @@ Then(/Create Account link should be with '(.*)' end/, (kums) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
     .checkUrl(kums);
 });
+Then(/I should see Product Selection step/, () => {
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Product Move':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).isSelectingProductsStepOpen();
+      break;
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipWidget).isSelectingProductsStepOpen();
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit().getCurrentWidget(): ChangeOwnershipBySuccessorWidget).isSelectingProductsStepOpen();
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
+});
