@@ -14,6 +14,7 @@ class ChangeOwnershipWidget extends AbstractWidget {
       'Date Picker': 'CO.datepiker',
       Cancel: 'CO.navigationCancel.btn',
       'Confirm cancel': 'CO.confirmModal.btn',
+      'Exclude Product': 'CO.excludeProduct.btn',
     };
   }
 
@@ -233,6 +234,18 @@ class ChangeOwnershipWidget extends AbstractWidget {
 
   isWarningExist = () => {
     cy.get('div[class="EffectiveDateWarning Icon faExclamationTriangle fax"]:contains(Set Execution Date to the last day of a calendar month if possible)').should('exist');
+  };
+
+  deleteProducts = (table) => {
+    table.hashes().forEach((row) => {
+      cy.get(`div[class='gucci-common-expandable-panel-header']:contains(${row.Product}${row.Subscription})`)
+        .find(`span[id='${this.elements['Exclude Product']}']`).click();
+      cy.get(`button[id='${this.elements['Confirm cancel']}']`).click();
+    });
+  };
+
+  isSelectingProductsStepOpen = () => {
+    cy.get('h3:contains(Select products to move.)').should('exist');
   };
 }
 

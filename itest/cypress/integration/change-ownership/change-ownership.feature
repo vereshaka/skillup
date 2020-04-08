@@ -90,3 +90,15 @@ Feature: Change Ownership
     When I open 'Add Account' dialog for 'A362217278 PRI' group
     And search account by 'KDNR:105475536'
     Then Create Account link should be with '105475536' ending
+
+  @focus
+  Scenario: Delete product
+    Given As hfhs-user2 with permission 'hfhs-user'
+    And open 'Change Ownership' widget from 'HFHS Cockpit'
+    And add products founded by 'KDNR:100883236'
+      | Product  | Subscription     |
+      | A1 Kombi | 43/9740/10935673 |
+    When I delete products
+      | Product  | Subscription     |
+      | A1 Kombi | 43/9740/10935673 |
+    Then I should see Product Selection step
