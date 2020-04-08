@@ -200,6 +200,11 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   isButtonActive = (buttonName) => {
+    cy.waitUntil(() => cy.get('div[class="gucci-common-expandable-panel-header"]').then(($group) => $group.find(`div[id="${this.elements[buttonName]}"].disabled`).length === 0), {
+      errorMsg: 'Select Account disabled',
+      timeout: 30000,
+      interval: 1000,
+    });
     cy.get(`div[id="${this.elements[buttonName]}"]`).should('not.have.class', 'disabled');
   };
 
