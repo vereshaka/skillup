@@ -16,7 +16,7 @@ class SearchAccountWidget extends AbstractWidget {
 
   clearSearch = () => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find('div[class="_loading_overlay_wrapper _loading_overlay_wrapper--active css-79elbk"]').length === 0), {
-      errorMsg: 'Accounts not loaded',
+      errorMsg: 'Input disable',
       timeout: 30000,
       interval: 1000,
     });
