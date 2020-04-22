@@ -11,7 +11,7 @@ class ProductMoveWidget extends AbstractWidget {
       'Add Product': 'PM.addProduct.icon',
       'Add Account': 'PM.selectAccount.link',
       'Next Button': 'wizard_PM.next.btn_btn',
-      'Exclude Invalid Products': 'PM.excludeAllWarnProducts.btn',
+      'Exclude Invalid Products': 'PM.excludeWarnProducts.btn',
       'Date Picker': 'PM.datepiker',
       'Previous Button': 'wizard_PM.previous.btn_btn',
       Cancel: 'PM.navigationCancel.btn',
@@ -236,6 +236,10 @@ class ProductMoveWidget extends AbstractWidget {
 
   isSelectingProductsStepOpen = () => {
     cy.get('h3:contains(Select products to move.)').should('exist');
+  };
+
+  excludeInvalidProducts = (buttonName) => {
+    cy.get(`span[id='${this.elements[buttonName]}']`).click();
   };
 }
 
