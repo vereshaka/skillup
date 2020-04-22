@@ -244,3 +244,6 @@ When(/I delete products/, (table) => {
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
+When(/I click on '(.*)' button/, (buttonName) => {
+  (gucciWorld.getCurrentCockpit().getCurrentWidget(): ProductMoveWidget).excludeInvalidProducts(buttonName);
+});

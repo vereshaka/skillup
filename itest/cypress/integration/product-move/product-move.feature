@@ -59,3 +59,14 @@ Feature: Product Move
       | Product  | Subscription     |
       | A1 Kombi | 43/9740/10935673 |
     Then I should see Product Selection step
+
+  @focus
+  Scenario: Delete product without Account Type
+    Given As hfhs-user2 with permission 'hfhs-user'
+    And open 'Product Move' widget from 'HFHS Cockpit'
+    And add products founded by 'ACC:200006999843'
+      | Product                  | Subscription     |
+      | A1 SIP Trunk Premium 400 | 43/9740/11451710 |
+    When I click on 'Exclude Invalid Products' button
+    Then I should see Product Selection step
+
