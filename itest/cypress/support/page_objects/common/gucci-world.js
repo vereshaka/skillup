@@ -70,7 +70,7 @@ class GucciWorld {
     cy.get('body')
       .then(($body) => {
         if ($body.find('div.logout').length) {
-          cy.get('a[href="/portal/_/api/logout"]')
+          cy.get('a[href="/portal/web/___/api/logout"]')
             .click();
         } else {
           // TODO: yevgenyv: raise an error if user not logged in
