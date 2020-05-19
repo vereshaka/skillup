@@ -22,6 +22,7 @@ Variable 'projects' contains list of widgets that can be released.
 */
 
 def projects = [
+    "microfrontend-hfhs-createaccount": "",
     "microfrontend-hfhs-bulk-operation" : "",
     "microfrontend-hfhs-processing" : "",
     "microfrontend-hfhs-changeownership" : "",
@@ -137,11 +138,7 @@ String reportWidgetStatus(String widget_name, String widget_version, String rele
         }
     }
     def row = """
-    <tr ${highlight}>
-      <td>${name}</td>
-      <td>${prev_version}</td>
-      <td>${curr_version}</td>
-    </tr>
+    <tr ${highlight}><td>${name}</td><td>${prev_version}</td><td>${curr_version}</td></tr>
     """
     return row
 }
@@ -157,44 +154,19 @@ String report(Map projects, String release_version){
 
     def build_time = timePart + " " + datePart
     def sheet = """
-    <!DOCTYPE html>
-    <html lang="en" dir="ltr">
-      <head>
-        <meta charset="utf-8">
-        <title>HFHS Release ${release_version}</title>
-      </head>
-      <body style="font-family:system-ui,sans-serif;">
-        <h1 align="center">HFHS release report</h1>
-        <div class="body">
-         <table border="0" width="100%">
-           <tr>
-             <td width="10%"></td>
-             <td>
-               <p>
-               Congratulations! <br/>
-               HFHS release version ${release_version} has been done successfully. Here is the list of widgets: <br/>
-               </p>
-               <p>
-               <table width="100%" border="0">
-                 <tr>
-                   <th width='50%'>Name</th>
-                   <th>Previous version</th>
-                   <th>Current version</th>
-                 </tr>
-                 ${widget_status}
-               </table>
-               </p>
-             </td>
-             <td width="10%"></td>
-           </tr>
-         </table>
-        </div>
-        <div class="footer">
-          <hr/>
-          <p style="font-size: 8pt; text-align:center"> This report was generated automatically at ${build_time} </p>
-        </div>
-      </body>
-    </html>
+    <!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<title>HFHS Release ${release_version}</title></head><body 
+style="font-family:system-ui,sans-serif;"><h1 align="center">
+HFHS release report</h1><div class="body"><table border="0" 
+width="100%"><tr><td width="10%"></td><td><p>Congratulations!<br>
+HFHS release version ${release_version} has been done successfully. Here is the list of widgets:
+<br></p><p><table width="100%" border="0"><tr><th width="50%">Name
+</th><th>Previous version</th><th>Current version</th></tr>
+${widget_status}</table></p></td><td width="10%"></td></tr></table>
+</div><div class="footer"><hr><p 
+style="font-size: 8pt; text-align:center">
+This report was generated automatically at ${build_time}</p></div>
+</body></html>
     """
     return sheet
 }
@@ -428,6 +400,52 @@ pipeline{
         }
         stage('Build widgets'){
             stages{
+                stage('Widget: Create account'){
+                    when{
+                        expression{
+                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-createaccount" }?.value) == true
+                        }
+                    }
+                    stages{
+                        stage('Prepare'){
+                            steps{
+                                dir("microfrontend-hfhs-createaccount/"){
+                                    sh 'git status'
+                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                        sh 'npm i'
+                                    }
+                                }
+                            }
+                        }
+                        stage('Build'){
+                            steps{
+                                dir("microfrontend-hfhs-createaccount/"){
+                                    sh 'git status'
+                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                        sh 'npm run build'
+                                        sh "npm version ${base_build['baseVersion']} --force"
+                                    }
+                                }
+                            }
+                        }
+                        stage('Publish'){
+                            steps{
+                                dir("microfrontend-hfhs-createaccount/"){
+                                    sh 'git status'
+                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-createaccount.git"
+                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-createaccount.git --tags"
+                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                                            sh "npm run docker-push-image"
+                                            sh "npm publish"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 stage('Widget: Bulk Operation'){
                     when{
                         expression{
@@ -789,25 +807,6 @@ pipeline{
                                             sh "npm publish"
                                             sh "npm run docker-push-image"
                                         }
-                                    }
-                                }
-                            }
-                        }
-                        stage("Deploy to Kubernetes"){
-                            environment {
-                                NODE_ENV = 'integration'
-                                NAMESPACE = 'gucci-int'
-                                REPLICA_COUNT = '1'
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-toolbar/"){
-                                    script {
-                                        env.IMAGE_VERSION = getPackageVersion()
-                                    }
-                                    echo "Deploying version: ${IMAGE_VERSION} to INT"
-                                    withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
-                                        sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
-                                        sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
                                     }
                                 }
                             }
