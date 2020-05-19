@@ -840,25 +840,6 @@ pipeline{
                                 }
                             }
                         }
-                        stage("Deploy to Kubernetes"){
-                            environment {
-                                NODE_ENV = 'integration'
-                                NAMESPACE = 'gucci-int'
-                                REPLICA_COUNT = '1'
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-toolbar/"){
-                                    script {
-                                        env.IMAGE_VERSION = getPackageVersion()
-                                    }
-                                    echo "Deploying version: ${IMAGE_VERSION} to INT"
-                                    withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
-                                        sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
-                                        sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
                 stage('Widget: Business Transaction History'){
