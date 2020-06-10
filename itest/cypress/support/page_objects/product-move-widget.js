@@ -50,7 +50,8 @@ class ProductMoveWidget extends AbstractWidget {
           interval: 1000,
         });
         if (group) {
-          this.specifyGroup(name, group);
+         // this.specifyGroup(name, group);
+          cy.get(`button[id="${this.elements[name]}"]`).click();
           this.currentDialog = new SearchAccountWidget();
         } else {
           throw new Error('No group was defined');
@@ -108,7 +109,7 @@ class ProductMoveWidget extends AbstractWidget {
   };
 
   specifyAccount = (account:string, query:string, group:string) => {
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`div[id="${this.elements['Add Account']}"]`).length), {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`button[id="${this.elements['Add Account']}"]`).length), {
       errorMsg: 'Product Move not loaded',
       timeout: 30000,
       interval: 1000,

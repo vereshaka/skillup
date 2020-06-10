@@ -1,6 +1,5 @@
 Feature: Restriction checking
 
-  @focus
   Scenario: Restriction check: wrong contract capable
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
@@ -12,7 +11,6 @@ Feature: Restriction checking
     When add all products
     And error 'Product Move is not allowed for this customer' should be displayed
 
-  @focus
   Scenario: Restriction check: wrong provisional customer
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'

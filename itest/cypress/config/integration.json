@@ -4,7 +4,7 @@
     "chromeWebSecurity": false,
     "env": {
         "portalUrl": "https://int.gucci-qa.at.inside/",
-        "localisation": "DE",
+        "localisation": "EN",
         "createAccountLink": "http://int.telekom.inside/anw7-int/kumsweb/innerdirect.do?returnurl=https%3A%2F%2Fint.gucci-qa.at.inside%2Fportal%2Fweb%2Fhfhs%3F&kundennummer="
     }
 }

@@ -8,7 +8,6 @@
     "dbPassword": "test1234!",
     "dbConnectionString": "vldbsqt105.at.inside:2329/CSOFD",
     "localisation": "EN",
-    "mockUrl": "https://hfhs-sm.gucci-qa.at.inside/api/configure",
     "createAccountLink": "undefined"
   }
 }

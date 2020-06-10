@@ -37,7 +37,8 @@ class ChangeOwnershipBySuccessorWidget extends AbstractWidget {
         break;
       case 'Add Account':
         if (group) {
-          this.specifyGroup(name, group);
+         // this.specifyGroup(name, group);
+          cy.get(`button[id="${this.elements[name]}"]`).click();
           this.currentDialog = new SearchAccountWidget();
         } else {
           throw new Error('No group was defined');
