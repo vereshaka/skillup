@@ -1,10 +1,3 @@
-/*
-Jenkinsfile for building of HFHS widgets release versions.
-
-Build starts manually.
-*/
-
-
 def JENKIN_GIT_CREDENTIALS_ID = "8c90ce01-4736-4b5a-8661-ab6299330151"
 def JENKIN_K8S_CREDENTIALS_ID = 'kubernetes-gucci-dev'
 def INFORM_ABOUT_FAILURE = 'grp.hfhs@sytoss.com'
@@ -13,7 +6,7 @@ def JENKINS_NODE_JS_INSTALLATION_LABEL = 'node10.16.3'
 def proposal_version = ""
 def overview = "Version proposal"
 def ver_list = ""
-def base_ver = ""
+def release_version = ""
 def base_build = null
 def sanity_test_job_name = "hfhs-release-sanity-test"
 
@@ -21,14 +14,12 @@ def sanity_test_job_name = "hfhs-release-sanity-test"
 Variable 'projects' contains list of widgets that can be released.
 */
 
-def projects = [
+def widgets = [
     "microfrontend-hfhs-createaccount": "",
     "microfrontend-hfhs-bulk-operation" : "",
     "microfrontend-hfhs-processing" : "",
     "microfrontend-hfhs-changeownership" : "",
     "microfrontend-hfhs-product-details" : "",
-    "microfrontend-hfhs-base" : "",
-    "microfrontend-hfhs-connector" : "",
     "microfrontend-hfhs-business-transaction-detail" : "",
     "microfrontend-hfhs-business-transaction-history" : "",
     "microfrontend-hfhs-toolbar" : "",
@@ -36,34 +27,39 @@ def projects = [
     "microfrontend-hfhs-search-product" : "",
 ];
 
-Boolean isReleaseNeeded(String packageVersion){
-    String prerelease_regex = /\d+\.{1}\d+\.{1}\d+\-.*/
-    if ((packageVersion ==~ prerelease_regex) || (packageVersion == "" )) return true
+def modules = [
+    "microfrontend-hfhs-base" : "",
+    "microfrontend-hfhs-connector" : ""
+]
+
+def projects = widgets + modules
+
+Boolean isVersionValid(String version){
+    String regex = /\d+\.{1}\d+\.{1}\d+/
+    if (version ==~ regex) return true
     else return false
 }
 
-String Conclusion(String ver){
-    if (isReleaseNeeded(ver) == true ) return """Release needed ( ${ver} )"""
-    else return """Release NOT needed ( ${ver} )"""
+Boolean isReleaseNeeded(String version){
+    String prerelease_regex = /\d+\.{1}\d+\.{1}\d+\-.*/
+    if ((version ==~ prerelease_regex) || (version == "" )) return true
+    else return false
 }
 
-String ComponentVersion(String name, String version){
-    def command_parts = [ 
-        'sed -r \'s|', 
-        '\\s{4}\\"(@a1\\/',
-        // name
-        ')\\"\\:\\s*\\"\\^?[0-9]*\\.[0-9]*\\.[0-9]*.*\\"\\,|',
-        '    \"@a1/',
-        // name
-        '\": \"^',
-        // version
-        '",|\' package.json > package1 ; rm package.json ; mv package1 package.json'
-    ]
-    def command = command_parts[0] + command_parts[1] + name + command_parts[2] + command_parts[3] + name + command_parts[4] + version + command_parts[5]
-    return command
+String releaseDecision(String version){
+    if (isReleaseNeeded(version) == true ) return """Release needed ( ${version} )"""
+    else return """Release NOT needed ( ${version} )"""
 }
 
-String getMostHighVersion(String version_list){
+void setComponentVersion(String package_name, String package_version){
+    def package_data = readJSON file: 'package.json'
+    if(package_data.'dependencies'.containsKey(package_name)){
+        package_data.'dependencies'."${package_name}" = package_version 
+    }
+    writeJSON file: 'package.json', json: package_data, pretty: 2
+}
+
+String getMostRecentVersion(String version_list){
     def mod_version_list = "\'" + version_list + "\'"
     return sh(returnStdout: true, script: "printf ${mod_version_list} | sort -V | tail -1").trim()
 }
@@ -77,13 +73,13 @@ Boolean isTagExist(String version){
 }
 
 String getComponentVersion(String component_name){
-    def mod_component_name = '\'\"' + component_name + '\"\''
-    def ver = "" + sh(returnStdout: true, script: "cat package.json | grep ${mod_component_name} | egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+(\\-[a-zA-Z0-9]*)?' || true").trim()
-    return ver
+    def package_data = readJSON file: 'package.json'
+    return package_data.'dependencies'."${component_name}"?: ""
 }
 
-String getPackageVersion(){
-    return "" + sh(returnStdout: true, script: "cat package.json | grep '\"version\":' | tr -d ',\"[:space:]' | cut -d: -f2").trim()
+String getPackageAttribute(String attr){
+    def package_data = readJSON file: 'package.json'
+    return package_data."${attr}"
 }
 
 void checkPackageProperties(Boolean isRelease, String packageName, String packageVersion, Map projects){
@@ -95,7 +91,7 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
                 dir(k + "/") {
                     def full_name = "@a1/" + packageName
                     def component_version = getComponentVersion(full_name)
-                    isBaseVerValid = isBaseVerValid && ((component_version  ==~ /\d+\.{1}\d+\.{1}\d+/) || (component_version  == ""))
+                    isBaseVerValid = isBaseVerValid && (isVersionValid(component_version) || (component_version  == ""))
                     overview = overview + k + ": " + component_version + "\n    "
                 }
             }
@@ -105,7 +101,7 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
         }
     }
     else{
-        echo "Now will be set actual version of ${packageName} in 'package.json' of widgets"
+        echo "Now will be set recent version of ${packageName} in 'package.json' of widgets"
         projects.each{ k,v ->
             dir(k + "/"){
                 def set_version = ComponentVersion(packageName, packageVersion)
@@ -146,7 +142,7 @@ String reportWidgetStatus(String widget_name, String widget_version, String rele
 String report(Map projects, String release_version){
     def widget_status = ""
     projects.each { k,v ->
-      widget_status = widget_status + "\n" + reportWidgetStatus(k,v,release_version)
+        widget_status = widget_status + "\n" + reportWidgetStatus(k,v,release_version)
     }
     Date date = new Date()
     String datePart = date.format("dd.MM.yyyy")
@@ -172,21 +168,108 @@ This report was generated automatically at ${build_time}</p></div>
 }
 
 String widgetResolution(String widget_name, String widget_version){
-    def resolution = Conclusion(widget_version)
+    def resolution = releaseDecision(widget_version)
     return """    ${widget_name}: ${resolution}"""
 }
 
 String releaseOverview(String release_version, Map projects){
     def widget_status = ""
     projects.each { k,v ->
-      widget_status = widget_status + "\n" + widgetResolution(k,v)
+        widget_status = widget_status + "\n" + widgetResolution(k,v)
     }
     def sheet = """
-Version proposal: ${release_version}
+Recommended version: ${release_version}
 ${widget_status}
 """
 return sheet
 }
+
+def templatedSubstageCheckProperties = {isRelease,name,version,project_list ->
+    return{
+        stage("Check properties"){
+            checkPackageProperties(isRelease,name,version,project_list)
+        }
+    }
+}
+
+def templatedSubstagePrepare = {name ->
+    return{
+        stage("Install dependencies"){
+            dir("${name}/"){
+                sh 'git status'
+                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                    sh 'npm i'
+                }
+            }
+        }
+    }
+}
+def templatedSubstageBuild = {name,version ->
+    return{
+        stage("Build"){
+            dir("${name}/"){
+                sh 'git status'
+                nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                    sh 'npm run build'
+                    sh 'git checkout package-lock.json || true'
+                    sh "npm version ${base_build['baseVersion']} --force"
+                }
+            }
+        }
+    }
+}
+
+def templatedSubstagePush = {name ->
+    return{
+        stage("Push tags and artifacts"){
+            dir("${name}/"){
+                sh 'git status'
+                withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${name}.git"
+                    sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${name}.git --tags"
+                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                        sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                        sh "npm publish"
+                    }
+                }
+            }
+        }
+    }
+}
+
+def moduleTemplatedStage = { project_dir,release_variable,version,project_list ->
+    stage_name = "Module: ${project_dir}"
+    if(base_build[release_variable] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/){
+        return{
+            stage(stage_name){
+                templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list)
+                templatedSubstagePrepare(project_dir).call()
+                templatedSubstageBuild(project_dir,version).call()
+                templatedSubstagePush(project_dir).call()
+            }
+        }
+    }
+    else{
+        return{
+            stage(stage_name){
+                templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list)
+            }
+        }
+    }
+}
+
+def widgetTemplatedStage = {project_dir,version ->
+    stage_name = "Widget: ${project_dir}"
+    return{
+        stage(stage_name){
+            templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list)
+            templatedSubstagePrepare(project_dir).call()
+            templatedSubstageBuild(project_dir,version).call()
+            templatedSubstagePush(project_dir).call()
+        }
+    }
+}
+
 
 pipeline{
     agent{
@@ -199,7 +282,7 @@ pipeline{
         parallelsAlwaysFailFast()
     }
     stages{
-        stage('Prepare to build'){
+        stage("Preparation steps"){
             stages{
                 stage('Clone repos'){
                     steps{
@@ -213,21 +296,20 @@ pipeline{
                             }
                         }
                     }
-                }
                 stage('Get versions of widgets'){
                     steps{
                         script{
                             projects.each { k,v ->
                                 dir(k + "/") {
                                     sh 'git checkout develop && git status'
-                                    projects[k] = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
-                                    ver_list = ver_list + sh(returnStdout: true, script: 'git describe --tags | cut -c 2- | cut -d- -f1' ).trim() + "\\n"
+                                    raw_version = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
+                                    projects[k] = raw_version
+                                    ver_list = ver_list + raw_version.split("-")[0] + "\\n"
                                 } 
                             }
-                            proposal_version = getMostHighVersion(ver_list)
-                            overview = releaseOverview(proposal_version, projects)
-                            echo "${overview}"
-                            base_ver = base_ver + proposal_version
+                            proposal_version = getMostRecentVersion(ver_list)
+                            echo "${releaseOverview(proposal_version, projects)}"
+                            release_version = proposal_version
                         }
                     }
                 }
@@ -237,22 +319,23 @@ pipeline{
                             base_build = input(
                                 id: 'base_build', message: 'HFHS Release',
                                 parameters: [
-                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-base" }?.value),
-                                                    description: "Make release of Base",
-                                                    name: 'isBaseRelease'),
-                                        booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
-                                                    description: "Make release of HFHS Connector",
-                                                    name: 'isConnectorRelease'),
-                                        string(defaultValue: "$base_ver",
-                                            description: 'with version',
-                                            name: 'baseVersion'),
+                                    booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-base" }?.value),
+                                                 description: "Make release of Base",
+                                                 name: 'isBaseRelease'),
+                                    booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
+                                                 description: "Make release of HFHS Connector",
+                                                 name: 'isConnectorRelease'),
+                                    string(defaultValue: "$release_version",
+                                           description: 'with version',
+                                           name: 'baseVersion'),
                                 ])
                             if (!(base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/)){
-                                error("Inappropriate base version. Release build will be interrupted.")
+                                error("Inappropriate version number. Release build will be interrupted.")
                             }
-                            echo "Check if tag not exist"
+                            echo "Check chosen tag existance"
                             def notValidTag = 0
                             projects.each{ k,v ->
+                                if(isReleaseNeeded(projects.find{it.key == k }?.value == false) return
                                 dir(k + "/"){
                                     if(isTagExist(base_build['baseVersion']) == true){
                                         echo "${k} already have tag ${base_build['baseVersion']}"
@@ -266,597 +349,21 @@ pipeline{
                         }
                     }
                 }
-            }
         }
-        stage('Build components'){
-            stages{
-                stage('Component: Base'){
-                    stages{
-                        stage('Check widgets'){
-                            steps{
-                                script{
-                                    checkPackageProperties(base_build['isBaseRelease'], "microfrontend-hfhs-base", base_build['baseVersion'], projects)
-                                }
-                            }
-                        }
-                        stage('Prepare'){
-                            when{
-                                expression{
-                                    base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-base/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            when{
-                                expression{
-                                    base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-base/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh 'git checkout package-lock.json'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Push tags'){
-                            when{
-                                expression{
-                                    base_build['isBaseRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-base/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-base.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Component: Connector'){
-                    stages{
-                        stage('Check widgets'){
-                            steps{
-                                script{
-                                    checkPackageProperties(base_build['isConnectorRelease'], "microfrontend-hfhs-connector", base_build['baseVersion'], projects)
-                                }
-                            }
-                        }
-                        stage('Prepare'){
-                            when{
-                                expression{
-                                    base_build['isConnectorRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-connector/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            when{
-                                expression{
-                                    base_build['isConnectorRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-connector/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh 'git checkout package-lock.json'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Push tags'){
-                            when{
-                                expression{
-                                    base_build['isConnectorRelease'] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/
-                                }
-                            }
-                            steps{
-                                dir("microfrontend-hfhs-connector/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-connector.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-connector.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+        stage("Build modules"){
+            steps{
+                script{
+                    moduleTemplatedStage("microfrontend-hfhs-base","isBaseRelease",base_build['baseVersion'],projects).call()
+                    moduleTemplatedStage("microfrontend-hfhs-connector","isConnectorRelease",base_build['baseVersion'],projects).call()
                 }
             }
         }
-        stage('Build widgets'){
-            stages{
-                stage('Widget: Create account'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-createaccount" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Prepare'){
-                            steps{
-                                dir("microfrontend-hfhs-createaccount/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-createaccount/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-createaccount/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-createaccount.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-createaccount.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm run docker-push-image"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Bulk Operation'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-bulk-operation" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Prepare'){
-                            steps{
-                                dir("microfrontend-hfhs-bulk-operation/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-bulk-operation/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-bulk-operation/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-bulk-operation.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-bulk-operation.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm run docker-push-image"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Processing'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-processing" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Prepare'){
-                            steps{
-                                dir("microfrontend-hfhs-processing/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-processing/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-processing/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-processing.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-processing.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm run docker-push-image"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Change Ownership'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-changeownership" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Prepare'){
-                            steps{
-                                dir("microfrontend-hfhs-changeownership/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-changeownership/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-changeownership/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-changeownership.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-changeownership.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm run docker-push-image"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Business Transaction Detail'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-business-transaction-detail" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Prepare'){
-                            steps{
-                                dir("microfrontend-hfhs-business-transaction-detail/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-business-transaction-detail/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-business-transaction-detail/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-detail.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-detail.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm run docker-push-image"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Product Details'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-product-details" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Prepare'){
-                            steps{
-                                dir("microfrontend-hfhs-product-details/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-product-details/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-product-details/"){
-                                    sh 'git status'
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-product-details.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-product-details.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm run docker-push-image"
-                                            sh "npm publish"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Search Product'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-search-product" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Install deps'){
-                            steps{
-                                dir("microfrontend-hfhs-search-product/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-search-product/"){
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh 'git checkout package-lock.json'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-search-product/"){
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/search-product.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm publish"
-                                            sh "npm run docker-push-image"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Product Move'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-product-move" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Install deps'){
-                            steps{
-                                dir("microfrontend-hfhs-product-move/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-product-move/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-product-move/"){
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                        sh 'git status'
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/product-move.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm publish"
-                                            sh "npm run docker-push-image"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Toolbar'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-toolbar" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Install deps'){
-                            steps{
-                                dir("microfrontend-hfhs-toolbar/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-toolbar/"){
-                                    sh 'git status' 
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {         
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-toolbar/"){
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                        sh 'git status'
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-toolbar.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-toolbar.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm publish"
-                                            sh "npm run docker-push-image"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Widget: Business Transaction History'){
-                    when{
-                        expression{
-                            isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-business-transaction-history" }?.value) == true
-                        }
-                    }
-                    stages{
-                        stage('Install deps'){
-                            steps{
-                                dir("microfrontend-hfhs-business-transaction-history/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm i'
-                                    }
-                                }
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                dir("microfrontend-hfhs-business-transaction-history/"){
-                                    sh 'git status'
-                                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                        sh 'npm run build'
-                                        sh "npm version ${base_build['baseVersion']} --force"
-                                    }
-                                }
-                            }
-                        }
-                        stage('Publish'){
-                            steps{
-                                dir("microfrontend-hfhs-business-transaction-history/"){
-                                    withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                                        sh "git status"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-history.git"
-                                        sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/microfrontend-hfhs-business-transaction-history.git --tags"
-                                        nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
-                                            sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
-                                            sh "npm publish"
-                                            sh "npm run docker-push-image"
-                                        }
-                                    }
-                                }
-                            }
-                        }
+        stage("Build widgets"){
+            steps{
+                script{
+                    widgets.each{k,v ->
+                        if(isReleaseNeeded(projects.find{it.key == k }?.value) == false) return
+                        else widgetTemplatedStage(k,base_build['baseVersion'])
                     }
                 }
             }
@@ -872,8 +379,8 @@ pipeline{
                     projects.each{ k,v ->
                         if ((isReleaseNeeded(projects.find{it.key == k}?.value) == false) || (isPluggableModule(k) == true)) return
                         dir(k + "/") {
-                            env.IMAGE_VERSION = getPackageVersion()
-                            echo "Deploying ${k} to INT"
+                            env.IMAGE_VERSION = getPackageAttribute("version")
+                            echo "Deploying ${k}:${env.IMAGE_VERSION} to INT"
                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {
                                 sh 'envsubst < kubernetes/deployment.yml | kubectl apply -v=6 -f -'
                                 sh 'envsubst < kubernetes/service.yml | kubectl apply -v=6 -f -'
@@ -892,7 +399,7 @@ pipeline{
     post{
         success{
             script{
-                projects.each{ k,v ->
+                widgets.each{ k,v ->
                     sh "docker rmi \$(docker images tasktrack.telekom.at/gucci-docker-local/${k}:latest | tail -n +2 | awk '{print \$3}') -f || true"
                 }
             }
