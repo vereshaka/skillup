@@ -237,6 +237,25 @@ def templatedSubstagePush = {name ->
     }
 }
 
+def templatedWidgetSubstagePush = {name ->
+    return{
+        stage("Push tags and artifacts"){
+            dir("${name}/"){
+                sh 'git status'
+                withCredentials([usernamePassword(credentialsId: JENKIN_GIT_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${name}.git"
+                    sh "git push https://${USERNAME}:${PASSWORD}@tasktrack.telekom.at/bitbucket/scm/ccf/${name}.git --tags"
+                    nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
+                        sh "npm-cli-adduser --registry https://tasktrack.telekom.at/artifactory/api/npm/npm-repos --username ${USERNAME}  --password ${PASSWORD} --email ${USERNAME}@a1.at --scope @a1"
+                        sh "npm publish"
+                        sh "npm run docker-push-image"
+                    }
+                }
+            }
+        }
+    }
+}
+
 def moduleTemplatedStage = { project_dir,release_variable,version,project_list ->
     stage_name = "Module: ${project_dir}"
     if(base_build[release_variable] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/){
@@ -264,7 +283,7 @@ def widgetTemplatedStage = {project_dir,version ->
         stage(stage_name){
             templatedSubstagePrepare(project_dir).call()
             templatedSubstageBuild(project_dir,version).call()
-            templatedSubstagePush(project_dir).call()
+            templatedWidgetSubstagePush(project_dir).call()
         }
     }
 }
