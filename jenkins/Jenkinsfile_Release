@@ -54,7 +54,7 @@ String releaseDecision(String version){
 void setComponentVersion(String package_name, String package_version){
     def package_data = readJSON file: 'package.json'
     if(package_data.'dependencies'.containsKey(package_name)){
-        package_data.'dependencies'."${package_name}" = package_version 
+        package_data.'dependencies'."${package_name}" = "^" + package_version 
     }
     writeJSON file: 'package.json', json: package_data, pretty: 2
 }
@@ -90,7 +90,7 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
             if (k == packageName) return
                 dir(k + "/") {
                     def full_name = "@a1/" + packageName
-                    def component_version = getComponentVersion(full_name)
+                    def component_version = (getComponentVersion(full_name)).replaceAll("[@^=]+","")
                     isBaseVerValid = isBaseVerValid && (isVersionValid(component_version) || (component_version  == ""))
                     overview = overview + k + ": " + component_version + "\n    "
                 }
