@@ -296,6 +296,8 @@ pipeline{
                             }
                         }
                     }
+
+                }
                 stage('Get versions of widgets'){
                     steps{
                         script{
@@ -349,6 +351,7 @@ pipeline{
                         }
                     }
                 }
+            }
         }
         stage("Build modules"){
             steps{
