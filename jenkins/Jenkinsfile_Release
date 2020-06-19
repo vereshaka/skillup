@@ -335,7 +335,7 @@ pipeline{
                             echo "Check chosen tag existance"
                             def notValidTag = 0
                             projects.each{ k,v ->
-                                if(isReleaseNeeded(projects.find{it.key == k }?.value == false) return
+                                if(isReleaseNeeded(projects.find{it.key == k }?.value == false)) return
                                 dir(k + "/"){
                                     if(isTagExist(base_build['baseVersion']) == true){
                                         echo "${k} already have tag ${base_build['baseVersion']}"
