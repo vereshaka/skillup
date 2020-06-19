@@ -242,7 +242,7 @@ def moduleTemplatedStage = { project_dir,release_variable,version,project_list -
     if(base_build[release_variable] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/){
         return{
             stage(stage_name){
-                templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list)
+                templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list).call()
                 templatedSubstagePrepare(project_dir).call()
                 templatedSubstageBuild(project_dir,version).call()
                 templatedSubstagePush(project_dir).call()
@@ -252,7 +252,7 @@ def moduleTemplatedStage = { project_dir,release_variable,version,project_list -
     else{
         return{
             stage(stage_name){
-                templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list)
+                templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list).call()
             }
         }
     }
@@ -262,7 +262,6 @@ def widgetTemplatedStage = {project_dir,version ->
     stage_name = "Widget: ${project_dir}"
     return{
         stage(stage_name){
-            templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list)
             templatedSubstagePrepare(project_dir).call()
             templatedSubstageBuild(project_dir,version).call()
             templatedSubstagePush(project_dir).call()
@@ -366,7 +365,7 @@ pipeline{
                 script{
                     widgets.each{k,v ->
                         if(isReleaseNeeded(projects.find{it.key == k }?.value) == false) return
-                        else widgetTemplatedStage(k,base_build['baseVersion'])
+                        widgetTemplatedStage(k,base_build['baseVersion']).call()
                     }
                 }
             }
