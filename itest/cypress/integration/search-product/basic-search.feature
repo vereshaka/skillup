@@ -8,8 +8,8 @@ Feature: Basic Search
     When I search by 'KDNR:100200108'
     Then I should see following 'products'
       | Product     | Subscription | AccountNumber | AccountType |
-      | A1 Festnetz | 43/1/5222128 | 200006294697  | NORM        |
-      | A1 Festnetz | 43/1/8652407 | 200009814696  | NORM        |
+      | A1 Festnetz ISDN  | 43/2272/65400 | 200006294697  | NORM        |
+      | A1 Festnetz | 43/2622/26633 | 200006294697   | NORM        |
 
   @focus
   Scenario: Search by Account(Maxbill)
@@ -82,9 +82,8 @@ Feature: Basic Search
     When I search by 'PN:A1 Festnetz && KDNR:100200108'
     Then I should see following 'products'
       | Product     | Subscription  | AccountNumber | AccountType |
-      | A1 Festnetz | 43/1/5222128  | 200006294697  | NORM        |
-      | A1 Festnetz | 43/1/8652407  | 200009814696  | NORM        |
-      | A1 Festnetz | 43/316/810346 | 200006294697  | NORM        |
+      | A1 Festnetz | 43/2622/26633  | 200006294697   | NORM        |
+
 
   @focus
   Scenario: Search by Subscription ID
