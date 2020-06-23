@@ -104,8 +104,7 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
         echo "Now will be set recent version of ${packageName} in 'package.json' of widgets"
         projects.each{ k,v ->
             dir(k + "/"){
-                def set_version = ComponentVersion(packageName, packageVersion)
-                sh "${set_version}"
+                setComponentVersion(packageName, packageVersion)
                 sh "git add package.json || true"
             }
         }
