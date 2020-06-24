@@ -1,6 +1,5 @@
 Feature: Restriction checking
 
-  @focus
   Scenario: Restriction check: wrong contract capable
     Given As hfhs-user2 with permission 'hfhs-user'
     And open 'Product Move' widget from 'HFHS Cockpit'
