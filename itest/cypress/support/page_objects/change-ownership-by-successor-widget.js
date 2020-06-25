@@ -29,7 +29,7 @@ class ChangeOwnershipBySuccessorWidget extends AbstractWidget {
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
   };
 
-  openDialog = (name: string, group?:string) => {
+  openDialog = (name: string, group?: string) => {
     switch (name) {
       case 'Add Product':
         cy.get(`span[id="${this.elements[name]}"]`).click();
@@ -37,7 +37,7 @@ class ChangeOwnershipBySuccessorWidget extends AbstractWidget {
         break;
       case 'Add Account':
         if (group) {
-         // this.specifyGroup(name, group);
+          // this.specifyGroup(name, group);
           cy.get(`button[id="${this.elements[name]}"]`).click();
           this.currentDialog = new SearchAccountWidget();
         } else {

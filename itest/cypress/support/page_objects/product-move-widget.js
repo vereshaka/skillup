@@ -50,7 +50,7 @@ class ProductMoveWidget extends AbstractWidget {
           interval: 1000,
         });
         if (group) {
-         // this.specifyGroup(name, group);
+          // this.specifyGroup(name, group);
           cy.get(`button[id="${this.elements[name]}"]`).click();
           this.currentDialog = new SearchAccountWidget();
         } else {
@@ -118,22 +118,23 @@ class ProductMoveWidget extends AbstractWidget {
     new SearchAccountWidget().addAccount(account, query);
   };
 
-isPageOpened = () => {
-  cy.normalWait();
-  cy.get(`button[id="${this.elements['Next Button']}"]`).click();
-  cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
-};
+  isPageOpened = () => {
+    cy.normalWait();
+    cy.get(`button[id="${this.elements['Next Button']}"]`).click();
+    cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
+  };
+
   isPageNotOpened = () => {
     cy.normalWait();
     cy.get(`button[id="${this.elements['Next Button']}"]`).should('have.attr', 'disabled');
   };
 
-isWarningExist2 = () => {
-  cy.get('div[id="PM.warningAccount.icon"]').should('exist');
-};
+  isWarningExist2 = () => {
+    cy.get('div[id="PM.warningAccount.icon"]').should('exist');
+  };
 
 
-isSelectedAccountsCorrect = (table:Object) => {
+  isSelectedAccountsCorrect = (table:Object) => {
     let { length } = table.hashes();
     length = Number(length);
     // eslint-disable-next-line no-plusplus

@@ -350,14 +350,10 @@ Then(/Execution Date warning should exist/, () => {
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
-
 Then(/I see warning icon/, () => {
-
   (gucciWorld.getCurrentCockpit()
-      .getCurrentWidget(): ProductMoveWidget).isWarningExist2();
+    .getCurrentWidget(): ProductMoveWidget).isWarningExist2();
 });
-
-
 Then(/Create Account link should be with '(.*)' end/, (kums) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentDialog(): SearchAccountWidget)
     .checkUrl(kums);
