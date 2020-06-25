@@ -3,7 +3,10 @@
   "watchForFileChanges": false,
   "chromeWebSecurity": false,
   "env": {
-    "portalUrl": "https://int.gucci-qa.at.inside/",
+    "portalUrl": "http://gucci-portal.k8s.sytoss.intra/",
+    "dbUsername": "csof",
+    "dbPassword": "csof",
+    "dbConnectionString": "db01.sytoss.intra:1521/sytoss03",
     "localisation": "EN",
     "createAccountLink": "undefined"
   }

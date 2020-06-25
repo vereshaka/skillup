@@ -48,6 +48,7 @@ Feature: Change Ownership by successor
     Then I should see that product 'transferable'
     And Select account button 'active'
 
+  @focus
   Scenario: Check Transferability: not transferable
     Given I open GUCCI Portal as hfhs-user2
     And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
