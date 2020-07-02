@@ -26,7 +26,7 @@ class ChangeOwnershipBySuccessorWidget extends AbstractWidget {
       timeout: 30000,
       interval: 1000,
     });
-    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`button[id="${this.elements[name]}"]>span`).click();
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`button[id="${this.elements[name]}"]`).click();
   };
 
   openDialog = (name: string, group?: string) => {
