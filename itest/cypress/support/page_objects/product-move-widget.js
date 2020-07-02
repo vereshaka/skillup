@@ -23,13 +23,13 @@ class ProductMoveWidget extends AbstractWidget {
   getName = () => 'Product Move';
 
   specifyGroup = (name: string, group: string) => {
-    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
+    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`button[id="${this.elements[name]}"].inactive`).length === 0), {
       errorMsg: 'Select Account disabled',
       timeout: 30000,
       interval: 1000,
     });
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains("${group}Products")`).as('searchableGroup');
-    cy.get('@searchableGroup').find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
+    cy.get('@searchableGroup').find(`button[id="${this.elements[name]}"]`).click();
   };
 
   openDialog = (name: string, group?:string) => {
@@ -50,8 +50,7 @@ class ProductMoveWidget extends AbstractWidget {
           interval: 1000,
         });
         if (group) {
-          // this.specifyGroup(name, group);
-          cy.get(`button[id="${this.elements[name]}"]`).click();
+          this.specifyGroup(name, group);
           this.currentDialog = new SearchAccountWidget();
         } else {
           throw new Error('No group was defined');
@@ -108,7 +107,7 @@ class ProductMoveWidget extends AbstractWidget {
     new SearchProductWidget().search(query);
   };
 
-  specifyAccount = (account:string, query:string, group:string) => {
+  specifyAccount = (account: string, query: string, group: string) => {
     cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`button[id="${this.elements['Add Account']}"]`).length), {
       errorMsg: 'Product Move not loaded',
       timeout: 30000,
