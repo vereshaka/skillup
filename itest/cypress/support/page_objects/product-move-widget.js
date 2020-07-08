@@ -23,13 +23,13 @@ class ProductMoveWidget extends AbstractWidget {
   getName = () => 'Product Move';
 
   specifyGroup = (name: string, group: string) => {
-    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
+    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`button[id="${this.elements[name]}"].inactive`).length === 0), {
       errorMsg: 'Select Account disabled',
       timeout: 30000,
       interval: 1000,
     });
     cy.get(`div[class="gucci-common-expandable-panel-header"]:contains("${group}Products")`).as('searchableGroup');
-    cy.get('@searchableGroup').find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
+    cy.get('@searchableGroup').find(`button[id="${this.elements[name]}"]`).click();
   };
 
   openDialog = (name: string, group?:string) => {
@@ -107,8 +107,8 @@ class ProductMoveWidget extends AbstractWidget {
     new SearchProductWidget().search(query);
   };
 
-  specifyAccount = (account:string, query:string, group:string) => {
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`div[id="${this.elements['Add Account']}"]`).length), {
+  specifyAccount = (account: string, query: string, group: string) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`button[id="${this.elements['Add Account']}"]`).length), {
       errorMsg: 'Product Move not loaded',
       timeout: 30000,
       interval: 1000,
@@ -122,6 +122,16 @@ class ProductMoveWidget extends AbstractWidget {
     cy.get(`button[id="${this.elements['Next Button']}"]`).click();
     cy.get('ol.gucci-common-stepper>li:eq(2)').should('have.attr', 'active');
   };
+
+  isPageNotOpened = () => {
+    cy.normalWait();
+    cy.get(`button[id="${this.elements['Next Button']}"]`).should('have.attr', 'disabled');
+  };
+
+  isWarningExist2 = () => {
+    cy.get('div[id="PM.warningAccount.icon"]').should('exist');
+  };
+
 
   isSelectedAccountsCorrect = (table:Object) => {
     let { length } = table.hashes();

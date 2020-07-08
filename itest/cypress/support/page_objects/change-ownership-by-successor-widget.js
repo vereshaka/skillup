@@ -21,15 +21,15 @@ class ChangeOwnershipBySuccessorWidget extends AbstractWidget {
   getName = () => 'Change Ownership by successor';
 
   specifyGroup = (name: string, group: string) => {
-    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
+    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`button[id="${this.elements[name]}"].inactive`).length === 0), {
       errorMsg: 'Change Ownership by successor not loaded',
       timeout: 30000,
       interval: 1000,
     });
-    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`button[id="${this.elements[name]}"]`).click();
   };
 
-  openDialog = (name: string, group?:string) => {
+  openDialog = (name: string, group?: string) => {
     switch (name) {
       case 'Add Product':
         cy.get(`span[id="${this.elements[name]}"]`).click();

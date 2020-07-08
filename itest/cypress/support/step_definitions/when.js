@@ -60,6 +60,11 @@ When(/Order validation step is open/, () => {
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
+When(/Order validation step is not open/, () => {
+  (gucciWorld.getCurrentCockpit()
+    .getCurrentWidget(): ProductMoveWidget)
+    .isPageNotOpened();
+});
 When(/^I open '(.*)' Widget from toolbar$/, (widgetName) => {
   gucciWorld.getCurrentCockpit()
     .openWidget(widgetName);

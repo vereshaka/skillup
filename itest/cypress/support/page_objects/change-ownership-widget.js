@@ -21,12 +21,12 @@ class ChangeOwnershipWidget extends AbstractWidget {
   getName = () => 'Change Ownership';
 
   specifyGroup = (name: string, group: string) => {
-    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`div[id="${this.elements[name]}"].disabled`).length === 0), {
+    cy.waitUntil(() => cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).then(($group) => $group.find(`button[id="${this.elements[name]}"].inactive`).length === 0), {
       errorMsg: 'Change Ownership not loaded',
       timeout: 30000,
       interval: 1000,
     });
-    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`div[id="${this.elements[name]}"]>span`).click({ force: true });
+    cy.get(`div[class="gucci-common-expandable-panel-header"]:contains(${group})`).find(`button[id="${this.elements[name]}"]`).click();
   };
 
   openDialog = (name: string, group?:string) => {
@@ -78,8 +78,8 @@ class ChangeOwnershipWidget extends AbstractWidget {
     new SearchProductWidget().searchAndAdd(query, table);
   };
 
-  specifyAccount = (account:string, query:string, group:string) => {
-    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`div[id="${this.elements['Add Account']}"]`).length), {
+  specifyAccount = (account: string, query: string, group: string) => {
+    cy.waitUntil(() => cy.get('body').then(($body) => $body.find(`button[id="${this.elements['Add Account']}"]`).length), {
       errorMsg: 'Change Ownership not loaded',
       timeout: 30000,
       interval: 1000,
