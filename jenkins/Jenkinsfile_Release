@@ -194,7 +194,7 @@ String quickSetVersion(String requested_version, String option){
     def agreed_version = ""
     if (option == "hotfix"){
         def processing = requested_version.split("\\.")
-        processing[2] = (processing[2].toInteger() + 1).toString()
+        processing[2] = (processing[2].toInteger() + 0).toString()
         agreed_version = processing.join(".")
     }
     else if (option == "release"){
