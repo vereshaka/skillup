@@ -378,7 +378,7 @@ pipeline{
                                            description: 'with version. If buildType is hotfix or release, this field is ignored.',
                                            name: 'baseVersion'),
                                 ])
-                            if ((base_build["buildType"] == "hotfix") or (base_build["buildType"] == "release")){
+                            if ((base_build["buildType"] == "hotfix") || (base_build["buildType"] == "release")){
                                 release_version = quickSetVersion(proposal_version, base_build["buildType"])
                             }
                             else{
