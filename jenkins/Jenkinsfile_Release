@@ -203,6 +203,7 @@ def templatedSubstagePrepare = {name ->
         }
     }
 }
+
 def templatedSubstageBuild = {name,version ->
     return{
         stage("Build"){
@@ -211,7 +212,7 @@ def templatedSubstageBuild = {name,version ->
                 nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                     sh 'npm run build'
                     sh 'git checkout package-lock.json || true'
-                    sh "npm version ${base_build['baseVersion']} --force"
+                    sh "npm version ${version} --force"
                 }
             }
         }
