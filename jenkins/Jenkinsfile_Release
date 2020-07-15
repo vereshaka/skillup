@@ -10,6 +10,12 @@ def release_version = ""
 def base_build = null
 def sanity_test_job_name = "hfhs-release-sanity-test"
 
+def job_types = [
+    "hotfix",
+    "release",
+    "custom"
+]
+
 /* 
 Variable 'projects' contains list of widgets that can be released.
 */
@@ -183,6 +189,26 @@ ${widget_status}
 return sheet
 }
 
+//BETA feature
+String quickSetVersion(String requested_version, String option){
+    def agreed_version = ""
+    if (option == "hotfix"){
+        def processing = requested_version.split("\\.")
+        processing[2] = (processing[2].toInteger() + 0).toString()
+        agreed_version = processing.join(".")
+    }
+    else if (option == "release"){
+        def processing = requested_version.split("\\.")
+        processing[1] = (processing[1].toInteger() + 1).toString()
+        agreed_version = processing.join(".")
+    }
+    else{
+        agreed_version = requested_version
+    }
+    return agreed_version
+}
+//end
+
 def templatedSubstageCheckProperties = {isRelease,name,version,project_list ->
     return{
         stage("Check properties"){
@@ -203,6 +229,7 @@ def templatedSubstagePrepare = {name ->
         }
     }
 }
+
 def templatedSubstageBuild = {name,version ->
     return{
         stage("Build"){
@@ -211,7 +238,7 @@ def templatedSubstageBuild = {name,version ->
                 nodejs(JENKINS_NODE_JS_INSTALLATION_LABEL) {
                     sh 'npm run build'
                     sh 'git checkout package-lock.json || true'
-                    sh "npm version ${base_build['baseVersion']} --force"
+                    sh "npm version ${version} --force"
                 }
             }
         }
@@ -257,7 +284,7 @@ def templatedWidgetSubstagePush = {name ->
 
 def moduleTemplatedStage = { project_dir,release_variable,version,project_list ->
     stage_name = "Module: ${project_dir}"
-    if(base_build[release_variable] == true && base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/){
+    if(base_build[release_variable] == true && release_version  ==~ /\d+\.{1}\d+\.{1}\d+/){
         return{
             stage(stage_name){
                 templatedSubstageCheckProperties(base_build[release_variable],project_dir,version,project_list).call()
@@ -344,26 +371,38 @@ pipeline{
                                     booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
                                                  description: "Make release of HFHS Connector",
                                                  name: 'isConnectorRelease'),
-                                    string(defaultValue: "$release_version",
-                                           description: 'with version',
+                                    choice(name: 'buildType', 
+                                           choices: job_types, 
+                                           description: 'Kind of job type'),
+                                    string(defaultValue: "$proposal_version",
+                                           description: 'with version. If buildType is hotfix or release, this field is ignored.',
                                            name: 'baseVersion'),
                                 ])
-                            if (!(base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/)){
-                                error("Inappropriate version number. Release build will be interrupted.")
+                            if ((base_build["buildType"] == "hotfix") or (base_build["buildType"] == "release")){
+                                release_version = quickSetVersion(proposal_version, base_build["buildType"])
                             }
+                            else{
+                                if (!(base_build['baseVersion']  ==~ /\d+\.{1}\d+\.{1}\d+/)){
+                                    error("Inappropriate version number. Release build will be interrupted.")
+                                }
+                                else{
+                                    release_version = quickSetVersion(base_build['baseVersion'], base_build['buildType'])
+                                }                                
+                            }
+                            
                             echo "Check chosen tag existance"
                             def notValidTag = 0
                             projects.each{ k,v ->
                                 if(isReleaseNeeded(projects.find{it.key == k }?.value) == false) return
                                 dir(k + "/"){
-                                    if(isTagExist(base_build['baseVersion']) == true){
-                                        echo "${k} already have tag ${base_build['baseVersion']}"
+                                    if(isTagExist(release_version) == true){
+                                        echo "${k} already have tag ${release_version}"
                                         notValidTag += 1
                                     }
                                 }
                             }
                             if (notValidTag > 0 ){
-                                error("Some projects already have tag ${base_build['baseVersion']}. Release build will be interrupted.")
+                                error("Some projects already have tag ${release_version}. Release build will be interrupted.")
                             }
                         }
                     }
@@ -373,8 +412,8 @@ pipeline{
         stage("Build modules"){
             steps{
                 script{
-                    moduleTemplatedStage("microfrontend-hfhs-base","isBaseRelease",base_build['baseVersion'],projects).call()
-                    moduleTemplatedStage("microfrontend-hfhs-connector","isConnectorRelease",base_build['baseVersion'],projects).call()
+                    moduleTemplatedStage("microfrontend-hfhs-base","isBaseRelease",release_version,projects).call()
+                    moduleTemplatedStage("microfrontend-hfhs-connector","isConnectorRelease",release_version,projects).call()
                 }
             }
         }
@@ -383,7 +422,7 @@ pipeline{
                 script{
                     widgets.each{k,v ->
                         if(isReleaseNeeded(projects.find{it.key == k }?.value) == false) return
-                        widgetTemplatedStage(k,base_build['baseVersion']).call()
+                        widgetTemplatedStage(k,release_version).call()
                     }
                 }
             }
@@ -424,14 +463,14 @@ pipeline{
                 }
             }
             emailext to: INFORM_ABOUT_FAILURE,
-                     subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been finished",
-                     body: report(projects, base_build['baseVersion']),
+                     subject: "${JOB_NAME} for version ${release_version} has been finished",
+                     body: report(projects, release_version),
                      attachLog: false,
                      mimeType: 'text/html'
         }
         failure {
             emailext to: INFORM_ABOUT_FAILURE,
-                     subject: "${JOB_NAME} for version ${base_build['baseVersion']} has been failed",
+                     subject: "${JOB_NAME} for version ${release_version} has been failed",
                      body: "Please go to ${BUILD_URL} and verify the build",
                      attachLog: true
         }
