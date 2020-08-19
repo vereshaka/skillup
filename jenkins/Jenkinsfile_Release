@@ -339,7 +339,6 @@ pipeline{
                             }
                         }
                     }
-
                 }
                 stage('Get versions of widgets'){
                     steps{
@@ -376,6 +375,9 @@ pipeline{
                                     string(defaultValue: "$proposal_version",
                                            description: 'with version. If buildType is hotfix or release, this field is ignored.',
                                            name: 'baseVersion'),
+                                    booleanParam(defaultValue: false,
+                                                 description: "Perform sanity test after release",
+                                                 name: 'isSanityTestChosen'),
                                 ])
                             if ((base_build["buildType"] == "hotfix") || (base_build["buildType"] == "release")){
                                 release_version = quickSetVersion(proposal_version, base_build["buildType"])
@@ -449,6 +451,11 @@ pipeline{
             }
         }
         stage("Perform sanity tests"){
+            when{
+                expression{
+                    base_build['isSanityTestChosen'] == true
+                }
+            }
             steps{
                 build job: sanity_test_job_name,  propagate: false, quietPeriod: 150
             }
