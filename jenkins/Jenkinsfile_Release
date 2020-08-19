@@ -189,7 +189,6 @@ ${widget_status}
 return sheet
 }
 
-//BETA feature
 String quickSetVersion(String requested_version, String option){
     def agreed_version = ""
     if (option == "hotfix"){
@@ -208,7 +207,6 @@ String quickSetVersion(String requested_version, String option){
     }
     return agreed_version
 }
-//end
 
 def templatedSubstageCheckProperties = {isRelease,name,version,project_list ->
     return{
