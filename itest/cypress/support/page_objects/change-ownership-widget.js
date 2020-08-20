@@ -151,6 +151,11 @@ class ChangeOwnershipWidget extends AbstractWidget {
     cy.get('div.gucci-common-select-field-drop-down-wrapper').find(`span:contains(${getValue(discount)})`).click();
   };
 
+  selectCustomerCommunication = (customer) => {
+    cy.get('div[class="gucci-common-select-field-button"]:eq(1)').click();
+    cy.get('div.gucci-common-select-field-drop-down-wrapper').find(`span:contains(${getValue(customer)})`).click();
+  };
+
   isTransactionFeeCorrect = (transactionFee: string) => {
     const fee = Number(transactionFee);
     const enTransactionFee = fee.toLocaleString('en-EN', { minimumFractionDigits: 2 });

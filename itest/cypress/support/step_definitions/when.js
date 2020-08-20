@@ -143,6 +143,25 @@ When(/Transaction fee discount is '(no discount|50% discount|100% discount)'/, (
       throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
   }
 });
+When(/Customer communication is '(Suppress customer letters|New customer|Previous customer|New and Previous customer)'/, (customer) => {
+  const currentWidgetName = gucciWorld.getCurrentCockpit()
+    .getCurrentWidget()
+    .getName();
+  switch (currentWidgetName) {
+    case 'Change Ownership':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipWidget)
+        .selectCustomerCommunication(customer);
+      break;
+    case 'Change Ownership by successor':
+      (gucciWorld.getCurrentCockpit()
+        .getCurrentWidget(): ChangeOwnershipBySuccessorWidget)
+        .selectCustomerCommunication(customer);
+      break;
+    default:
+      throw new Error(`Unsupported widget. Name: ${currentWidgetName}`);
+  }
+});
 When(/select '(Name|SidID|Names and SidIds)' mode/, (mode) => {
   (gucciWorld.getCurrentCockpit().getCurrentWidget().getCurrentWidget(): ProductDetailsWidget)
     .selectMode(mode);
