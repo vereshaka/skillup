@@ -30,6 +30,17 @@ Feature: Change Ownership by successor
     Then Transaction fee should be '10.00'
 
   @focus
+  Scenario: Check Customer communication
+    Given I open GUCCI Portal as hfhs-user2
+    And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
+    And add products founded by 'KDNR:108033579'
+      | Product  | Subscription     | AccountNumber | AccountType |
+      | A1 Kombi | 43/9740/11183504 | A362217278    | PRI         |
+    And specify 'A362259643,00001' account founded by 'KDNR:105475536' for 'A362217278 PRI' group
+    When Order validation step is open
+    And Customer communication is 'New customer'
+
+  @focus
   Scenario: Check Legal Representative info
     Given I open GUCCI Portal as hfhs-user2
     And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
@@ -63,9 +74,22 @@ Feature: Change Ownership by successor
     Given I open GUCCI Portal as hfhs-user2
     And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
     And add products founded by 'KDNR:102849412'
-      | Product  | Subscription     | AccountNumber | AccountType |
-      | A1 Mobil Start | 43/9143/00557 | 200002376215    | NORM         |
+      | Product        | Subscription  | AccountNumber | AccountType |
+      | A1 Mobil Start | 43/9143/00557 | 200002376215  | NORM        |
     And specify '200003507657' account founded by 'KDNR:102567907' for '200002376215 NORM' group
+    When Order validation step is open
+    And set effective date not end of month
+    Then Execution Date warning should exist
+
+
+  @focus
+  Scenario: Check date
+    Given I open GUCCI Portal as hfhs-user2
+    And open 'Change Ownership by successor' widget from 'HFHS Cockpit'
+    And add products founded by 'KDNR:101104958'
+      | Product        | Subscription  | AccountNumber | AccountType |
+      | A1 Mobil Start | 43/9144/14876 | 200008406078  | NORM        |
+    And specify '200003507657' account founded by 'KDNR:102567907' for '200008406078 NORM' group
     When Order validation step is open
     And set effective date not end of month
     Then Execution Date warning should exist
