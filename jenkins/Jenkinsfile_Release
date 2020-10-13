@@ -95,7 +95,6 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
         projects.each{ k,v ->
             if (k == packageName) return
                 dir(k + "/") {
-//                    def full_name = "@a1/" + packageName
                     def component_version = (getComponentVersion("@a1/${packageName}")).replaceAll("[@^=]+","")
                     isBaseVerValid = isBaseVerValid && (isVersionValid(component_version) || (component_version  == ""))
                     overview = overview + k + ": " + component_version + "\n    "
@@ -373,7 +372,7 @@ pipeline{
                                            name: 'baseVersion'),
                                     booleanParam(defaultValue: false,
                                                  description: "Perform sanity test after release",
-                                                 name: 'isSanityTestChosen'),
+                                                 name: 'isSanityTestEnabled'),
                                 ])
                             if ((base_build["buildType"] == "hotfix") || (base_build["buildType"] == "release")){
                                 release_version = quickSetVersion(proposal_version, base_build["buildType"])
@@ -448,7 +447,7 @@ pipeline{
         stage("Perform sanity tests"){
             when{
                 expression{
-                    base_build['isSanityTestChosen'] == true
+                    base_build['isSanityTestEnabled'] == true
                 }
             }
             steps{
