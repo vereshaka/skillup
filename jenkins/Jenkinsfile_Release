@@ -95,19 +95,18 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
         projects.each{ k,v ->
             if (k == packageName) return
                 dir(k + "/") {
-                    def full_name = "@a1/" + packageName
-                    def component_version = (getComponentVersion(full_name)).replaceAll("[@^=]+","")
+                    def component_version = (getComponentVersion("@a1/${packageName}")).replaceAll("[@^=]+","")
                     isBaseVerValid = isBaseVerValid && (isVersionValid(component_version) || (component_version  == ""))
                     overview = overview + k + ": " + component_version + "\n    "
                 }
             }
         echo "${overview}"
         if (isBaseVerValid == false) {
-            error("Some widgets has wrong version. Release build will be interrupted.")
+            error("Some widgets have wrong version of the module. Release build will be interrupted.")
         }
     }
     else{
-        echo "Now will be set recent version of ${packageName} in 'package.json' of widgets"
+        echo "Now will be set a most recent version of ${packageName} in 'package.json' of widgets"
         projects.each{ k,v ->
             dir(k + "/"){
                 setComponentVersion("@a1/${packageName}", packageVersion)
@@ -150,12 +149,9 @@ String report(Map projects, String release_version){
         widget_status = widget_status + "\n" + reportWidgetStatus(k,v,release_version)
     }
     Date date = new Date()
-    String datePart = date.format("dd.MM.yyyy")
-    String timePart = date.format("HH:mm")
-
-    def build_time = timePart + " " + datePart
+    String build_time = date.format("dd.MM.yyyy HH:mm")
     def sheet = """
-    <!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8">
+<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8">
 <title>HFHS Release ${release_version}</title></head><body 
 style="font-family:system-ui,sans-serif;"><h1 align="center">
 HFHS release report</h1><div class="body"><table border="0" 
@@ -167,8 +163,7 @@ ${widget_status}</table></p></td><td width="10%"></td></tr></table>
 </div><div class="footer"><hr><p 
 style="font-size: 8pt; text-align:center">
 This report was generated automatically at ${build_time}</p></div>
-</body></html>
-    """
+</body></html>"""
     return sheet
 }
 
@@ -189,7 +184,6 @@ ${widget_status}
 return sheet
 }
 
-//BETA feature
 String quickSetVersion(String requested_version, String option){
     def agreed_version = ""
     if (option == "hotfix"){
@@ -208,7 +202,6 @@ String quickSetVersion(String requested_version, String option){
     }
     return agreed_version
 }
-//end
 
 def templatedSubstageCheckProperties = {isRelease,name,version,project_list ->
     return{
@@ -327,7 +320,7 @@ pipeline{
         parallelsAlwaysFailFast()
     }
     stages{
-        stage("Preparation steps"){
+        stage("Preflight steps"){
             stages{
                 stage('Clone repos'){
                     steps{
@@ -341,7 +334,6 @@ pipeline{
                             }
                         }
                     }
-
                 }
                 stage('Get versions of widgets'){
                     steps{
@@ -367,7 +359,7 @@ pipeline{
                                 id: 'base_build', message: 'HFHS Release',
                                 parameters: [
                                     booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-base" }?.value),
-                                                 description: "Make release of Base",
+                                                 description: "Make release of HFHS Base",
                                                  name: 'isBaseRelease'),
                                     booleanParam(defaultValue: isReleaseNeeded(projects.find{it.key == "microfrontend-hfhs-connector" }?.value),
                                                  description: "Make release of HFHS Connector",
@@ -376,8 +368,11 @@ pipeline{
                                            choices: job_types, 
                                            description: 'Kind of job type'),
                                     string(defaultValue: "$proposal_version",
-                                           description: 'with version. If buildType is hotfix or release, this field is ignored.',
+                                           description: 'Version number for release. If buildType is hotfix or release, this field is ignored.',
                                            name: 'baseVersion'),
+                                    booleanParam(defaultValue: false,
+                                                 description: "Perform sanity test after release",
+                                                 name: 'isSanityTestEnabled'),
                                 ])
                             if ((base_build["buildType"] == "hotfix") || (base_build["buildType"] == "release")){
                                 release_version = quickSetVersion(proposal_version, base_build["buildType"])
@@ -390,7 +385,6 @@ pipeline{
                                     release_version = quickSetVersion(base_build['baseVersion'], base_build['buildType'])
                                 }                                
                             }
-                            
                             echo "Check chosen tag existance"
                             def notValidTag = 0
                             projects.each{ k,v ->
@@ -451,6 +445,11 @@ pipeline{
             }
         }
         stage("Perform sanity tests"){
+            when{
+                expression{
+                    base_build['isSanityTestEnabled'] == true
+                }
+            }
             steps{
                 build job: sanity_test_job_name,  propagate: false, quietPeriod: 150
             }
