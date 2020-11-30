@@ -83,8 +83,8 @@ String getComponentVersion(String component_name){
     return package_data.'dependencies'."${component_name}"?: ""
 }
 
-String getPackageAttribute(String attr){
-    def package_data = readJSON file: 'package.json'
+String getPackageAttribute(String attr, String filename = "package.json"){
+    def package_data = readJSON file: filename
     return package_data."${attr}"
 }
 
@@ -122,7 +122,7 @@ Boolean isPluggableModule(String packageName){
 }
 
 String reportWidgetStatus(String widget_name, String widget_version, String release_version){
-    def name = widget_name
+    def name = getPackageAttribute("description", "${widget_name}/package.json")? """ <abbr title="${widget_name}"> ${getPackageAttribute('description', "${widget_name}/package.json")}  </abbr> """ : widget_name
     def prev_version = widget_version
     def curr_version = widget_version
     def highlight = ""
