@@ -341,7 +341,7 @@ pipeline{
                             projects.each { k,v ->
                                 dir(k + "/") {
                                     sh 'git checkout develop && git status'
-                                    raw_version = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
+                                    raw_version = sh(returnStdout: true, script: 'git describe --tags --abbrev=0 | cut -c 2-').trim()
                                     projects[k] = raw_version
                                     ver_list = ver_list + raw_version.split("-")[0] + "\\n"
                                 } 
