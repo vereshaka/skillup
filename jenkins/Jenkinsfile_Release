@@ -149,7 +149,7 @@ String report(Map projects, String release_version){
         widget_status = widget_status + "\n" + reportWidgetStatus(k,v,release_version)
     }
     Date date = new Date()
-    String build_time = date.format("dd.MM.yyyy HH:mm")
+    String build_time = date.format("dd.MM.yyyy HH:mm Z")
     def sheet = """
 <!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8">
 <title>HFHS Release ${release_version}</title></head><body 
