@@ -31,12 +31,22 @@ String getLatestCommiter(String repo, String cred_id) {
 
 pipeline{
     agent any
+    triggers{
+        cron('H/6 * * * 1-5')
+    }
     stages{
         stage("Master of puppets"){
             steps{
                 script{
                     project.each{k,v ->
-                        echo "${getLatestCommiter(k,JENKINS_BITBUCKET_CREDS)}"
+                        if (getLatestCommiter(k, JENKINS_BITBUCKET_CREDS) != "dk_crm_gucci"){
+                            try {
+                                echo "It is going to run next job: ${k}"
+                                build wait: false, job: k
+                            } catch (Exception e) {
+                                echo "Could not run ${k}"
+                            }
+                        }
                     }
                 }
             }
