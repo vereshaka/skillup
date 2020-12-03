@@ -122,7 +122,7 @@ Boolean isPluggableModule(String packageName){
 }
 
 String reportWidgetStatus(String widget_name, String widget_version, String release_version){
-    def name = getPackageAttribute("description", "${widget_name}/package.json")? """ <abbr title="${widget_name}"> ${getPackageAttribute('description', "${widget_name}/package.json")}  </abbr> """ : widget_name
+    def name = getPackageAttribute("name", "${widget_name}/package.json")? """ <abbr title="${widget_name}"> ${getPackageAttribute('description', "${widget_name}/package.json")}  </abbr> """ : widget_name
     def prev_version = widget_version
     def curr_version = widget_version
     def highlight = ""
