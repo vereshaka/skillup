@@ -38,7 +38,7 @@ pipeline{
         stage("Master of puppets"){
             steps{
                 script{
-                    project.each{k,v ->
+                    project.each{k ->
                         if (getLatestCommiter(k, JENKINS_BITBUCKET_CREDS) != "dk_crm_gucci"){
                             try {
                                 echo "It is going to run next job: ${k}"
