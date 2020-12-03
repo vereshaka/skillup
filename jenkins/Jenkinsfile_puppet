@@ -32,7 +32,7 @@ String getLatestCommiter(String repo, String cred_id) {
 pipeline{
     agent any
     triggers{
-        cron('H/6 * * * 1-5')
+        cron('H H/6 * * 1-5')
     }
     stages{
         stage("Master of puppets"){
