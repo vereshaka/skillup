@@ -71,7 +71,7 @@ String getMostRecentVersion(String version_list){
 }
 
 Boolean isTagExist(String version){
-    def tag = '\'refs/tags/' + 'v' + version + '\''
+    def tag = """'refs/tags/v${version}'"""
     def grep_statement = '\'^' + tag + '\$\''
     def tag_count = sh(returnStdout: true, script: "git ls-remote -q --tags | awk '{print \$2}'| grep ${grep_statement} | wc -l").trim().toInteger()
     if(tag_count > 0) return true
@@ -83,8 +83,8 @@ String getComponentVersion(String component_name){
     return package_data.'dependencies'."${component_name}"?: ""
 }
 
-String getPackageAttribute(String attr){
-    def package_data = readJSON file: 'package.json'
+String getPackageAttribute(String attr, String filename = "package.json"){
+    def package_data = readJSON file: filename
     return package_data."${attr}"
 }
 
@@ -94,7 +94,7 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
     if (isRelease == false){
         projects.each{ k,v ->
             if (k == packageName) return
-                dir(k + "/") {
+                dir("${k}/") {
                     def component_version = (getComponentVersion("@a1/${packageName}")).replaceAll("[@^=]+","")
                     isBaseVerValid = isBaseVerValid && (isVersionValid(component_version) || (component_version  == ""))
                     overview = overview + k + ": " + component_version + "\n    "
@@ -108,7 +108,7 @@ void checkPackageProperties(Boolean isRelease, String packageName, String packag
     else{
         echo "Now will be set a most recent version of ${packageName} in 'package.json' of widgets"
         projects.each{ k,v ->
-            dir(k + "/"){
+            dir("${k}/"){
                 setComponentVersion("@a1/${packageName}", packageVersion)
                 sh "git add package.json || true"
             }
@@ -122,7 +122,7 @@ Boolean isPluggableModule(String packageName){
 }
 
 String reportWidgetStatus(String widget_name, String widget_version, String release_version){
-    def name = widget_name
+    def name = getPackageAttribute("description", "${widget_name}/package.json")? """ <abbr title="${widget_name}"> ${getPackageAttribute('description', "${widget_name}/package.json")}  </abbr> """ : widget_name
     def prev_version = widget_version
     def curr_version = widget_version
     def highlight = ""
@@ -149,7 +149,7 @@ String report(Map projects, String release_version){
         widget_status = widget_status + "\n" + reportWidgetStatus(k,v,release_version)
     }
     Date date = new Date()
-    String build_time = date.format("dd.MM.yyyy HH:mm")
+    String build_time = date.format("dd.MM.yyyy HH:mm Z")
     def sheet = """
 <!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8">
 <title>HFHS Release ${release_version}</title></head><body 
@@ -339,9 +339,9 @@ pipeline{
                     steps{
                         script{
                             projects.each { k,v ->
-                                dir(k + "/") {
+                                dir("${k}/") {
                                     sh 'git checkout develop && git status'
-                                    raw_version = sh(returnStdout: true, script: 'git describe --tags | cut -c 2-').trim()
+                                    raw_version = sh(returnStdout: true, script: 'git describe --tags --abbrev=0 | cut -c 2-').trim()
                                     projects[k] = raw_version
                                     ver_list = ver_list + raw_version.split("-")[0] + "\\n"
                                 } 
@@ -389,7 +389,7 @@ pipeline{
                             def notValidTag = 0
                             projects.each{ k,v ->
                                 if(isReleaseNeeded(projects.find{it.key == k }?.value) == false) return
-                                dir(k + "/"){
+                                dir("${k}/"){
                                     if(isTagExist(release_version) == true){
                                         echo "${k} already have tag ${release_version}"
                                         notValidTag += 1
@@ -432,7 +432,7 @@ pipeline{
                 script{
                     projects.each{ k,v ->
                         if ((isReleaseNeeded(projects.find{it.key == k}?.value) == false) || (isPluggableModule(k) == true)) return
-                        dir(k + "/") {
+                        dir("${k}/") {
                             env.IMAGE_VERSION = getPackageAttribute("version")
                             echo "Deploying ${k}:${env.IMAGE_VERSION} to INT"
                             withKubeConfig([credentialsId: JENKIN_K8S_CREDENTIALS_ID]) {

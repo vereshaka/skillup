@@ -1,0 +1,55 @@
+def JENKINS_BITBUCKET_CREDS = "8c90ce01-4736-4b5a-8661-ab6299330151"
+
+def project = [
+    "microfrontend-hfhs-createaccount",
+    "microfrontend-hfhs-bulk-operation",
+    "microfrontend-hfhs-processing",
+    "microfrontend-hfhs-changeownership",
+    "microfrontend-hfhs-product-details",
+    "microfrontend-hfhs-business-transaction-detail",
+    "microfrontend-hfhs-business-transaction-history",
+    "microfrontend-hfhs-toolbar",
+    "microfrontend-hfhs-product-move",
+    "microfrontend-hfhs-search-product",
+    "microfrontend-hfhs-base",
+    "microfrontend-hfhs-connector"
+];
+
+String getLatestCommiter(String repo, String cred_id) {
+    def api_endpoint = "https://tasktrack.telekom.at/bitbucket/rest/api/latest/projects/CCF/repos/${repo}/commits?limit=1"
+    def request = httpRequest(acceptType: 'APPLICATION_JSON',
+            authentication: cred_id,
+            consoleLogResponseBody: true,
+            responseHandle: 'NONE',
+            customHeaders: [[maskValue: true, name: 'User-Agent', value: 'curl/7.58.0']],
+            url: api_endpoint,
+            wrapAsMultipart: false)
+    def processing = readJSON text: request.content
+    def author = processing."values"[0]."author"."name"
+    return author
+}
+
+pipeline{
+    agent any
+    triggers{
+        cron('H H/6 * * 1-5')
+    }
+    stages{
+        stage("Master of puppets"){
+            steps{
+                script{
+                    project.each{k ->
+                        if (getLatestCommiter(k, JENKINS_BITBUCKET_CREDS) != "dk_crm_gucci"){
+                            try {
+                                echo "It is going to run next job: ${k}"
+                                build wait: false, job: k
+                            } catch (Exception e) {
+                                echo "Could not run ${k}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
