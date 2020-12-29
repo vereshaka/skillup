@@ -16,7 +16,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y libaio1 --no-install-recommends && \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
-    rm -rf /var/lib/{apt,dpkg,cache,log} /var/log
+    rm -rf /var/lib/apt /var/lib/dpkg /var/lib/cache /var/lib/log
     
 COPY --from=libs /opt/oracle/instantclient_12_2 /opt/oracle/instantclient
 COPY --from=libs /opt/openjdk/jdk8u275-b01-jre /usr/lib/jvm/java-8-openjdk-amd64
